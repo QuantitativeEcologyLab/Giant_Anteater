@@ -142,15 +142,24 @@ FIT.ALL <- c(FIT.1, FIT.2)
 # Load Proximity Analysis results
 proximity.data <- read_csv("proximity.csv")
 
-# clean up data because there are duplicate values
-proximity.data <- proximity.data[!duplicated(proximity.data[,c(1,2)]),]
-
 # Identify pairs that were closer/further from each other
 proximity.above1 <- proximity.data[which(proximity.data$proximity_low > 1),]
 proximity.below1 <- proximity.data[which(proximity.data$proximity_high < 1),]
+
+### PREP PROXIMITY RESULTS FOR CORRMOVE ANALYSIS ----
+# clean up data because there are duplicate values
+proximity.data <- proximity.data[!duplicated(proximity.data[,c(1,2)]),]
 
 # Create time stamp table
 anteater.time <- seq(from=as.POSIXct("2017-07-05"), to=as.POSIXct("2019-09-05"), by='20 mins')
 
 # Predict the location of each individual
-prediction <- predict(DATA[[1]], CTMM=FIT.ALL[[1]], t = anteater.time)
+predict.Alexander <- predict(DATA[[1]], CTMM=FIT.1[[1]], t = anteater.time)
+predict.Bumpus <- predict(DATA[[5]], CTMM=FIT.1[[3]], t = anteater.time)
+predict.Christoffer <- predict(DATA[[7]], CTMM=FIT.1[[5]], t = anteater.time)
+predict.Elaine <- predict(DATA[[8]], CTMM=FIT.1[[6]], t = anteater.time)
+predict.Kyle <- predict(DATA[[11]], CTMM=FIT.1[[8]], t = anteater.time)
+predict.LittleRick <- predict(DATA[[13]], CTMM=FIT.1[[9]], t = anteater.time)
+predict.Makao <- predict(DATA[[14]], CTMM=FIT.1[[10]], t = anteater.time)
+predict.Puji <- predict(DATA[[16]], CTMM=FIT.1[[11]], t = anteater.time)
+predict.Rodolfo <- predict(DATA[[18]], CTMM=FIT.1[[12]], t = anteater.time)
