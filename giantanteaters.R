@@ -1,15 +1,17 @@
+
+
 ### LOAD PACKAGES ###
 library("readr")
 library("ctmm")
 library("ggplot2")
 library("dplyr") # for mutate
 library("tidyr") # for pivot_longer()
-
+devtools::install_github("jmcalabrese/corrMove", force = TRUE)
 
 ### DATA PREPARATION ----
 
 ## WORKING DIRECTORY
-setwd("C:\Users\achhen.stu\OneDrive - UBC\BIOL 452 Directed Studies - Giant Anteaters\Anteater Scripts\R working directory")
+setwd("C:/Users/achhen.stu/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Anteater Scripts/R working directory")
 
 ## IMPORT DATASET
 anteater.DATA <- read_csv("C:/Users/achhen.stu/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Anteater Dataset/giantanteater.csv", col_types = cols(timestamp = "c", class = "c", identity = "c", id = "c", .default = "d"))
@@ -40,7 +42,7 @@ FIT.1.male <- readRDS("FIT.1.male.RDS")
 overlap(FIT.1.male)
 FIT.1.male.adult <- readRDS("FIT.1.male.adult.RDS")
 overlap(FIT.1.male.adult)
-FITS.1.female <- readRDS("FIT.1.female.RDS")
+FIT.1.female <- readRDS("FIT.1.female.RDS")
 overlap(FIT.1.female)
 
 # Load fitted model for SITE 2
