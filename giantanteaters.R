@@ -155,13 +155,19 @@ proximity.data <- proximity.data[!duplicated(proximity.data[,c(1,2)]),]
 # Create time stamp table
 anteater.time <- seq(from=as.POSIXct("2017-07-05"), to=as.POSIXct("2019-09-05"), by='20 mins')
 
-# Predict the location of each individual
-predict.Alexander <- predict(DATA[[1]], CTMM=FIT.1[[1]], t = anteater.time)
-predict.Bumpus <- predict(DATA[[5]], CTMM=FIT.1[[3]], t = anteater.time)
-predict.Christoffer <- predict(DATA[[7]], CTMM=FIT.1[[5]], t = anteater.time)
-predict.Elaine <- predict(DATA[[8]], CTMM=FIT.1[[6]], t = anteater.time)
-predict.Kyle <- predict(DATA[[11]], CTMM=FIT.1[[8]], t = anteater.time)
-predict.LittleRick <- predict(DATA[[13]], CTMM=FIT.1[[9]], t = anteater.time)
-predict.Makao <- predict(DATA[[14]], CTMM=FIT.1[[10]], t = anteater.time)
-predict.Puji <- predict(DATA[[16]], CTMM=FIT.1[[11]], t = anteater.time)
-predict.Rodolfo <- predict(DATA[[18]], CTMM=FIT.1[[12]], t = anteater.time)
+## Predict the location of each individual
+# Load location predictions
+predict.Alexander <- readRDS("predict.Alexander.RDS")
+predict.Bumpus <- readRDS("predict.Bumpus.RDS")
+predict.Christoffer <- readRDS("predict.Christoffer.RDS")
+predict.Elaine <- readRDS("predict.Elaine.RDS")
+predict.Kyle <- readRDS("predict.Kyle.RDS")
+predict.LittleRick <- readRDS("predict.LittleRick.RDS")
+predict.Makao <- readRDS("predict.Makao.RDS")
+predict.Puji <- readRDS("predict.Puji.RDS")
+predict.Rodolfo <- readRDS("predict.Rodolfo.RDS")
+
+#Extract some test individuals and do some data carpentry
+Elaine <- subset(anteater.DATA, identity=='Elaine')
+Christoffer <- subset(anteater.DATA, identity == 'Christoffer')
+plot(list("Elaine", "Christoffer"), col = c("red", "blue"))
