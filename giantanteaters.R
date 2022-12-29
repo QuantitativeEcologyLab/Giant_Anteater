@@ -1,12 +1,15 @@
 
 
 ### LOAD PACKAGES ###
-library("readr")
+library("readr") # for read_csv()
 library("ctmm")
 library("ggplot2")
-library("dplyr") # for mutate
-library("tidyr") # for pivot_longer()
+library("dplyr") # for mutate(), part of tidyverse
+library("tidyr") # for pivot_longer(), part of tidyverse
+library("lme4") # test to see if differences are significant using glmer()
 devtools::install_github("jmcalabrese/corrMove", force = TRUE)
+library("corrMove")
+library("lubridate") # for round_date() for corrMove
 
 ### DATA PREPARATION ----
 
@@ -168,6 +171,24 @@ predict.Puji <- readRDS("predict.Puji.RDS")
 predict.Rodolfo <- readRDS("predict.Rodolfo.RDS")
 
 #Extract some test individuals and do some data carpentry
-Elaine <- subset(anteater.DATA, identity=='Elaine')
-Christoffer <- subset(anteater.DATA, identity == 'Christoffer')
-plot(list("Elaine", "Christoffer"), col = c("red", "blue"))
+Elaine <- DATA$Elaine #data$Elaine
+Christoffer <- DATA$Christoffer # data$Christoffer
+plot(list(Elaine, Christoffer), col = c("red", "blue"))
+El <- data.frame(timestamp = round_date(Elaine$timestamp, "20 minutes") ,
+                 E.x = Elaine$longitude,
+                 E.y = Elaine$latitude)
+Chris <- data.frame(timestamp = round_date(Christoffer$timestamp, "20 minutes"),
+                    S.x = Christoffer$longitude,
+                    S.y = Christoffer$latitude)
+test <- merge(El, Chris)
+test <- test[, c(1,2,4,3,5)]
+test <- test[!duplicated(test$timestamp),]
+#Create corrData object.
+cdAnteater <- as.corrData(test)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater <- findPrts(cdAnteater, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater <- corrMove(cdAnteater, prtsAnteater)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater)
+title("Elaine and Christoffer")
