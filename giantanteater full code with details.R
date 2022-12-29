@@ -12,6 +12,7 @@ install.packages("dplyr") # for %>% and other function, join functions
 install.packages("ggplot2")
 install.packages("lme4")
 install.packages("tibble")
+install.packages("lubridate") # for round_date() for corrMove
 
 # Using github packages that are not on CRAN i.e. cannot be used via install.packages()
 devtools::install_github("r-lib/devtools", force = TRUE)
@@ -30,6 +31,7 @@ library("tidyr") # for pivot_longer()
 library("lme4") # test to see if differences are significant using glmer()
 library("corrMove")
 library("tibble")
+library("lubridate") # for round_date() for corrMove
 
 ### DATA PREPARATION ----
 
@@ -204,7 +206,7 @@ dev.off()
 AKDE.1.male <- akde(site.1[1:7],FIT.1.male)
 saveRDS(object = AKDE.1.male, file = "AKDE.1.male.RDS")
 # Load saved AKDE aligned UDs, see original file for code
-AKDE.1.male <- readR/DS("AKDE.1.male.RDS")
+AKDE.1.male <- readRDS("AKDE.1.male.RDS")
 overlap(AKDE.1.male)
 png(file = "Overlap.1.male.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.1.male, col.DF = "blue", col.level = "black", col.grid = NA, level = NA)
@@ -591,8 +593,8 @@ predict.Rodolfo <- readRDS("predict.Rodolfo.RDS")
 
 #####
 #Extract some test individuals and do some data carpentry
-Elaine <- data$Elaine #data$Elaine
-Christoffer <- data$Christoffer # data$Christoffer
+Elaine <- DATA$Elaine #data$Elaine
+Christoffer <- DATA$Christoffer # data$Christoffer
 plot(list(Elaine, Christoffer), col = c("red", "blue"))
 El <- data.frame(timestamp = round_date(Elaine$timestamp, "20 minutes") ,
                  E.x = Elaine$longitude,
@@ -614,11 +616,6 @@ plot.corrMove(cmAnteater)
 title("Elaine and Christoffer")
 
 ######
-
-#Extract some test individuals and do some data carpentry
-Elaine <- subset(anteater.DATA, identity == 'Elaine')
-Christoffer <- subset(anteater.DATA, identity == 'Christoffer')
-plot(list("Elaine", "Christoffer"), col = c("red", "blue"))
 
 
 
