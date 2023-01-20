@@ -5,17 +5,8 @@ date: "2023-01-20"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+knitr::opts_chunk$set(root.dir = "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater")
+# setting working directory for entire rmarkdown file instead of chunks, which is a default of a rmarkdown file
 ```
 
 ## Including Plots
@@ -28,89 +19,571 @@ plot(pressure)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
+# BIOL 452 Directed Studies - Giant Anteater Sociality
 
-
-
-
-
-
-
-
-
-
-
-
-
-Load packages
+## install R packages
 ```{r}
+install.packages("rmarkdown")
+install.packages("knitr")
+install.packages("readr")
+install.packages("ctmm")
+```
+
+## Load packages
+```{r}
+library("rmarkdown")
+library("knitr")
 library("readr")
 library("ctmm")
 ```
 
 # DATA PREPARATION
 
+## Set working directory
+```{r}
+setwd("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)")
+```
+
 ## IMPORT DATASET
 ```{r}
-giantanteater <- read_csv("C:/Users/achhen.stu/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Anteater Dataset/giantanteater.csv")
+giantanteater <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/Anteaters_NoOutliers (original data).csv")
 ```
 
 ## TELEMETRY FORMAT
 Convert dataset to a telemetry object, assuming the data has been cleaned and containing no outliers
 ```{r}
-DATA <- as.telemetry("C:/Users/achhen.stu/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Anteater Dataset/giantanteater.csv") # n=19
+DATA <- as.telemetry("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/Anteaters_NoOutliers (original data).csv")
 
 ```
 
 
 ## SUBSET DATA FOR SITE 1
 ```{r}
-site.1 <- DATA[c(1,3,5:9,11,13:14,16,18)] # males and females (n=12)
-site.1.adult <- DATA[c(1,5:9,14,16,18)] # adults only (n=9)
-site.1.male <- DATA[c(1,3,7,9,11,13,18)] # males only (n=7)
-site.1.male.adult <- DATA[c(1,7,9,18)] # male adults only (n=4)
-site.1.female <- DATA[c(5,6,8,14,16)] # female adults (n=5)
+site.1 <- DATA[c(1,3,9,10,12,15,21,24,27,29,36,38)] # male and female (n=12)
+site.1.adult <- DATA[c(1,9,10,12,15,21,29,36,38)] # adult (n=9)
+site.1.male <- DATA[c(1,3,12,21,24,27,38)] # male (n=7)
+site.1.male.adult <- DATA[c(1,12,21,38)] # male adult (n=4)
+site.1.female <- DATA[c(9,10,15,29,36)] # female adult (n=5)
 ```
 
 ## SUBSET DATA FOR SITE 2
 ```{r}
-site.2 <- DATA[c(2, 4, 10, 12, 15, 17, 19)] # all individuals (n=7)
-site.2.adult <- DATA[c(2,4,10,12,15,19)] # adults only (n=6)
-site.2.male <- DATA[c(4,12,17,19)]  # males only (n=4)
-site.2.male.adult <- DATA[c(4,12,19)] # male adults only (n=3)
-site.2.female <- DATA[c(2,10,15)]  # female adults (n=3)
+site.2 <- DATA[c(2,8,22,25,30,37,42)] # male and female (n=7)
+site.2.adult <- DATA[c(2,8,22,25,30,42)] # adult (n=6)
+site.2.male <- DATA[c(8,25,37,42)]  # male (n=4)
+site.2.male.adult <- DATA[c(8,25,42)] # male adult (n=3)
+site.2.female <- DATA[c(2,22,30)]  # female adult (n=3)
 ```
 
 ## SUBSET DATA FOR SITE 3
 ```{r}
-
+site.3 <- DATA[c()] # male and female (n=)
+site.3.adult <- DATA[c()] # adult (n=)
+site.3.male <- DATA[c()]  # male (n=)
+site.3.male.adult <- DATA[c()] # male adult (n=)
+site.3.female <- DATA[c()]  # female adult (n=)
 ```
 
 # OVERLAP
-
 ## FITTING MODELS
+### FITTING MODELS FOR SITE 1
 
-### Fit models for SITE 1
+#### SITE 1 - male and female (n=12)
+```{r}
+GUESS.1 <- lapply(site.1[1:12], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.1 <- lapply(1:12, function(i) ctmm.select(site.1[[i]],GUESS.1[[i]]) )
+names(FIT.1) <- names(site.1[1:12])
+saveRDS(object = FIT.1, file = "FIT.1.RDS")
+```
+
+#### Load save fitted model for SITE 1
+```{r}
+FIT.1 <- readRDS("FIT.1.RDS")
+overlap(FIT.1)
+```
+
+#### SITE 1 - male (n=7)
+```{r}
+GUESS.1.male <- lapply(site.1.male[1:7], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.1.male <- lapply(1:7, function(i) ctmm.select(site.1.male[[i]],GUESS.1.male[[i]]) )
+names(FIT.1.male) <- names(site.1.male[1:7])
+saveRDS(object = FIT.1.male, file = "FIT.1.male.RDS")
+```
+
+#### Load saved fitted model
+```{r}
+FIT.1.male <- readRDS("FIT.1.male.RDS")
+overlap(FIT.1.male)
+```
+
+#### SITE 1 - male adult (n=4)
+```{r}
+GUESS.1.male.adult <- lapply(site.1[1:4], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.1.male.adult <- lapply(1:12, function(i) ctmm.select(site.1.male.adult[[i]],GUESS.1.male.adult[[i]]) )
+names(FIT.1.male.adult) <- names(site.1.male.adult[1:4])
+saveRDS(object = FIT.1.male.adult, file = "FIT.1.male.adult.RDS")
+```
+
+#### Load saved fitted model
+```{r}
+FIT.1.male.adult <- readRDS("FIT.1.male.adult.RDS")
+overlap(FIT.1.male.adult)
+```
+
+#### SITE 1 - female (n=5)
+```{r}
+GUESS.1.female <- lapply(site.1.female[1:5], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.1.female <- lapply(1:5, function(i) ctmm.select(site.1.female[[i]],GUESS.1.female[[i]]) )
+names(FIT.1.female) <- names(site.1.female[1:5])
+saveRDS(object = FIT.1.female, file = "FIT.1.female.RDS")
+```
+
+#### Load saved fitted model
+```{r}
+FIT.1.female <- readRDS("FIT.1.female.RDS")
+overlap(FIT.1.female)
+```
+
+### FITTING MODELS FOR SITE 2 ----
+
+#### SITE 2 - male and female (n=7)
+```{r}
+GUESS.2 <- lapply(site.2[1:7], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.2 <- lapply(1:7, function(i) ctmm.select(site.2[[i]],GUESS.2[[i]]) )
+names(FIT.2) <- names(site.2[1:7])
+saveRDS(object = FIT.2, file = "FIT.2.RDS")
+```
+
+#### Load saved fitted model
+```{r}
+FIT.2 <- readRDS("FIT.2.RDS")
+overlap(FIT.2)
+```
+
+#### SITE 2 - male (n=4)
+```{r}
+GUESS.2.male <- lapply(site.2.male[1:4], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.2.male <- lapply(1:4, function(i) ctmm.select(site.2.male[[i]],GUESS.2.male[[i]]) )
+names(FIT.2.male) <- names(site.2.male[1:4])
+saveRDS(object = FIT.2.male, file = "FIT.2.male.RDS")
+```
+
+#### Load saved fitted model
+```{r}
+FIT.2.male <- readRDS("FIT.2.male.RDS")
+overlap(FIT.2.male)
+```
+
+#### SITE 2 - male adult (n=3)
+```{r}
+GUESS.2.male.adult <- lapply(site.2.male.adult[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.2.male.adult <- lapply(1:3, function(i) ctmm.select(site.2.male.adult[[i]],GUESS.2.male.adult[[i]]) )
+names(FIT.2.male.adult) <- names(site.2.male.adult[1:3])
+saveRDS(object = FITS.2.male.adult, file = "FIT.2.male.adult.RDS")
+```
+
+#### Load saved fitted model
+```{r}
+FIT.2.male.adult <- readRDS("FIT.2.male.adult.RDS")
+overlap(FIT.2.male.adult)
+```
+
+#### SITE 2 - female (n=3)
+```{r}
+GUESS.2.female <- lapply(site.2.female[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.2.female <- lapply(1:3, function(i) ctmm.select(site.2.female[[i]],GUESS.2.female[[i]]) )
+names(FIT.2.female) <- names(site.2.female[1:3])
+saveRDS(object = FIT.2.female, file = "FIT.2.female.RDS")
+```
+
+#### Load saved fitted model
+```{r}
+FIT.2.female <- readRDS("FIT.2.female.RDS")
+overlap(FIT.2.female)
+```
+
+
+
+### FITTING MODELS FOR SITE 3 ----
+
+SITE 3 - male and female (n=)
+SITE 3 - male (n=)
+SITE 3 - male adult (n=)
+SITE 3 - female (n=)
+Load saved fitted model
+
+## AKDE OVERLAP
+### AKDE OVERLAP FOR SITE 1
+
+#### SITE 1 - male and female (n=12)
+```{r}
+AKDE.1 <- akde(site.1[1:12],FIT.1)
+saveRDS(object = AKDE.1, file = "AKDE.1.RDS")
+```
+
+#### Load saved AKDE aligned UDs
+```{r}
+AKDE.1 <- readRDS("AKDE.1.RDS")
+overlap(AKDE.1)
+```
+
+#### Plot AKDE overlap
+```{r}
+COL.1 <- c("blue", "light blue", "red", "red", "blue", "red", "blue", "light blue", "light blue", "red",
+           "red", "blue") # blue = male; light blue = subadult male; red = female
+png(file = "Overlap.1.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(AKDE.1, col.DF = COL.1, col.level = COL.1, col.grid = NA, level = NA)
+title("aKDE Overlap (Site 1: all individuals)")
+dev.off()
+```
+
+#### SITE 1 - male (n=7)
+```{r}
+AKDE.1.male <- akde(site.1[1:7],FIT.1.male)
+saveRDS(object = AKDE.1.male, file = "AKDE.1.male.RDS")
+```
+
+#### Load saved AKDE aligned UDs
+```{r}
+AKDE.1.male <- readRDS("AKDE.1.male.RDS")
+overlap(AKDE.1.male)
+```
+
+#### Plot AKDE overlap
+```{r}
+png(file = "Overlap.1.male.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(AKDE.1.male, col.DF = "blue", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 1: males only)")
+dev.off()
+```
+
+#### SITE 1 - male adult (n=4)
+```{r}
+AKDE.1.male.adult <- akde(site.1.male.adult[1:4],FIT.1.male.adult)
+saveRDS(object = AKDE.1.male.adult, file = "AKDE.1.male.adult.RDS")
+```
+
+#### Load saved AKDE aligned UDs
+```{r}
+AKDE.1.male.adult <- readRDS("AKDE.1.male.adult.RDS")
+overlap(AKDE.1.male.adult)
+```
+
+#### Plot AKDE overlap
+```{r}
+png(file = "Overlap.1.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(AKDE.1.male.adult, col.DF = "blue", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 1: male adults only)")
+dev.off()
+```
+
+#### SITE 1 - female (n=5)
+```{r}
+AKDE.1.female <- akde(site.1.female[1:5],FIT.1.female)
+saveRDS(object = AKDE.1.female, file = "AKDE.1.female.RDS")
+```
+
+#### Load saved AKDE aligned UDs
+```{r}
+AKDE.1.female <- readRDS("AKDE.1.female.RDS")
+overlap(AKDE.1.female)
+```
+
+#### Plot AKDE overlap
+```{r}
+png(file = "Overlap.1.female.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(AKDE.1.female, col.DF = "red", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 1: females only)")
+dev.off()
+```
+
+### AKDE OVERLAP FOR SITE 2
+
+#### SITE 2 - male and female (n=7)
+```{r}
+AKDE.2 <- akde(site.2[1:7],FITS.2)
+saveRDS(object = AKDE.2, file = "AKDE.2.RDS")
+```
+
+#### Load saved AKDE aligned UDs
+```{r}
+AKDE.2 <- readRDS("AKDE.2.RDS")
+overlap(AKDE.2)
+```
+
+#### Plot AKDE overlap
+```{r}
+COL.2 <- c("red", "blue", "red", "blue", "red", "light blue", "blue") # blue = male; light blue = subadult male; red = female
+png(file = "Overlap.2.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(AKDE.2, col.DF = COL.2, col.level = COL.2, col.grid = NA, level = NA) 
+title("aKDE Overlap (Site 2: all individuals)")
+dev.off()
+```
+
+#### SITE 2 - male (n=4)
+```{r}
+AKDE.2.male <- akde(site.2[1:4],FIT.2.male)
+saveRDS(object = AKDE.2.male, file = "AKDE.2.male.RDS")
+```
+
+#### Load saved AKDE aligned UDs
+```{r}
+AKDE.2.male <- readRDS("AKDE.2.male.RDS")
+overlap(AKDE.2.male)
+```
+
+#### Plot AKDE overlap
+```{r}
+png(file = "Overlap.2.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(AKDE.2.male.adult, col.DF = "blue", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 2: male adults only)")
+dev.off()
+```
+
+#### SITE 2 - male adult (n=3)
+```{r}
+AKDE.2.male.adult <- akde(site.2.male.adult[1:3],FITS.2.male.adult)
+saveRDS(object = AKDE.2.male.adult, file = "AKDE.2.male.adult.RDS")
+```
+
+#### Load saved AKDE aligned UDs
+```{r}
+AKDE.2.male.adult <- readRDS("AKDE.2.male.adult.RDS")
+overlap(AKDE.2.male.adult)
+```
+
+#### Plot AKDE overlap
+```{r}
+png(file = "Overlap.2.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(AKDE.2.male.adult, col.DF = "blue", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 2: male adults only)")
+dev.off()
+```
+
+#### SITE 2 - female (n=3)
+```{r}
+AKDE.2.female <- akde(site.2.female[1:3],FITS.2.female)
+saveRDS(object = AKDE.2.female, file = "AKDE.2.female.RDS")
+```
+
+#### Load saved AKDE aligned UDs
+```{r}
+AKDE.2.female <- readRDS("AKDE.2.female.RDS")
+overlap(AKDE.2.female)
+```
+
+#### Plot AKDE overlap
+```{r}
+png(file = "Overlap.2.female.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(AKDE.2.female, col.DF = "red", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 2: females only)")
+dev.off()
+```
+
+### AKDE OVERLAP FOR SITE 3
+#### SITE 3 - male and female (n=)
+#### Load saved AKDE aligned UDs
+#### Plot AKDE overlap
+#### SITE 3 - male (n=)
+#### Load saved AKDE aligned UDs
+#### Plot AKDE overlap
+#### SITE 3 - male adult (n=)
+#### Load saved AKDE aligned UDs
+#### Plot AKDE overlap
+#### SITE 3 - female (n=)
+#### Load saved AKDE aligned UDs
+#### Plot AKDE overlap
+
+# PAIRWISE ANALYSIS SEX COMPARISON
+Creating a data frame from overlap values
+
+## IMPORT META DATA SET
+Import supplementry data set containing sex information
+```{r}
+METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/Anteater_Results_Final.csv")
+```
+
+Correcting for mismatch entry between data and supplemetary data
+```{r}
+METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
+                                                       true = 'Larry 267',
+                                                       false = ID))
+```
+
+### PAIRWISE SEX COMPARISON ANALYSIS FOR SITE 1
+```{r}
+# extracting median layer
+overlap.1 <- overlap(object = AKDE.1, level = 0.95) # assigns the overlap results as an object
+overlap.1.median <- overlap.1$CI[ , , 2] # extract the median layer (pulling out the section) of the cube (aka array)
+overlap.1.median[upper.tri(overlap.1.median, diag = TRUE)] <- NA # removing the upper triangle & diagonal
+# converting the overlap median layer matrix triangle into a pairwise dataframe
+pairwise.1.matrix <- as.data.frame(overlap.1.median) # Convert matrix to data frame
+pairwise.1.matrix$anteater_A <- rownames(pairwise.1.matrix) # add column of individual names
+pairwise.1.pivot <- pivot_longer(pairwise.1.matrix, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap', values_drop_na = TRUE)
+# add columns to the data frame matrix
+pairwise.1.pivot.A <- left_join(pairwise.1.pivot, rename(METADATA, anteater_A = ID), by = "anteater_A")
+pairwise.1.pivot.B <- left_join(pairwise.1.pivot.A, rename(METADATA, anteater_B = ID), by = "anteater_B", suffix = c(".A", ".B"))
+# adding column to indicate which sexes that are being compared
+pairwise.1.df <- mutate(pairwise.1.pivot.B, sex_comparison = case_when(paste(Sex.A, Sex.B) == "Male Male" ~ "male:male",
+                                                                       paste(Sex.A, Sex.B) == "Female Female" ~ "female:female",
+                                                                       paste(Sex.A, Sex.B) == "Male Female" ~ "male:female",
+                                                                       paste(Sex.A, Sex.B) == "Female Male" ~ "male:female"))
+# removing subadults from dataframe matrix
+pairwise.1.df.A <- pairwise.1.df[which(pairwise.1.df$Age.A != "Subadult"),] # removing subadults from anteater_A from matrix
+pairwise.1.df.adult <- pairwise.1.df.A[which(pairwise.1.df.A$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
+
+```
+
+#### Plot pairwise sex comparison for SITE 1 - male and female
+```{r}
+ggplot(data = pairwise.1.df, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+  geom_boxplot() +
+  ylab("Overlap") +
+  xlab("Sex Comparison") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 1: all)") +
+  theme_bw() +
+  scale_y_continuous(limits = c(0,1))
+ggsave(filename = "pairwise.1.png", plot = last_plot(), device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
+```
+
+#### Plot pairwise sex comparison for SITE 1 - adult
+```{r}
+ggplot(data = pairwise.1.df.adult, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+  geom_boxplot() +
+  ylab("Overlap") +
+  xlab("Sex Comparison") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 1: adults only)") +
+  theme_bw() +
+  scale_y_continuous(limits = c(0,1))
+ggsave(filename = "pairwise.1.adult.png", plot = last_plot(), device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
+```
+
+
+### PAIRWISE SEX COMPARISON ANALYSIS FOR SITE 2
+```{r}
+# extracting median layer
+overlap.2 <- overlap(object = AKDE.2, level = 0.95) # assigns the overlap results as an object
+overlap.2.median <- overlap.2$CI[ , , 2] # extract the median layer (pulling out the section) of the cube (aka array)
+overlap.2.median[upper.tri(overlap.2.median, diag = TRUE)] <- NA # removing the upper triangle & diagonal of the matrix
+# converting the overlap median layer matrix triangle into a pairwise dataframe
+pairwise.2.matrix <- as.data.frame(overlap.2.median) # Convert matrix to data frame
+pairwise.2.matrix$anteater_A <- rownames(pairwise.2.matrix) # add column of individual names
+pairwise.2.pivot <- pivot_longer(pairwise.1.matrix, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap', values_drop_na = TRUE)
+# add columns to the data frame matrix
+pairwise.2.pivot.A <- left_join(pairwise.2.pivot, rename(METADATA, anteater_A = ID), by = "anteater_A")
+pairwise.2.pivot.B <- left_join(pairwise.2.pivot.A, rename(METADATA, anteater_B = ID), by = "anteater_B", suffix = c(".A", ".B"))
+# adding column to indicate which sexes that are being compared
+pairwise.2.df <- mutate(pairwise.2.pivot.B, sex_comparison = case_when(paste(Sex.A, Sex.B) == "Male Male" ~ "male:male",
+                                                                       paste(Sex.A, Sex.B) == "Female Female" ~ "female:female",
+                                                                       paste(Sex.A, Sex.B) == "Male Female" ~ "male:female",
+                                                                       paste(Sex.A, Sex.B) == "Female Male" ~ "male:female"))
+# removing subadults from dataframe matrix
+pairwise.2.df.A <- pairwise.2.df[which(pairwise.2.df$Age.A != "Subadult"),] # removing subadults from anteater_A from matrix
+pairwise.2.df.adult <- pairwise.2.df.A[which(pairwise.2.df.A$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
+
+```
+
+#### Plot pairwise sex comparison for SITE 2 - male and female
+```{r}
+ggplot(data = pairwise.2.df, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+  geom_boxplot() +
+  ylab("Overlap") +
+  xlab("Sex Comparison") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 2: all)") +
+  theme_bw() +
+  scale_y_continuous(limits = c(0,1))
+ggsave(filename = "pairwise.2.png", plot = last_plot(), device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
+```
+
+#### Plot pairwise sex comparison for SITE 2 - adult
+```{r}
+ggplot(data = pairwise.2.df.adult, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+  geom_boxplot() +
+  ylab("Overlap") +
+  xlab("Sex Comparison") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 2: adults only)") +
+  theme_bw() +
+  scale_y_continuous(limits = c(0,1))
+ggsave(filename = "pairwise.2.adult.png", plot = last_plot(), device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
+```
+
+
+### PAIRWISE SEX COMPARISON ANALYSIS FOR SITE 3
 ```{r}
 
 ```
 
-### Load fitted model for SITE 1
+#### Plot pairwise sex comparison for SITE 3 - male and female
 ```{r}
 
 ```
 
-### Fit models for SITE 2
+#### Plot pairwise sex comparison for SITE 3 - adult
+```{r}
+
+```
+
+
+### PAIRWISE SEX COMPARISON ANALYSIS FOR SITE 1 & 2, NEED TO ADD SITE 3
+
+
+#### Male and female
+DATA.pairwise <- bind_rows(pairwise.1.df, pairwise.2.df)
+#### Adults
+DATA.pairwise.adult <- bind_rows(pairwise.1.df.adult, pairwise.2.df.adult)
+
+```{r}
+
+```
+
+## Quick test to see if differences are significant -------
+```{r}
+test.sex <- glmer(overlap ~ sex_comparison + (1|Sex.A), family = "binomial", data = pairwise.df.adult)
+summary(test.sex)
+```
+
+
+# PROXIMITY ANALYSIS BETWEEN SEX (PAIRWISE) *** NEED TO SPLIT AND RUN PER SITE ***
+refer to help("proximity")
+
+## SET UP PROXIMITY DATA FRAME
+create empty columns for where the result information will be added/filled into
+```{r}
+DATA.pairwise$proximity_low <- NA
+DATA.pairwise$proximity_est <- NA
+DATA.pairwise$proximity_high <- NA
+```
+
+
+### PROXIMITY ANALYSIS BETWEEN SEX FOR SITE 1
 ```{r}
 
 ```
 
 
 
-Load fitted model for SITE 2
 
 
 
+#############################
 
+SITE 1 - male and female (n=12)
+SITE 1 - male (n=7)
+SITE 1 - male adult (n=4)
+SITE 1 - female (n=5)
 
-# Load fitted model for SITE 3
+SITE 2 - male and female (n=7)
+SITE 2 - male (n=4)
+SITE 2 - male adult (n=3)
+SITE 2 - female (n=3)
+
+SITE 3 - male and female (n=)
+SITE 3 - male (n=)
+SITE 3 - male adult (n=)
+SITE 3 - female (n=)
+
 
