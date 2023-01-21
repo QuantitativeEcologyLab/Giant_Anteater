@@ -558,14 +558,72 @@ DATA.pairwise$proximity_est <- NA
 DATA.pairwise$proximity_high <- NA
 ```
 
-
 ### PROXIMITY ANALYSIS BETWEEN SEX FOR SITE 1
+Using tryCatch
 ```{r}
-
+for(i in 1:nrow(DATA.pairwise)){
+  ANIMAL_A <- as.character(DATA.pairwise[i, 'anteater_A']) # add as.character due to tibble format
+  ANIMAL_B <- as.character(DATA.pairwise[i, 'anteater_B'])
+  TRACKING_DATA <- DATA[c(ANIMAL_A, ANIMAL_B)] # extract anteater by name, has extra layers .-. it doesnt work, that is why
+    # line above is using as.character removes all the fluff because you just want the text string
+  MODELS <- list(FIT.1[ANIMAL_A][[1]], FIT.1[ANIMAL_B][[1]])
+  PROXIMITY <- tryCatch(
+    {
+      PROXIMITY <- proximity(data = TRACKING_DATA, CTMM = MODELS , GUESS=ctmm(error=FALSE))},
+    error=function(err){
+      PROXIMITY <- c(NA,NA,NA)
+      return(PROXIMITY)
+    }
+  )
+  DATA.pairwise[i, c("proximity_low")] <- PROXIMITY[1]
+  DATA.pairwise[i, c("proximity_est")] <- PROXIMITY[2]
+  DATA.pairwise[i, c("proximity_high")] <- PROXIMITY[3]
+  write.csv(DATA.pairwise.1, "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/DATA.proximity.1.csv", row.names = FALSE)
+}
 ```
 
+#### Load Proximity Analysis results
+```{r}
+DATA.proximity.1 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/DATA.proximity.1.csv")
+DATA.proximity.1 <- read_csv("DATA.proximity.1.csv")
+```
 
+#### Plot Proximity Analysis results
+```{r}
+FIG.proximity.1 <- 
+  ggplot(data = DATA.proximity.1, aes(y = proximity_est, x = overlap, col = sex_comparison)) +
+  geom_hline(yintercept = 1, col = "grey70", linetype = "dashed") +
+  geom_point(size = 0.5) +
+  geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), size = 0.3) +
+  scale_y_log10(expand = c(0,0.1)) +
+  scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
+  scale_color_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+                     labels = c("Female - Female", "Male - Female", "Male - Male"),
+                     name = "") +
+  ylab("Proximity ratio") +
+  xlab("Home range overlap") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.y = element_text(size=8, family = "sans", face = "bold"),
+        axis.title.x = element_text(size=8, family = "sans", face = "bold"),
+        axis.text.y = element_text(size=6, family = "sans"),
+        axis.text.x  = element_text(size=6, family = "sans"),
+        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        plot.title = element_text(hjust = -0.05, size = 12, family = "sans", face = "bold"),
+        legend.position = c(0.8, 0.8),
+        legend.key=element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        legend.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
 
+ggsave(FIG.proximity.1,
+       width = 3.23, height = 2, units = "in",
+       dpi = 600,
+       bg = "transparent",
+       file="Anteater_Proximity_Site1.png")
+```
 
 
 
