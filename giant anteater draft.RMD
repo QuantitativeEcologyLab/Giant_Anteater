@@ -203,11 +203,51 @@ overlap(FIT.2.female)
 
 ### FITTING MODELS FOR SITE 3 ----
 
-SITE 3 - male and female (n=)
-SITE 3 - male (n=)
-SITE 3 - male adult (n=)
-SITE 3 - female (n=)
-Load saved fitted model
+
+
+#### SITE 3 - male and female (n=)
+```{r}
+
+```
+
+#### Load saved fitted model
+```{r}
+FIT.3 <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.3.RDS")
+overlap(FIT.2)
+```
+
+#### SITE 3 - male (n=)
+```{r}
+
+```
+
+#### Load saved fitted model
+```{r}
+FIT.3.male <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.3.male.RDS")
+overlap(FIT.3.male)
+```
+
+#### SITE 3 - male adult (n=)
+```{r}
+
+```
+
+#### Load saved fitted model
+```{r}
+FIT.3.male.adult <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.3.male.adult.RDS")
+overlap(FIT.3.male.adult)
+```
+
+#### SITE 3 - female (n=)
+```{r}
+
+```
+
+#### Load saved fitted model
+```{r}
+FIT.3.female <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.3.female.RDS")
+overlap(FIT.3.female)
+```
 
 ## AKDE OVERLAP
 ### AKDE OVERLAP FOR SITE 1
