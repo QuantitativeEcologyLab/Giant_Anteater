@@ -5,7 +5,7 @@ date: "2023-01-20"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(root.dir = "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater")
+knitr::opts_chunk$set(root.dir = "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)")
 # setting working directory for entire rmarkdown file instead of chunks, which is a default of a rmarkdown file
 ```
 
@@ -53,7 +53,6 @@ giantanteater <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Stud
 Convert dataset to a telemetry object, assuming the data has been cleaned and containing no outliers
 ```{r}
 DATA <- as.telemetry("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/Anteaters_NoOutliers (original data).csv")
-
 ```
 
 
@@ -98,7 +97,7 @@ saveRDS(object = FIT.1, file = "FIT.1.RDS")
 
 #### Load save fitted model for SITE 1
 ```{r}
-FIT.1 <- readRDS("FIT.1.RDS")
+FIT.1 <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.1.RDS")
 overlap(FIT.1)
 ```
 
@@ -112,7 +111,7 @@ saveRDS(object = FIT.1.male, file = "FIT.1.male.RDS")
 
 #### Load saved fitted model
 ```{r}
-FIT.1.male <- readRDS("FIT.1.male.RDS")
+FIT.1.male <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.1.male.RDS")
 overlap(FIT.1.male)
 ```
 
@@ -126,7 +125,7 @@ saveRDS(object = FIT.1.male.adult, file = "FIT.1.male.adult.RDS")
 
 #### Load saved fitted model
 ```{r}
-FIT.1.male.adult <- readRDS("FIT.1.male.adult.RDS")
+FIT.1.male.adult <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.1.male.adult.RDS")
 overlap(FIT.1.male.adult)
 ```
 
@@ -140,7 +139,7 @@ saveRDS(object = FIT.1.female, file = "FIT.1.female.RDS")
 
 #### Load saved fitted model
 ```{r}
-FIT.1.female <- readRDS("FIT.1.female.RDS")
+FIT.1.female <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.1.female.RDS")
 overlap(FIT.1.female)
 ```
 
@@ -156,7 +155,7 @@ saveRDS(object = FIT.2, file = "FIT.2.RDS")
 
 #### Load saved fitted model
 ```{r}
-FIT.2 <- readRDS("FIT.2.RDS")
+FIT.2 <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.2.RDS")
 overlap(FIT.2)
 ```
 
@@ -170,7 +169,7 @@ saveRDS(object = FIT.2.male, file = "FIT.2.male.RDS")
 
 #### Load saved fitted model
 ```{r}
-FIT.2.male <- readRDS("FIT.2.male.RDS")
+FIT.2.male <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.2.male.RDS")
 overlap(FIT.2.male)
 ```
 
@@ -184,7 +183,7 @@ saveRDS(object = FITS.2.male.adult, file = "FIT.2.male.adult.RDS")
 
 #### Load saved fitted model
 ```{r}
-FIT.2.male.adult <- readRDS("FIT.2.male.adult.RDS")
+FIT.2.male.adult <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.2.male.adult.RDS")
 overlap(FIT.2.male.adult)
 ```
 
@@ -198,11 +197,9 @@ saveRDS(object = FIT.2.female, file = "FIT.2.female.RDS")
 
 #### Load saved fitted model
 ```{r}
-FIT.2.female <- readRDS("FIT.2.female.RDS")
+FIT.2.female <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/FIT.2.female.RDS")
 overlap(FIT.2.female)
 ```
-
-
 
 ### FITTING MODELS FOR SITE 3 ----
 
@@ -223,7 +220,7 @@ saveRDS(object = AKDE.1, file = "AKDE.1.RDS")
 
 #### Load saved AKDE aligned UDs
 ```{r}
-AKDE.1 <- readRDS("AKDE.1.RDS")
+AKDE.1 <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/AKDE.1.RDS")
 overlap(AKDE.1)
 ```
 
@@ -245,7 +242,7 @@ saveRDS(object = AKDE.1.male, file = "AKDE.1.male.RDS")
 
 #### Load saved AKDE aligned UDs
 ```{r}
-AKDE.1.male <- readRDS("AKDE.1.male.RDS")
+AKDE.1.male <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/AKDE.1.male.RDS")
 overlap(AKDE.1.male)
 ```
 
@@ -265,7 +262,7 @@ saveRDS(object = AKDE.1.male.adult, file = "AKDE.1.male.adult.RDS")
 
 #### Load saved AKDE aligned UDs
 ```{r}
-AKDE.1.male.adult <- readRDS("AKDE.1.male.adult.RDS")
+AKDE.1.male.adult <- readRDS("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory (giant anteater)/AKDE.1.male.adult.RDS")
 overlap(AKDE.1.male.adult)
 ```
 
