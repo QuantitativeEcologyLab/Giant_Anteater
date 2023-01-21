@@ -148,6 +148,14 @@ saveRDS(object = FIT.2.female, file = "FIT.2.female.RDS")
 FIT.2.female <- readRDS("FIT.2.female.RDS")
 overlap(FIT.2.female)
 
+# SITE 3 - male and female (n=)
+# SITE 3 - male (n=)
+# SITE 3 - male adult (n=)
+# SITE 3 - female (n=)
+
+
+
+
 ###################################################
 #### ALTERNATE CODE FOR SAVING FIT MODELS RDS #####
 # using if/else to fit models & to include save and load RDS file
@@ -373,20 +381,20 @@ pairwise.2.pivot.A <- left_join(pairwise.2.pivot, rename(METADATA, anteater_A = 
 # adding anteater_A info to matrix
 pairwise.2.pivot.B <- left_join(pairwise.2.pivot.A, rename(METADATA, anteater_B = ID), by = "anteater_B", suffix = c(".A", ".B"))
 # adding anteater_B info to matrix with anteater_A info
-pairwise.2.df <- mutate(pairwise.2.pivot.B, sex_comparison = case_when(paste(Sex.A, Sex.B) == "Male Male" ~ "male:male",
+DATA.pairwise.2 <- mutate(pairwise.2.pivot.B, sex_comparison = case_when(paste(Sex.A, Sex.B) == "Male Male" ~ "male:male",
                                                                        paste(Sex.A, Sex.B) == "Female Female" ~ "female:female",
                                                                        paste(Sex.A, Sex.B) == "Male Female" ~ "male:female",
                                                                        paste(Sex.A, Sex.B) == "Female Male" ~ "male:female"))
 # adding column to indicate which sexes that are being compared
-pairwise.2.df # to check if matrix is good, has all the correct columns, variables etc. ie. no NA values
+DATA.pairwise.2 # to check if matrix is good, has all the correct columns, variables etc. ie. no NA values
 
 # removing subadults from dataframe matrix
 pairwise.2.df.A <- pairwise.2.df[which(pairwise.2.df$Age.A != "Subadult"),] # removing subadults from anteater_A from matrix
-pairwise.2.df.adult <- pairwise.2.df.A[which(pairwise.2.df.A$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
+DATA.pairwise.2.adult <- pairwise.2.df.A[which(pairwise.2.df.A$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
 
 # Plot pairwise sex comparison for SITE 2
 ## SITE 2 plot pairwise comparison (all)
-ggplot(data = pairwise.2.df, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+ggplot(data = DATA.pairwise.2, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex Comparison") +
@@ -397,7 +405,7 @@ ggsave(filename = "pairwise.2.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 ## SITE 2 plot pairwise comparison (adults only)
-ggplot(data = pairwise.2.df.adult, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+ggplot(data = DATA.pairwise.2.adult, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex Comparison") +
@@ -411,15 +419,15 @@ ggsave(filename = "pairwise.2.adult.png", plot = last_plot(), device = NULL,
 # use bind_rows() to join the 2 pairwise comparison and then plot it
 
 # All individuals
-pairwise.df <- bind_rows(pairwise.1.df, pairwise.2.df)
+DATA.pairwise <- bind_rows(DATA.pairwise.1, DATA.pairwise.2)
 # Adults only
-pairwise.df.adult <- bind_rows(pairwise.1.df.adult, pairwise.2.df.adult)
+DATA.pairwise.adult <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult)
 
 # NOTE: pairwise coding comprehension from Stefano -> re-coded the pipe version
 
 # Plot Pairwise Comparison SITE 1 & 2 ----
 # Plot combined SITE 1 & 2 pairwise analysis (All individuals)
-ggplot(data = pairwise.df, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+ggplot(data = DATA.pairwise, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex") +
@@ -430,7 +438,7 @@ ggsave(filename = "pairwise.combined.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 # Plot combined SITE 1 & 2 pairwise analysis (Adults only)
-ggplot(data = pairwise.df.adults, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+ggplot(data = DATA.pairwise.adults, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex") +
@@ -441,51 +449,58 @@ ggsave(filename = "pairwise.combined.adultsonly.png", plot = last_plot(), device
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 # Quick test to see if differences are significant -------
-test.sex <- glmer(overlap ~ sex_comparison + (1|Sex.A), family = "binomial", data = pairwise.df.adult)
+test.sex <- glmer(overlap ~ sex_comparison + (1|Sex.A), family = "binomial", data = DATA.pairwise.adult)
 summary(test.sex)
 
 ### PROXIMITY PAIRWISE ANALYSIS BETWEEN SEX ## ----
 # refer to help("proximity")
 
+################## 
+
 # combining the fitted models for both sites so you don't have to do the proximity looping test twice 
-FIT.ALL <- c(FIT.1, FIT.2)
+# FIT.ALL <- c(FIT.1, FIT.2)
+# ***** splitting analysis -> doing each site one at a time ********
+
+################
+
+### PROXIMITY ANALYSIS BETWEEN SEX FOR SITE 1
 
 # create empty columns for where the result information will be added/filled into
-pairwise.df$proximity_low <- NA
-pairwise.df$proximity_est <- NA
-pairwise.df$proximity_high <- NA
+DATA.pairwise.1$proximity_low <- NA
+DATA.pairwise.1$proximity_est <- NA
+DATA.pairwise.1$proximity_high <- NA
 
 # this will take a while, days to loop, if R crashes, change the # for the loop number it was on. syntax: for(i in #:nrow(pairwise.df)) 
 # Using tryCatch
-for(i in 1:nrow(pairwise.df)){
-  ANIMAL_A <- as.character(pairwise.df[i, 'anteater_A']) # add as.character due to tibble format
-  ANIMAL_B <- as.character(pairwise.df[i, 'anteater_B'])
-  TRACKING_DATA <- anteater.tel[c(ANIMAL_A, ANIMAL_B)] # extract anteater by name, has extra layers .-. it doesnt work, that is why
+for(i in 1:nrow(DATA.pairwise.1)){
+  ANIMAL_A <- as.character(DATA.pairwise.1[i, 'anteater_A']) # add as.character due to tibble format
+  ANIMAL_B <- as.character(DATA.pairwise.1[i, 'anteater_B'])
+  TRACKING_DATA.1 <- DATA[c(ANIMAL_A, ANIMAL_B)] # extract anteater by name, has extra layers .-. it doesnt work, that is why
     # line above is using as.character removes all the fluff because you just want the text string
-  MODELS <- list(FIT.ALL[ANIMAL_A][[1]], FIT.ALL[ANIMAL_B][[1]])
-  PROXIMITY <- tryCatch(
+  MODELS.1 <- list(FIT.1[ANIMAL_A][[1]], FIT.1[ANIMAL_B][[1]])
+  PROXIMITY.1 <- tryCatch(
     {
-      PROXIMITY <- proximity(data = TRACKING_DATA, CTMM = MODELS , GUESS=ctmm(error=FALSE))},
+      PROXIMITY.1 <- proximity(data = TRACKING_DATA.1, CTMM = MODELS.1, GUESS=ctmm(error=FALSE))},
     error=function(err){
-      PROXIMITY <- c(NA,NA,NA)
-      return(PROXIMITY)
+      PROXIMITY.1 <- c(NA,NA,NA)
+      return(PROXIMITY.1)
     }
   )
-  pairwise.df[i, c("proximity_low")] <- PROXIMITY[1]
-  pairwise.df[i, c("proximity_est")] <- PROXIMITY[2]
-  pairwise.df[i, c("proximity_high")] <- PROXIMITY[3]
-  write.csv(pairwise.df, "C:\Users\achhen.stu\OneDrive - UBC\BIOL 452 Directed Studies - Giant Anteaters\Anteater Scripts\R working directory/proximity.csv", row.names = FALSE)
+  DATA.pairwise.1[i, c("proximity_low")] <- PROXIMITY.1[1]
+  DATA.pairwise.1[i, c("proximity_est")] <- PROXIMITY.1[2]
+  DATA.pairwise.1[i, c("proximity_high")] <- PROXIMITY.1[3]
+  write.csv(DATA.pairwise.1, "C:\Users\achhen.stu\OneDrive - UBC\BIOL 452 Directed Studies - Giant Anteaters\Anteater Scripts\R working directory/DATA.proximity.1.csv", row.names = FALSE)
 }
   # merged all the proximity files results due to R crashing and needing to restart the proximity analysis,
   # saved the mid-analysis/crashes files as proximity.1, proximity.2, proximity.3, and combined proximity results into proximity.csv after analysis was complete
 
 # Load Proximity Analysis results
-proximity.data <- read.csv("C:\Users\achhen.stu\OneDrive - UBC\BIOL 452 Directed Studies - Giant Anteaters\Anteater Scripts\R working directory/proximity.csv")
-proximity.data <- read_csv("proximity.csv")
+DATA.proximity.1 <- read.csv("C:\Users\achhen.stu\OneDrive - UBC\BIOL 452 Directed Studies - Giant Anteaters\Anteater Scripts\R working directory/DATA.proximity.1.csv")
+DATA.proximity.1 <- read_csv("DATA.proximity.1.csv")
 
 # Plot Proximity Analysis between sex ----
-proximity.FIG <- 
-  ggplot(data = proximity.data, aes(y = proximity_est, x = overlap, col = sex_comparison)) +
+FIG.proximity.1 <- 
+  ggplot(data = DATA.proximity.1, aes(y = proximity_est, x = overlap, col = sex_comparison)) +
   geom_hline(yintercept = 1, col = "grey70", linetype = "dashed") +
   geom_point(size = 0.5) +
   geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), size = 0.3) +
@@ -512,11 +527,11 @@ proximity.FIG <-
         plot.background = element_rect(fill = "transparent", color = NA),
         plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
 
-ggsave(proximity.FIG,
+ggsave(FIG.proximity.1,
        width = 3.23, height = 2, units = "in",
        dpi = 600,
        bg = "transparent",
-       file="Anteater_Proximity.png")
+       file="Anteater_Proximity_site_1.png")
 
 # IDENTIFY PAIRS THAT WERE CLOSER/FURTHER TO EACH OTHER ----
 # To do this, subset proximity analysis results for proximity values above and below 1
