@@ -299,7 +299,7 @@ dev.off()
 ### META DATASET (for pairwise analysis) ## ----
 
 # Adding a meta dataset from a supplementary dataset ----
-METADATA <- read_csv("C:/Users/achhen.stu/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Anteater Dataset/Anteater_Results_Final.csv")
+METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/Anteater_Results_Final.csv")
 
 # Must correct a mismatch entry for 'Larry 267' and 'Larry' between dataset and meta dataset
 METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
