@@ -369,7 +369,7 @@ plot(AKDE.3.male.adult, col.DF = "blue", col.level = "black", col.grid = NA, lev
 title("aKDE Overlap (Site 3: male adults only)")
 dev.off()
 
-# SITE 2 - FEMALE (n=3)
+# SITE 3 - FEMALE (n=3)
 AKDE.3.female <- akde(site.3.female[1:3],FIT.3.female)
 saveRDS(object = AKDE.3.female, file = "AKDE.3.female.RDS")
 # Load saved AKDE aligned UDs, see original file for code
@@ -384,14 +384,14 @@ dev.off()
 
 ### META DATASET (for pairwise analysis) ## ----
 
-# Adding a meta dataset from a supplementary dataset ----
+# Adding a meta dataset from a supplementary dataset
 METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/Anteater_Results_Final.csv")
 
 # Must correct a mismatch entry for 'Larry 267' and 'Larry' between dataset and meta dataset
 METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
                                                        true = 'Larry 267',
                                                        false = ID))
-unique(anteater.metadata.df$ID) # to check if the name has been corrected, (dataset$column)
+unique(METADATA$ID) # to check if the name has been corrected, (dataset$column)
 
 ### PAIRWISE ANALYSIS SEX COMPARISON ----
 # creating the data frame from overlap values
@@ -435,18 +435,18 @@ ggplot(data = DATA.pairwise.1, mapping = aes(x = sex_comparison, y = overlap, fi
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex Comparison") +
-  ggtitle("Overlap pairwise comparison of sexes (Site 1: all)") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 1: male and female)") +
   theme_bw() +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.1.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
-## SITE 1 plot pairwise comparison (adults only)
+## SITE 1 plot pairwise comparison (adult only)
 ggplot(data = DATA.pairwise.1.adult, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex Comparison") +
-  ggtitle("Overlap pairwise comparison of sexes (Site 1: adults only)") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 1: adult only)") +
   theme_bw() +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.1.adult.png", plot = last_plot(), device = NULL,
@@ -487,7 +487,7 @@ ggplot(data = DATA.pairwise.2, mapping = aes(x = sex_comparison, y = overlap, fi
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex Comparison") +
-  ggtitle("Overlap pairwise comparison of sexes (Site 2: all)") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 2: male and female)") +
   theme_bw() +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.2.png", plot = last_plot(), device = NULL,
@@ -498,48 +498,97 @@ ggplot(data = DATA.pairwise.2.adult, mapping = aes(x = sex_comparison, y = overl
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex Comparison") +
-  ggtitle("Overlap pairwise comparison of sexes (Site 2: adults only)") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 2: adult only)") +
   theme_bw() +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.2.adult.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 ## PAIRWISE ANALYSIS SEX COMPARISON FOR SITE 3 ----
+# taking the overlap cube, extracting median layer, removing one portion of the triangle
+overlap.3 <- overlap(object = AKDE.3, level = 0.95) # assigns the overlap results as an object
+overlap.3.median <- overlap.3$CI[ , , 2] # extract the median layer (pulling out the section) of the cube (aka array)
+overlap.3.median[upper.tri(overlap.3.median, diag = TRUE)] <- NA # removing the upper triangle & diagonal of the matrix
+#View(overlap.3.median) # to check everything is correct (full-screen console for best results)
+
+# converting the overlap median layer matrix triangle into a pairwise dataframe
+pairwise.3.matrix <- as.data.frame(overlap.3.median) # Convert matrix to data frame
+pairwise.3.matrix$anteater_A <- rownames(pairwise.3.matrix) # add column of individual names
+pairwise.3.pivot <- pivot_longer(pairwise.1.matrix, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap', values_drop_na = TRUE)
+# table is too wide .-. rotate it to make it long
+
+# add columns to the dataframe matrix, general syntax -> join_type(firstTable, secondTable, by=columnTojoinOn)
+pairwise.3.pivot.A <- left_join(pairwise.3.pivot, rename(METADATA, anteater_A = ID), by = "anteater_A")
+# adding anteater_A info to matrix
+pairwise.3.pivot.B <- left_join(pairwise.3.pivot.A, rename(METADATA, anteater_B = ID), by = "anteater_B", suffix = c(".A", ".B"))
+# adding anteater_B info to matrix with anteater_A info
+DATA.pairwise.3 <- mutate(pairwise.3.pivot.B, sex_comparison = case_when(paste(Sex.A, Sex.B) == "Male Male" ~ "male:male",
+                                                                         paste(Sex.A, Sex.B) == "Female Female" ~ "female:female",
+                                                                         paste(Sex.A, Sex.B) == "Male Female" ~ "male:female",
+                                                                         paste(Sex.A, Sex.B) == "Female Male" ~ "male:female"))
+# adding column to indicate which sexes that are being compared
+DATA.pairwise.3 # to check if matrix is good, has all the correct columns, variables etc. ie. no NA values
+
+# removing subadults from dataframe matrix
+pairwise.3.df.A <- DATA.pairwise.3[which(DATA.pairwise.3$Age.A != "Subadult"),] # removing subadults from anteater_A from matrix
+DATA.pairwise.3.adult <- pairwise.3.df.A[which(DATA.pairwise.3$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
+
 # Plot pairwise sex comparison for SITE 3
+
 ## SITE 3 plot pairwise comparison (male and female)
-## SITE 3 plot pairwise comparison (adults only)
+ggplot(data = DATA.pairwise.3, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+  geom_boxplot() +
+  ylab("Overlap") +
+  xlab("Sex Comparison") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 3: male and female)") +
+  theme_bw() +
+  scale_y_continuous(limits = c(0,1))
+ggsave(filename = "pairwise.3.png", plot = last_plot(), device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
+
+## SITE 3 plot pairwise comparison (adult only)
+ggplot(data = DATA.pairwise.3.adult, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+  geom_boxplot() +
+  ylab("Overlap") +
+  xlab("Sex Comparison") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 3: adult3 only)") +
+  theme_bw() +
+  scale_y_continuous(limits = c(0,1))
+ggsave(filename = "pairwise.3.adult.png", plot = last_plot(), device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
+
 
 # PAIRWISE COMPARISON ANALYSIS OF SEX OVERALL COMPARISON ## ----
 # use bind_rows() to join the 2 pairwise comparison and then plot it
 
-# All individuals
-DATA.pairwise <- bind_rows(DATA.pairwise.1, DATA.pairwise.2)
-# Adults only
-DATA.pairwise.adult <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult)
+# male and female
+DATA.pairwise. <- bind_rows(DATA.pairwise.1, DATA.pairwise.2, DATA.pairwise.3)
+# Adult only
+DATA.pairwise.adult <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult, DATA.pairwise.3.adult)
 
 # NOTE: pairwise coding comprehension from Stefano -> re-coded the pipe version
 
-# Plot Pairwise Comparison SITE 1 & 2 ----
-# Plot combined SITE 1 & 2 pairwise analysis (All individuals)
+# Plot Pairwise Comparison SITE 1, 2, 3 ----
+# Plot combined SITE 1, 2, 3 pairwise analysis (male and female)
 ggplot(data = DATA.pairwise, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex") +
-  ggtitle("Anteater overlap pairwise comparison of sexes (all)") +
+  ggtitle("Anteater overlap pairwise comparison of sexes (male and female)") +
   theme_bw() +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.combined.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
-# Plot combined SITE 1 & 2 pairwise analysis (Adults only)
-ggplot(data = DATA.pairwise.adults, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
+# Plot combined SITE 1, 2, 3 pairwise analysis (Adult only)
+ggplot(data = DATA.pairwise.adult, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex") +
   ggtitle("Anteater overlap pairwise comparison of sexes (Adults only)") +
   theme_bw() +
   scale_y_continuous(limits = c(0,1))
-ggsave(filename = "pairwise.combined.adultsonly.png", plot = last_plot(), device = NULL,
+ggsave(filename = "pairwise.combined.adult.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 # Quick test to see if differences are significant -------
