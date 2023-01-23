@@ -138,7 +138,7 @@ overlap(FIT.1.male)
 #### SITE 1 - male adult (n=4)
 ```{r}
 GUESS.1.male.adult <- lapply(site.1[1:4], function(b) ctmm.guess(b,interactive=FALSE) )
-FIT.1.male.adult <- lapply(1:12, function(i) ctmm.select(site.1.male.adult[[i]],GUESS.1.male.adult[[i]]) )
+FIT.1.male.adult <- lapply(1:4, function(i) ctmm.select(site.1.male.adult[[i]],GUESS.1.male.adult[[i]]) )
 names(FIT.1.male.adult) <- names(site.1.male.adult[1:4])
 saveRDS(object = FIT.1.male.adult, file = "FIT.1.male.adult.RDS")
 ```
