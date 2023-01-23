@@ -97,7 +97,7 @@ overlap(FIT.1.male)
 
 # SITE 1 - MALE ADULT (n=4)
 GUESS.1.male.adult <- lapply(site.1[1:4], function(b) ctmm.guess(b,interactive=FALSE) )
-FIT.1.male.adult <- lapply(1:12, function(i) ctmm.select(site.1.male.adult[[i]],GUESS.1.male.adult[[i]]) )
+FIT.1.male.adult <- lapply(1:4, function(i) ctmm.select(site.1.male.adult[[i]],GUESS.1.male.adult[[i]]) )
 names(FIT.1.male.adult) <- names(site.1.male.adult[1:4])
 saveRDS(object = FIT.1.male.adult, file = "FIT.1.male.adult.RDS")
 # Load saved fitted model
@@ -137,7 +137,7 @@ overlap(FIT.2.male)
 GUESS.2.male.adult <- lapply(site.2.male.adult[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.2.male.adult <- lapply(1:3, function(i) ctmm.select(site.2.male.adult[[i]],GUESS.2.male.adult[[i]]) )
 names(FIT.2.male.adult) <- names(site.2.male.adult[1:3])
-saveRDS(object = FITS.2.male.adult, file = "FIT.2.male.adult.RDS")
+saveRDS(object = FIT.2.male.adult, file = "FIT.2.male.adult.RDS")
 # Load saved fitted model
 FIT.2.male.adult <- readRDS("FIT.2.male.adult.RDS")
 overlap(FIT.2.male.adult)
@@ -151,10 +151,43 @@ saveRDS(object = FIT.2.female, file = "FIT.2.female.RDS")
 FIT.2.female <- readRDS("FIT.2.female.RDS")
 overlap(FIT.2.female)
 
-# SITE 3 - male and female (n=)
-# SITE 3 - male (n=)
-# SITE 3 - male adult (n=)
-# SITE 3 - female (n=)
+## FITTING MODELS FOR SITE 3 ----
+
+# SITE 3 - MALE AND FEMALE(n=)
+GUESS.3 <- lapply(site.3[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.3 <- lapply(1:3, function(i) ctmm.select(site.3[[i]],GUESS.3[[i]]) )
+names(FIT.3) <- names(site.3[1:3])
+saveRDS(object = FIT.3, file = "FIT.3.RDS")
+# Load saved fitted model
+FIT.3 <- readRDS("FIT.3.RDS")
+overlap(FIT.3)
+
+# SITE 3 - MALE (n=)
+GUESS.3.male <- lapply(site.3.male[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.3.male <- lapply(1:3, function(i) ctmm.select(site.3.male[[i]],GUESS.3.male[[i]]) )
+names(FIT.3.male) <- names(site.3.male[1:3])
+saveRDS(object = FIT.3.male, file = "FIT.3.male.RDS")
+# Load saved fitted model
+FIT.3.male <- readRDS("FIT.3.male.RDS")
+overlap(FIT.3.male)
+
+# SITE 3 - MALE ADULT (n=)
+GUESS.3.male.adult <- lapply(site.2.male.adult[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.3.male.adult <- lapply(1:3, function(i) ctmm.select(site.3.male.adult[[i]],GUESS.3.male.adult[[i]]) )
+names(FIT.3.male.adult) <- names(site.3.male.adult[1:3])
+saveRDS(object = FIT.3.male.adult, file = "FIT.3.male.adult.RDS")
+# Load saved fitted model
+FIT.3.male.adult <- readRDS("FIT.3.male.adult.RDS")
+overlap(FIT.3.male.adult)
+
+# SITE 2 - FEMALE (n=3)
+GUESS.3.female <- lapply(site.3.female[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.3.female <- lapply(1:3, function(i) ctmm.select(site.3.female[[i]],GUESS.3.female[[i]]) )
+names(FIT.3.female) <- names(site.3.female[1:3])
+saveRDS(object = FIT.3.female, file = "FIT.3.female.RDS")
+# Load saved fitted model
+FIT.3.female <- readRDS("FIT.3.female.RDS")
+overlap(FIT.3.female)
 
 
 
