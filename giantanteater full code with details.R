@@ -41,13 +41,13 @@ library("lubridate") # for round_date() for corrMove
 setwd("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory")
 
 ## IMPORT DATASET
-anteater.DATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/Anteaters_NoOutliers (original data).csv", col_types = cols(timestamp = "c", class = "c", identity = "c", id = "c", .default = "d"))
+anteater.DATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteaters_NoOutliers (original data).csv", col_types = cols(timestamp = "c", class = "c", identity = "c", id = "c", .default = "d"))
 
 ## TELEMETRY FORMAT
 # Convert dataset to a telemetry object, assuming the data has been cleaned and containing no outliers
 #DATA <- as.telemetry(anteater.DATA) # n=19
   #Error in strptime(xx, f, tz = tz) : input string is too long .-. used code below
-DATA <- as.telemetry("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/Anteaters_NoOutliers (original data).csv")
+DATA <- as.telemetry("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteaters_NoOutliers (original data).csv")
 
 ### SUBSET DATA FOR OVERLAP ----
 # Subset data to isolate individuals found only in specific sites
@@ -385,7 +385,7 @@ dev.off()
 ### META DATASET (for pairwise analysis) ## ----
 
 # Adding a meta dataset from a supplementary dataset
-METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/giant anteater data/Anteater_Results_Final.csv")
+METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteater_Results_Final.csv")
 
 # Must correct a mismatch entry for 'Larry 267' and 'Larry' between dataset and meta dataset
 METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
@@ -533,7 +533,7 @@ DATA.pairwise.3 # to check if matrix is good, has all the correct columns, varia
 pairwise.3.df.A <- DATA.pairwise.3[which(DATA.pairwise.3$Age.A != "Subadult"),] # removing subadults from anteater_A from matrix
 DATA.pairwise.3.adult <- pairwise.3.df.A[which(DATA.pairwise.3$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
 
-# Plot pairwise sex comparison for SITE 3
+# Plot pairwise sex comparison for SITE 3 ----
 
 ## SITE 3 plot pairwise comparison (male and female)
 ggplot(data = DATA.pairwise.3, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
@@ -606,7 +606,7 @@ summary(test.sex)
 
 ################
 
-### PROXIMITY ANALYSIS BETWEEN SEX FOR SITE 1
+### PROXIMITY ANALYSIS BETWEEN SEX FOR SITE 1 ----
 
 # create empty columns for where the result information will be added/filled into
 DATA.pairwise.1$proximity_low <- NA
@@ -634,14 +634,12 @@ for(i in 1:nrow(DATA.pairwise.1)){
   DATA.pairwise.1[i, c("proximity_high")] <- PROXIMITY.1[3]
   write.csv(DATA.pairwise.1, "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory/DATA.proximity.1.csv", row.names = FALSE)
 }
-  # merged all the proximity files results due to R crashing and needing to restart the proximity analysis,
-  # saved the mid-analysis/crashes files as proximity.1, proximity.2, proximity.3, and combined proximity results into proximity.csv after analysis was complete
 
 # Load Proximity Analysis results
-DATA.proximity.1 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory/DATA.proximity.1.csv")
+DATA.proximity.1 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.1.csv")
 DATA.proximity.1 <- read_csv("DATA.proximity.1.csv")
 
-# Plot Proximity Analysis between sex ----
+# Plot Proximity Analysis between sex
 FIG.proximity.1 <- 
   ggplot(data = DATA.proximity.1, aes(y = proximity_est, x = overlap, col = sex_comparison)) +
   geom_hline(yintercept = 1, col = "grey70", linetype = "dashed") +
@@ -678,7 +676,7 @@ ggsave(FIG.proximity.1,
 
 ### PROXIMITY ANALYSIS BETWEEN SEX FOR SITE 2 ----
 # create empty columns for where the result information will be added/filled into
-DATA.pairwise.3$proximity_low <- NA
+DATA.pairwise.2$proximity_low <- NA
 DATA.pairwise.2$proximity_est <- NA
 DATA.pairwise.2$proximity_high <- NA
 
@@ -701,13 +699,11 @@ for(i in 1:nrow(DATA.pairwise.2)){
   DATA.pairwise.2[i, c("proximity_low")] <- PROXIMITY.2[1]
   DATA.pairwise.2[i, c("proximity_est")] <- PROXIMITY.2[2]
   DATA.pairwise.2[i, c("proximity_high")] <- PROXIMITY.2[3]
-  write.csv(DATA.pairwise.2, "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory/DATA.proximity.2.csv", row.names = FALSE)
+  write.csv(DATA.pairwise.2, "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.2.csv", row.names = FALSE)
 }
-# merged all the proximity files results due to R crashing and needing to restart the proximity analysis,
-# saved the mid-analysis/crashes files as proximity.1, proximity.2, proximity.3, and combined proximity results into proximity.csv after analysis was complete
 
 # Load Proximity Analysis results
-DATA.proximity.2 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory/DATA.proximity.2.csv")
+DATA.proximity.2 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.2.csv")
 DATA.proximity.2 <- read_csv("DATA.proximity.2.csv")
 
 # Plot Proximity Analysis between sex ----
