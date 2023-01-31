@@ -55,7 +55,7 @@ DATA <- as.telemetry("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies -
 # to select multiple elements from a vector, add square brackets
 # refer to https://campus.datacamp.com/courses/free-introduction-to-r/chapter-2-vectors-2?ex=11
 
-## SUBSET DATA FOR SITE 1
+## SUBSET DATA FOR SITE 1 (n=12)
 site.1 <- DATA[c(1,3,9,10,12,15,21,24,27,29,36,38)] # male and female (n=12)
 site.1.adult <- DATA[c(1,9,10,12,15,21,29,36,38)] # adult (n=9)
 site.1.male <- DATA[c(1,3,12,21,24,27,38)] # male (n=7)
@@ -63,7 +63,7 @@ site.1.male.adult <- DATA[c(1,12,21,38)] # male adult (n=4)
 site.1.female <- DATA[c(9,10,15,29,36)] # female adult (n=5)
 # names() to check if individuals are correct and accounted for
 
-## SUBSET DATA FOR SITE 2
+## SUBSET DATA FOR SITE 2 (n=7)
 site.2 <- DATA[c(2,8,22,25,30,37,42)] # male and female (n=7)
 site.2.adult <- DATA[c(2,8,22,25,30,42)] # adult (n=6)
 site.2.male <- DATA[c(8,25,37,42)]  # male (n=4)
@@ -71,11 +71,11 @@ site.2.male.adult <- DATA[c(8,25,42)] # male adult (n=3)
 site.2.female <- DATA[c(2,22,30)]  # female adult (n=3)
 # names() to check if individuals are correct and accounted for
 
-## SUBSET DATA FOR SITE 3
-
-
-
-
+## SUBSET DATA FOR SITE 3 (n=4)
+site.3 <- DATA[c(19,28,31,41)] # male and female (n=4), contains adults only, no subadult
+site.3.male <- DATA[28] # male (n=1)
+site.3.female <- DATA[c(19,31,41)] # female (n=3)
+# names() to check if individuals are correct and accounted for
 
 ## LOAD ALL SAVED FITTED MODELS (quick reference) ----
 # Load all saved fitted models for SITE 1
@@ -93,7 +93,6 @@ FIT.2.female <- readRDS("FIT.2.female.RDS")
 # Load all saved fitted models for SITE 3
 FIT.3 <- readRDS("FIT.3.RDS")
 FIT.3.male <- readRDS("FIT.3.male.RDS")
-FIT.3.male.adult <- readRDS("FIT.3.male.adult.RDS")
 FIT.3.female <- readRDS("FIT.3.female.RDS")
 
 ## LOAD ALL AKDE ALIGNED UDS (quick reference) ----
@@ -112,7 +111,6 @@ AKDE.2.female <- readRDS("AKDE.2.female.RDS")
 # Load all saved AKDE aligned UDs for SITE 3
 AKDE.3 <- readRDS("AKDE.3.RDS")
 AKDE.3.male <- readRDS("AKDE.3.male.RDS")
-AKDE.3.male.adult <- readRDS("AKDE.3.male.adult.RDS")
 AKDE.3.female <- readRDS("AKDE.3.female.RDS")
 
 ### FIT MOVEMENT MODELS ----
@@ -195,34 +193,25 @@ overlap(FIT.2.female)
 
 ## FITTING MODELS FOR SITE 3 ----
 
-# SITE 3 - MALE AND FEMALE (n=)
-GUESS.3 <- lapply(site.3[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
-FIT.3 <- lapply(1:3, function(i) ctmm.select(site.3[[i]],GUESS.3[[i]]) )
-names(FIT.3) <- names(site.3[1:3])
+# SITE 3 - MALE AND FEMALE (n=4)
+GUESS.3 <- lapply(site.3[1:4], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.3 <- lapply(1:4, function(i) ctmm.select(site.3[[i]],GUESS.3[[i]]) )
+names(FIT.3) <- names(site.3[1:4])
 saveRDS(object = FIT.3, file = "FIT.3.RDS")
 # Load saved fitted model
 FIT.3 <- readRDS("FIT.3.RDS")
 overlap(FIT.3)
 
-# SITE 3 - MALE (n=)
-GUESS.3.male <- lapply(site.3.male[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
-FIT.3.male <- lapply(1:3, function(i) ctmm.select(site.3.male[[i]],GUESS.3.male[[i]]) )
-names(FIT.3.male) <- names(site.3.male[1:3])
+# SITE 3 - MALE (n=1)
+GUESS.3.male <- lapply(site.3.male[1], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT.3.male <- lapply(1, function(i) ctmm.select(site.3.male[[i]],GUESS.3.male[[i]]) )
+names(FIT.3.male) <- names(site.3.male[1])
 saveRDS(object = FIT.3.male, file = "FIT.3.male.RDS")
 # Load saved fitted model
 FIT.3.male <- readRDS("FIT.3.male.RDS")
 overlap(FIT.3.male)
 
-# SITE 3 - MALE ADULT (n=)
-GUESS.3.male.adult <- lapply(site.2.male.adult[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
-FIT.3.male.adult <- lapply(1:3, function(i) ctmm.select(site.3.male.adult[[i]],GUESS.3.male.adult[[i]]) )
-names(FIT.3.male.adult) <- names(site.3.male.adult[1:3])
-saveRDS(object = FIT.3.male.adult, file = "FIT.3.male.adult.RDS")
-# Load saved fitted model
-FIT.3.male.adult <- readRDS("FIT.3.male.adult.RDS")
-overlap(FIT.3.male.adult)
-
-# SITE 2 - FEMALE (n=3)
+# SITE 4 - FEMALE (n=3)
 GUESS.3.female <- lapply(site.3.female[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.3.female <- lapply(1:3, function(i) ctmm.select(site.3.female[[i]],GUESS.3.female[[i]]) )
 names(FIT.3.female) <- names(site.3.female[1:3])
@@ -280,11 +269,11 @@ overlap(AKDE.1)
 # colour coding sexes for plot
   # Make a list of colours that matches the order of the HR estimates
   #ggplot has a different saving code/method -> ggsave()
-COL.1 <- c("darkblue", "lightblue", "red", "red", "darkblue", "red", "darkblue", "lightblue", "lightblue", "red",
-           "red", "darkblue")
+COL.1 <- c("navyblue", "lightblue", "red", "red", "navyblue", "red", "navyblue", "lightblue", "lightblue", "red",
+           "red", "navyblue")
 png(file = "Overlap.1.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.1, col.DF = COL.1, col.level = COL.1, col.grid = NA, level = NA)
-title("aKDE Overlap (Site 1: all individuals)")
+title("aKDE Overlap (Site 1: male and female)")
 dev.off()
 
 # SITE 1 - MALE (n=7)
@@ -294,8 +283,8 @@ saveRDS(object = AKDE.1.male, file = "AKDE.1.male.RDS")
 AKDE.1.male <- readRDS("AKDE.1.male.RDS")
 overlap(AKDE.1.male)
 png(file = "Overlap.1.male.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.1.male, col.DF = "blue", col.level = "black", col.grid = NA, level = NA)
-title("aKDE Overlap (Site 1: males only)")
+plot(AKDE.1.male, col.DF = "dodgerblue2", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 1: male)")
 dev.off()
 
 # SITE 1 - MALE ADULT (n=4)
@@ -305,7 +294,7 @@ saveRDS(object = AKDE.1.male.adult, file = "AKDE.1.male.adult.RDS")
 AKDE.1.male.adult <- readRDS("AKDE.1.male.adult.RDS")
 overlap(AKDE.1.male.adult)
 png(file = "Overlap.1.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.1.male.adult, col.DF = "darkblue", col.level = "black", col.grid = NA, level = NA)
+plot(AKDE.1.male.adult, col.DF = "navyblue", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 1: male adults only)")
 dev.off()
 
@@ -331,7 +320,7 @@ overlap(AKDE.2)
 # colour coding sexes for plot
   # Make a list of colours that matches the order of the HR estimates
   #ggplot has a different saving code/method -> ggsave()
-COL.2 <- c("red", "darkblue", "red", "darkblue", "red", "lightblue", "darkblue") # blue = male; light blue = subadult male; red = female
+COL.2 <- c("red", "navyblue", "red", "navyblue", "red", "lightblue", "navyblue") # blue = male; light blue = subadult male; red = female
 png(file = "Overlap.2.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.2, col.DF = COL.2, col.level = COL.2, col.grid = NA, level = NA) 
 title("aKDE Overlap (Site 2: all individuals)")
@@ -344,7 +333,7 @@ saveRDS(object = AKDE.2.male, file = "AKDE.2.male.RDS")
 AKDE.2.male <- readRDS("AKDE.2.male.RDS")
 overlap(AKDE.2.male)
 png(file = "Overlap.2.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.2.male.adult, col.DF = "blue", col.level = "black", col.grid = NA, level = NA)
+plot(AKDE.2.male.adult, col.DF = "dodgerblue2", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 2: male adults only)")
 dev.off()
 
@@ -355,7 +344,7 @@ saveRDS(object = AKDE.2.male.adult, file = "AKDE.2.male.adult.RDS")
 AKDE.2.male.adult <- readRDS("AKDE.2.male.adult.RDS")
 overlap(AKDE.2.male.adult)
 png(file = "Overlap.2.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.2.male.adult, col.DF = "darkblue", col.level = "black", col.grid = NA, level = NA)
+plot(AKDE.2.male.adult, col.DF = "navyblue", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 2: male adults only)")
 dev.off()
 
@@ -372,8 +361,8 @@ dev.off()
 
 ## AKDE OVERLAP SITE 3 ----
 
-# SITE 3 - MALE AND FEMALE (n=7)
-AKDE.3 <- akde(site.3[1:7],FIT.3)
+# SITE 3 - MALE AND FEMALE (n=4)
+AKDE.3 <- akde(site.3[1:4],FIT.3)
 saveRDS(object = AKDE.3, file = "AKDE.3.RDS")
 # Load saved AKDE aligned UDs
 AKDE.3 <- readRDS("AKDE.3.RDS")
@@ -381,31 +370,20 @@ overlap(AKDE.3)
 # colour coding sexes for plot
 # Make a list of colours that matches the order of the HR estimates
 #ggplot has a different saving code/method -> ggsave()
-COL.3 <- c("red", "blue", "red", "blue", "red", "light blue", "blue") # blue = male; light blue = subadult male; red = female
+COL.3 <- c("red", "navyblue", "red", "red") # blue = male; light blue = subadult male; red = female
 png(file = "Overlap.3.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.3, col.DF = COL.3, col.level = COL.3, col.grid = NA, level = NA) 
 title("aKDE Overlap (Site 3: all individuals)")
 dev.off()
 
-# SITE 3 - MALE (n=4)
-AKDE.3.male <- akde(site.3[1:4],FIT.3.male)
+# SITE 3 - MALE (n=1)
+AKDE.3.male <- akde(site.3[1],FIT.3.male)
 saveRDS(object = AKDE.3.male, file = "AKDE.3.male.RDS")
 # Load saved AKDE aligned UDs
 AKDE.3.male <- readRDS("AKDE.3.male.RDS")
 overlap(AKDE.3.male)
 png(file = "Overlap.3.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.2.male.adult, col.DF = "blue", col.level = "black", col.grid = NA, level = NA)
-title("aKDE Overlap (Site 3: male adults only)")
-dev.off()
-
-# SITE 3 - MALE ADULT (n=3)
-AKDE.3.male.adult <- akde(site.3.male.adult[1:3],FIT.3.male.adult)
-saveRDS(object = AKDE.3.male.adult, file = "AKDE.3.male.adult.RDS")
-# Load saved AKDE aligned UDs
-AKDE.3.male.adult <- readRDS("AKDE.3.male.adult.RDS")
-overlap(AKDE.3.male.adult)
-png(file = "Overlap.3.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.3.male.adult, col.DF = "darkblue", col.level = "black", col.grid = NA, level = NA)
+plot(AKDE.2.male.adult, col.DF = "dodgerblue2", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 3: male adults only)")
 dev.off()
 
