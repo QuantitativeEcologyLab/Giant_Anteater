@@ -1,0 +1,67 @@
+"anteater_A","anteater_B","overlap","Sex.A","Age.A","Sex.B","Age.B","sex_comparison","proximity_low","proximity_est","proximity_high"
+"Anthony","Alexander",0,"Male","Subadult","Male","Adult","male:male",NA,NA,NA
+"Bumpus","Alexander",0.548138990131363,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Bumpus","Anthony",0,"Female","Adult","Male","Subadult","male:female",NA,NA,NA
+"Cate","Alexander",0.00119216456802906,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Cate","Anthony",0.178127344880965,"Female","Adult","Male","Subadult","male:female",NA,NA,NA
+"Cate","Bumpus",0.000282984993378485,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Christoffer","Alexander",0.0071866230656826,"Male","Adult","Male","Adult","male:male",NA,NA,NA
+"Christoffer","Anthony",0.594550993484119,"Male","Adult","Male","Subadult","male:male",NA,NA,NA
+"Christoffer","Bumpus",0.000399366355277403,"Male","Adult","Female","Adult","male:female",NA,NA,NA
+"Christoffer","Cate",0.207562096451744,"Male","Adult","Female","Adult","male:female",NA,NA,NA
+"Elaine","Alexander",0.000207823086827079,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Elaine","Anthony",0.568710980971609,"Female","Adult","Male","Subadult","male:female",NA,NA,NA
+"Elaine","Bumpus",0.00354695608801929,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Elaine","Cate",0.309492343772697,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Elaine","Christoffer",0.429513747795253,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Jackson","Alexander",0.139475674989437,"Male","Adult","Male","Adult","male:male",NA,NA,NA
+"Jackson","Anthony",0,"Male","Adult","Male","Subadult","male:male",NA,NA,NA
+"Jackson","Bumpus",0.411626163242645,"Male","Adult","Female","Adult","male:female",NA,NA,NA
+"Jackson","Cate",7.6633174220353e-05,"Male","Adult","Female","Adult","male:female",NA,NA,NA
+"Jackson","Christoffer",7.50542892726013e-05,"Male","Adult","Male","Adult","male:male",NA,NA,NA
+"Jackson","Elaine",0.000425087433775248,"Male","Adult","Female","Adult","male:female",NA,NA,NA
+"Kyle","Alexander",0.569713687915616,"Male","Subadult","Male","Adult","male:male",NA,NA,NA
+"Kyle","Anthony",1.99818031619641e-09,"Male","Subadult","Male","Subadult","male:male",NA,NA,NA
+"Kyle","Bumpus",0.903747761754124,"Male","Subadult","Female","Adult","male:female",NA,NA,NA
+"Kyle","Cate",0.00302712506963761,"Male","Subadult","Female","Adult","male:female",NA,NA,NA
+"Kyle","Christoffer",0.00331334227227053,"Male","Subadult","Male","Adult","male:male",NA,NA,NA
+"Kyle","Elaine",0.00463204093829794,"Male","Subadult","Female","Adult","male:female",NA,NA,NA
+"Kyle","Jackson",0.571133274364281,"Male","Subadult","Male","Adult","male:male",NA,NA,NA
+"Little Rick","Alexander",0.16219055608451,"Male","Subadult","Male","Adult","male:male",NA,NA,NA
+"Little Rick","Anthony",0,"Male","Subadult","Male","Subadult","male:male",NA,NA,NA
+"Little Rick","Bumpus",0.264187668459719,"Male","Subadult","Female","Adult","male:female",NA,NA,NA
+"Little Rick","Cate",9.17978187041027e-05,"Male","Subadult","Female","Adult","male:female",NA,NA,NA
+"Little Rick","Christoffer",0.000174821251047721,"Male","Subadult","Male","Adult","male:male",NA,NA,NA
+"Little Rick","Elaine",0.000504038670316179,"Male","Subadult","Female","Adult","male:female",NA,NA,NA
+"Little Rick","Jackson",0.529508601531324,"Male","Subadult","Male","Adult","male:male",NA,NA,NA
+"Little Rick","Kyle",0.403072168835212,"Male","Subadult","Male","Subadult","male:male",NA,NA,NA
+"Makao","Alexander",0.305658489386802,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Makao","Anthony",0,"Female","Adult","Male","Subadult","male:female",NA,NA,NA
+"Makao","Bumpus",0.693111111634931,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Makao","Cate",7.51745250265347e-06,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Makao","Christoffer",1.0932827324046e-05,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Makao","Elaine",0.000473081962405443,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Makao","Jackson",0.657492032780544,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Makao","Kyle",0.772893143849993,"Female","Adult","Male","Subadult","male:female",NA,NA,NA
+"Makao","Little Rick",0.603284728926366,"Female","Adult","Male","Subadult","male:female",NA,NA,NA
+"Puji","Alexander",0.271976349659679,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Puji","Anthony",0,"Female","Adult","Male","Subadult","male:female",NA,NA,NA
+"Puji","Bumpus",0.43818980420364,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Puji","Cate",6.20581615146153e-07,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Puji","Christoffer",1.3190352716086e-05,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Puji","Elaine",1.35499632766047e-05,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Puji","Jackson",0.416169914311153,"Female","Adult","Male","Adult","male:female",NA,NA,NA
+"Puji","Kyle",0.571666510457971,"Female","Adult","Male","Subadult","male:female",NA,NA,NA
+"Puji","Little Rick",0.584986549595664,"Female","Adult","Male","Subadult","male:female",NA,NA,NA
+"Puji","Makao",0.848254357758507,"Female","Adult","Female","Adult","female:female",NA,NA,NA
+"Rodolfo","Alexander",0.239539928241451,"Male","Adult","Male","Adult","male:male",NA,NA,NA
+"Rodolfo","Anthony",0.218563745129318,"Male","Adult","Male","Subadult","male:male",NA,NA,NA
+"Rodolfo","Bumpus",0.243887038739579,"Male","Adult","Female","Adult","male:female",NA,NA,NA
+"Rodolfo","Cate",0.264379439199704,"Male","Adult","Female","Adult","male:female",NA,NA,NA
+"Rodolfo","Christoffer",0.150058654365244,"Male","Adult","Male","Adult","male:male",NA,NA,NA
+"Rodolfo","Elaine",0.48422536164061,"Male","Adult","Female","Adult","male:female",NA,NA,NA
+"Rodolfo","Jackson",0.042670318782511,"Male","Adult","Male","Adult","male:male",NA,NA,NA
+"Rodolfo","Kyle",0.229470567020097,"Male","Adult","Male","Subadult","male:male",NA,NA,NA
+"Rodolfo","Little Rick",0.0338813520928491,"Male","Adult","Male","Subadult","male:male",NA,NA,NA
+"Rodolfo","Makao",0.063557495089154,"Male","Adult","Female","Adult","male:female",NA,NA,NA
+"Rodolfo","Puji",0.0253100852198288,"Male","Adult","Female","Adult","male:female",NA,NA,NA
