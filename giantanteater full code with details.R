@@ -211,7 +211,7 @@ saveRDS(object = FIT.3.male, file = "FIT.3.male.RDS")
 FIT.3.male <- readRDS("FIT.3.male.RDS")
 overlap(FIT.3.male)
 
-# SITE 4 - FEMALE (n=3)
+# SITE 3 - FEMALE (n=3)
 GUESS.3.female <- lapply(site.3.female[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.3.female <- lapply(1:3, function(i) ctmm.select(site.3.female[[i]],GUESS.3.female[[i]]) )
 names(FIT.3.female) <- names(site.3.female[1:3])
@@ -252,10 +252,9 @@ overlap(FIT.2)
 
 # OVERLAP colour code individuals as male/female on the overlap plot
 # Make a list of colours that matches the order of the HR estimates
-# blue = male
-# dark blue = adult male
+# blue = male adult
 # light blue = subadult male
-# red = female
+# red = female adult
 # ggplot has a different saving code/method -> ggsave()
 
 ## AKDE OVERLAP SITE 1 ----
@@ -269,8 +268,8 @@ overlap(AKDE.1)
 # colour coding sexes for plot
   # Make a list of colours that matches the order of the HR estimates
   #ggplot has a different saving code/method -> ggsave()
-COL.1 <- c("navyblue", "lightblue", "red", "red", "navyblue", "red", "navyblue", "lightblue", "lightblue", "red",
-           "red", "navyblue")
+COL.1 <- c("blue3", "lightblue1", "red", "red", "blue3", "red", "blue3", "lightblue1", "lightblue1", "red",
+           "red", "blue3")
 png(file = "Overlap.1.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.1, col.DF = COL.1, col.level = COL.1, col.grid = NA, level = NA)
 title("aKDE Overlap (Site 1: male and female)")
@@ -283,7 +282,7 @@ saveRDS(object = AKDE.1.male, file = "AKDE.1.male.RDS")
 AKDE.1.male <- readRDS("AKDE.1.male.RDS")
 overlap(AKDE.1.male)
 png(file = "Overlap.1.male.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.1.male, col.DF = "dodgerblue2", col.level = "black", col.grid = NA, level = NA)
+plot(AKDE.1.male, col.DF = "dodgerblue", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 1: male)")
 dev.off()
 
@@ -294,8 +293,8 @@ saveRDS(object = AKDE.1.male.adult, file = "AKDE.1.male.adult.RDS")
 AKDE.1.male.adult <- readRDS("AKDE.1.male.adult.RDS")
 overlap(AKDE.1.male.adult)
 png(file = "Overlap.1.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.1.male.adult, col.DF = "navyblue", col.level = "black", col.grid = NA, level = NA)
-title("aKDE Overlap (Site 1: male adults only)")
+plot(AKDE.1.male.adult, col.DF = "blue3", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 1: male adult)")
 dev.off()
 
 # SITE 1 - FEMALE (n=5)
@@ -306,7 +305,7 @@ AKDE.1.female <- readRDS("AKDE.1.female.RDS")
 overlap(AKDE.1.female)
 png(file = "Overlap.1.female.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.1.female, col.DF = "red", col.level = "black", col.grid = NA, level = NA)
-title("aKDE Overlap (Site 1: females only)")
+title("aKDE Overlap (Site 1: female)")
 dev.off()
 
 ## AKDE OVERLAP SITE 2 ----
@@ -320,10 +319,10 @@ overlap(AKDE.2)
 # colour coding sexes for plot
   # Make a list of colours that matches the order of the HR estimates
   #ggplot has a different saving code/method -> ggsave()
-COL.2 <- c("red", "navyblue", "red", "navyblue", "red", "lightblue", "navyblue") # blue = male; light blue = subadult male; red = female
+COL.2 <- c("red", "blue3", "red", "blue3", "red", "lightblue1", "blue3") # blue = male; light blue = subadult male; red = female
 png(file = "Overlap.2.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.2, col.DF = COL.2, col.level = COL.2, col.grid = NA, level = NA) 
-title("aKDE Overlap (Site 2: all individuals)")
+title("aKDE Overlap (Site 2: male and female)")
 dev.off()
 
 # SITE 2 - MALE (n=4)
@@ -333,8 +332,8 @@ saveRDS(object = AKDE.2.male, file = "AKDE.2.male.RDS")
 AKDE.2.male <- readRDS("AKDE.2.male.RDS")
 overlap(AKDE.2.male)
 png(file = "Overlap.2.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.2.male.adult, col.DF = "dodgerblue2", col.level = "black", col.grid = NA, level = NA)
-title("aKDE Overlap (Site 2: male adults only)")
+plot(AKDE.2.male.adult, col.DF = "dodgerblue", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 2: male)")
 dev.off()
 
 # SITE 2 - MALE ADULT (n=3)
@@ -344,8 +343,8 @@ saveRDS(object = AKDE.2.male.adult, file = "AKDE.2.male.adult.RDS")
 AKDE.2.male.adult <- readRDS("AKDE.2.male.adult.RDS")
 overlap(AKDE.2.male.adult)
 png(file = "Overlap.2.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.2.male.adult, col.DF = "navyblue", col.level = "black", col.grid = NA, level = NA)
-title("aKDE Overlap (Site 2: male adults only)")
+plot(AKDE.2.male.adult, col.DF = "blue3", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 2: male adult)")
 dev.off()
 
 # SITE 2 - FEMALE (n=3)
@@ -356,7 +355,7 @@ AKDE.2.female <- readRDS("AKDE.2.female.RDS")
 overlap(AKDE.2.female)
 png(file = "Overlap.2.female.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.2.female, col.DF = "red", col.level = "black", col.grid = NA, level = NA)
-title("aKDE Overlap (Site 2: females only)")
+title("aKDE Overlap (Site 2: female)")
 dev.off()
 
 ## AKDE OVERLAP SITE 3 ----
@@ -370,10 +369,10 @@ overlap(AKDE.3)
 # colour coding sexes for plot
 # Make a list of colours that matches the order of the HR estimates
 #ggplot has a different saving code/method -> ggsave()
-COL.3 <- c("red", "navyblue", "red", "red") # blue = male; light blue = subadult male; red = female
+COL.3 <- c("red", "blue3", "red", "red") # blue = male; light blue = subadult male; red = female
 png(file = "Overlap.3.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.3, col.DF = COL.3, col.level = COL.3, col.grid = NA, level = NA) 
-title("aKDE Overlap (Site 3: all individuals)")
+title("aKDE Overlap (Site 3: male and female)")
 dev.off()
 
 # SITE 3 - MALE (n=1)
@@ -382,9 +381,9 @@ saveRDS(object = AKDE.3.male, file = "AKDE.3.male.RDS")
 # Load saved AKDE aligned UDs
 AKDE.3.male <- readRDS("AKDE.3.male.RDS")
 overlap(AKDE.3.male)
-png(file = "Overlap.3.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE.2.male.adult, col.DF = "dodgerblue2", col.level = "black", col.grid = NA, level = NA)
-title("aKDE Overlap (Site 3: male adults only)")
+png(file = "Overlap.3.male.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(AKDE.2.male.adult, col.DF = "dodgerblue", col.level = "black", col.grid = NA, level = NA)
+title("aKDE Overlap (Site 3: male)")
 dev.off()
 
 # SITE 3 - FEMALE (n=3)
@@ -395,9 +394,8 @@ AKDE.3.female <- readRDS("AKDE.3.female.RDS")
 overlap(AKDE.3.female)
 png(file = "Overlap.3.female.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.3.female, col.DF = "red", col.level = "black", col.grid = NA, level = NA)
-title("aKDE Overlap (Site 3: females only)")
+title("aKDE Overlap (Site 3: female)")
 dev.off()
-
 
 ### META DATASET (for pairwise analysis) ## ----
 
@@ -408,7 +406,7 @@ METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies -
 METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
                                                        true = 'Larry 267',
                                                        false = ID))
-unique(METADATA$ID) # to check if the name has been corrected, (dataset$column)
+#unique(METADATA$ID) # to check if the name has been corrected, (dataset$column)
 
 ### PAIRWISE ANALYSIS SEX COMPARISON ----
 # creating the data frame from overlap values
@@ -496,7 +494,7 @@ DATA.pairwise.2 # to check if matrix is good, has all the correct columns, varia
 
 # removing subadults from dataframe matrix
 pairwise.2.df.A <- DATA.pairwise.2[which(DATA.pairwise.2$Age.A != "Subadult"),] # removing subadults from anteater_A from matrix
-DATA.pairwise.2.adult <- pairwise.2.df.A[which(DATA.pairwise.2$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
+DATA.pairwise.2.adult <- pairwise.2.df.A[which(pairwise.2.df.A$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
 
 # Plot pairwise sex comparison for SITE 2
 ## SITE 2 plot pairwise comparison (male and female)
@@ -531,7 +529,7 @@ overlap.3.median[upper.tri(overlap.3.median, diag = TRUE)] <- NA # removing the 
 # converting the overlap median layer matrix triangle into a pairwise dataframe
 pairwise.3.matrix <- as.data.frame(overlap.3.median) # Convert matrix to data frame
 pairwise.3.matrix$anteater_A <- rownames(pairwise.3.matrix) # add column of individual names
-pairwise.3.pivot <- pivot_longer(pairwise.1.matrix, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap', values_drop_na = TRUE)
+pairwise.3.pivot <- pivot_longer(pairwise.3.matrix, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap', values_drop_na = TRUE)
 # table is too wide .-. rotate it to make it long
 
 # add columns to the dataframe matrix, general syntax -> join_type(firstTable, secondTable, by=columnTojoinOn)
@@ -548,7 +546,7 @@ DATA.pairwise.3 # to check if matrix is good, has all the correct columns, varia
 
 # removing subadults from dataframe matrix
 pairwise.3.df.A <- DATA.pairwise.3[which(DATA.pairwise.3$Age.A != "Subadult"),] # removing subadults from anteater_A from matrix
-DATA.pairwise.3.adult <- pairwise.3.df.A[which(DATA.pairwise.3$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
+DATA.pairwise.3.adult <- pairwise.3.df.A[which(pairwise.3.df.A$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
 
 # Plot pairwise sex comparison for SITE 3 ----
 
@@ -568,18 +566,17 @@ ggplot(data = DATA.pairwise.3.adult, mapping = aes(x = sex_comparison, y = overl
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex Comparison") +
-  ggtitle("Overlap pairwise comparison of sexes (Site 3: adult3 only)") +
+  ggtitle("Overlap pairwise comparison of sexes (Site 3: adult only)") +
   theme_bw() +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.3.adult.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
-
 # PAIRWISE COMPARISON ANALYSIS OF SEX OVERALL COMPARISON ## ----
 # use bind_rows() to join the 2 pairwise comparison and then plot it
 
 # male and female
-DATA.pairwise. <- bind_rows(DATA.pairwise.1, DATA.pairwise.2, DATA.pairwise.3)
+DATA.pairwise <- bind_rows(DATA.pairwise.1, DATA.pairwise.2, DATA.pairwise.3)
 # Adult only
 DATA.pairwise.adult <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult, DATA.pairwise.3.adult)
 
@@ -591,7 +588,7 @@ ggplot(data = DATA.pairwise, mapping = aes(x = sex_comparison, y = overlap, fill
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex") +
-  ggtitle("Anteater overlap pairwise comparison of sexes (male and female)") +
+  ggtitle("Anteater overlap pairwise comparison of sexes (SITE 1-3: male and female)") +
   theme_bw() +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.combined.png", plot = last_plot(), device = NULL,
@@ -602,7 +599,7 @@ ggplot(data = DATA.pairwise.adult, mapping = aes(x = sex_comparison, y = overlap
   geom_boxplot() +
   ylab("Overlap") +
   xlab("Sex") +
-  ggtitle("Anteater overlap pairwise comparison of sexes (Adults only)") +
+  ggtitle("Anteater overlap pairwise comparison of sexes (SITE 1-3: adult only)") +
   theme_bw() +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.combined.adult.png", plot = last_plot(), device = NULL,
@@ -611,6 +608,10 @@ ggsave(filename = "pairwise.combined.adult.png", plot = last_plot(), device = NU
 # Quick test to see if differences are significant -------
 test.sex <- glmer(overlap ~ sex_comparison + (1|Sex.A), family = "binomial", data = DATA.pairwise.adult)
 summary(test.sex)
+  # male:female, pvalue = 0.1716
+  # male:male, pvalue = 1.00
+  # results indicating there is no difference across the groups, therefore individuals are doing their own thing
+  # if there was a difference across the groups, then individuals are not doing their own thing (and not independent of each other????)
 
 ### PROXIMITY PAIRWISE ANALYSIS BETWEEN SEX ## ----
 # refer to help("proximity")
@@ -651,6 +652,30 @@ for(i in 1:nrow(DATA.pairwise.1)){
   DATA.pairwise.1[i, c("proximity_high")] <- PROXIMITY.1[3]
   write.csv(DATA.pairwise.1, "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory/DATA.proximity.1.csv", row.names = FALSE)
 }
+
+################
+# Row 15 is missing
+for(i in 15:15){
+  ANIMAL_A <- as.character(DATA.pairwise.1[i, 'anteater_A']) # add as.character due to tibble format
+  ANIMAL_B <- as.character(DATA.pairwise.1[i, 'anteater_B'])
+  TRACKING_DATA.1 <- DATA[c(ANIMAL_A, ANIMAL_B)] # extract anteater by name, has extra layers .-. it doesnt work, that is why
+  # line above is using as.character removes all the fluff because you just want the text string
+  MODELS.1 <- list(FIT.1[ANIMAL_A][[1]], FIT.1[ANIMAL_B][[1]])
+  PROXIMITY.1 <- tryCatch(
+    {
+      PROXIMITY.1 <- proximity(data = TRACKING_DATA.1, CTMM = MODELS.1, GUESS=ctmm(error=FALSE))},
+    error=function(err){
+      PROXIMITY.1 <- c(NA,NA,NA)
+      return(PROXIMITY.1)
+    }
+  )
+  DATA.pairwise.1[i, c("proximity_low")] <- PROXIMITY.1[1]
+  DATA.pairwise.1[i, c("proximity_est")] <- PROXIMITY.1[2]
+  DATA.pairwise.1[i, c("proximity_high")] <- PROXIMITY.1[3]
+  write.csv(DATA.pairwise.1, "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory/DATA.proximity.1.csv", row.names = FALSE)
+}
+
+#################
 
 # Load Proximity Analysis results
 DATA.proximity.1 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.1.csv")
