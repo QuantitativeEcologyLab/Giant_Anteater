@@ -1,67 +1,67 @@
-"anteater_A","anteater_B","overlap","Sex.A","Age.A","Sex.B","Age.B","sex_comparison","proximity_low","proximity_est","proximity_high"
-"Anthony","Alexander",0,"Male","Subadult","Male","Adult","male:male",0.927605744239103,1.03740483908182,1.15639603059435
-"Bumpus","Alexander",0.548138990131363,"Female","Adult","Male","Adult","male:female",0.820827279141456,0.916936644746447,1.02095644431951
-"Bumpus","Anthony",0,"Female","Adult","Male","Subadult","male:female",0.882263450729443,0.978448908991362,1.08209683638899
-"Cate","Alexander",0.00119216456802906,"Female","Adult","Male","Adult","male:female",0.968926873288395,1.07973520722588,1.19935755635469
-"Cate","Anthony",0.178127344880965,"Female","Adult","Male","Subadult","male:female",0.921544135042244,1.01805047667648,1.12171411268549
-"Cate","Bumpus",0.000282984993378485,"Female","Adult","Female","Adult","female:female",0.941530652133813,1.04042722615247,1.14665008634992
-"Christoffer","Alexander",0.0071866230656826,"Male","Adult","Male","Adult","male:male",0.94970781007942,1.10385995773199,1.27521120805537
-"Christoffer","Anthony",0.594550993484119,"Male","Adult","Male","Subadult","male:male",0.882080111350887,1.01726859787373,1.16771998251154
-"Christoffer","Bumpus",0.000399366355277403,"Male","Adult","Female","Adult","male:female",0.866787465454389,0.996644947883717,1.14066995661079
-"Christoffer","Cate",0.207562096451744,"Male","Adult","Female","Adult","male:female",0.913447753435723,1.05002127974799,1.20127197499992
-"Elaine","Alexander",0.000207823086827079,"Female","Adult","Male","Adult","male:female",0.73666900353653,1.04264044786776,1.41591040247216
-"Elaine","Anthony",0.568710980971609,"Female","Adult","Male","Subadult","male:female",0.688426947326243,0.937901219298121,1.23997744368322
-"Elaine","Bumpus",0.00354695608801929,"Female","Adult","Female","Adult","female:female",0.728624500305897,0.990945078523696,1.30738621229746
-"Elaine","Cate",0.309492343772697,"Female","Adult","Female","Adult","female:female",NA,NA,NA
-"Elaine","Christoffer",0.429513747795253,"Female","Adult","Male","Adult","male:female",0.379858421960767,0.444178110193401,0.517565562823029
-"Jackson","Alexander",0.139475674989437,"Male","Adult","Male","Adult","male:male",0.902182487298347,1.00776451738969,1.12211956601597
-"Jackson","Anthony",0,"Male","Adult","Male","Subadult","male:male",0.894237445191219,0.995333566211434,1.10474427942043
-"Jackson","Bumpus",0.411626163242645,"Male","Adult","Female","Adult","male:female",0.904064255444049,1.00745128262345,1.11921879625741
-"Jackson","Cate",7.6633174220353e-05,"Male","Adult","Female","Adult","male:female",0.890468876388422,0.987624003695556,1.09237777155998
-"Jackson","Christoffer",7.50542892726013e-05,"Male","Adult","Male","Adult","male:male",0.880451343023413,1.0071868490658,1.14667813294712
-"Jackson","Elaine",0.000425087433775248,"Male","Adult","Female","Adult","male:female",0.727056904616331,0.971541470576643,1.26218332926653
-"Kyle","Alexander",0.569713687915616,"Male","Subadult","Male","Adult","male:male",0.902366030546139,0.99423550092865,1.09275338188403
-"Kyle","Anthony",1.99818031619641e-09,"Male","Subadult","Male","Subadult","male:male",0.916246079044169,1.00494690550145,1.0998590575357
-"Kyle","Bumpus",0.903747761754124,"Male","Subadult","Female","Adult","male:female",0.777242041449763,0.849967521350841,0.927685619322277
-"Kyle","Cate",0.00302712506963761,"Male","Subadult","Female","Adult","male:female",0.938607213814395,1.02805534004827,1.12355413098178
-"Kyle","Christoffer",0.00331334227227053,"Male","Subadult","Male","Adult","male:male",1.01719026266335,1.15455604237129,1.30495904419811
-"Kyle","Elaine",0.00463204093829794,"Male","Subadult","Female","Adult","male:female",0.742667028286161,0.968132651628808,1.23352437454824
-"Kyle","Jackson",0.571133274364281,"Male","Subadult","Male","Adult","male:male",0.857587147752917,0.941252816946997,1.03083368460151
-"Little Rick","Alexander",0.16219055608451,"Male","Subadult","Male","Adult","male:male",0.839463536596308,0.994691594301733,1.1708440774168
-"Little Rick","Anthony",0,"Male","Subadult","Male","Subadult","male:male",0.883812512626201,1.04733467557329,1.23361515783413
-"Little Rick","Bumpus",0.264187668459719,"Male","Subadult","Female","Adult","male:female",0.837906343587272,0.986101310373238,1.15419510433171
-"Little Rick","Cate",9.17978187041027e-05,"Male","Subadult","Female","Adult","male:female",0.941795274443721,1.10980777634956,1.3001806407699
-"Little Rick","Christoffer",0.000174821251047721,"Male","Subadult","Male","Adult","male:male",0.888956947000275,1.03823609617988,1.20520320387653
-"Little Rick","Elaine",0.000504038670316179,"Male","Subadult","Female","Adult","male:female",0.339318694105611,0.393408863274498,0.454758778891659
-"Little Rick","Jackson",0.529508601531324,"Male","Subadult","Male","Adult","male:male",0.793582825888296,0.925563989238974,1.07372193805096
-"Little Rick","Kyle",0.403072168835212,"Male","Subadult","Male","Subadult","male:male",0.830473810491998,0.958822774999188,1.10223558595072
-"Makao","Alexander",0.305658489386802,"Female","Adult","Male","Adult","male:female",0.895592772652542,1.00734394868123,1.12887761654863
-"Makao","Anthony",0,"Female","Adult","Male","Subadult","male:female",0.885102333614538,0.991922097794143,1.10794665555583
-"Makao","Bumpus",0.693111111634931,"Female","Adult","Female","Adult","female:female",0.792728744469257,0.883716515349069,0.982281339050068
-"Makao","Cate",7.51745250265347e-06,"Female","Adult","Female","Adult","female:female",0.883003415556711,0.980289910829095,1.08538116868268
-"Makao","Christoffer",1.0932827324046e-05,"Female","Adult","Male","Adult","male:female",0.83977185870392,0.965161793381135,1.10391074368664
-"Makao","Elaine",0.000473081962405443,"Female","Adult","Female","Adult","female:female",0.695549267069843,0.965650359978115,1.2922868728997
-"Makao","Jackson",0.657492032780544,"Female","Adult","Male","Adult","male:female",0.832254790893714,0.928919842492763,1.0336016551302
-"Makao","Kyle",0.772893143849993,"Female","Adult","Male","Subadult","male:female",0.83393772337848,0.918655082476143,1.0095653365622
-"Makao","Little Rick",0.603284728926366,"Female","Adult","Male","Subadult","male:female",0.825996332062682,0.972116691606559,1.13728079622514
-"Puji","Alexander",0.271976349659679,"Female","Adult","Male","Adult","male:female",0.912946756224393,1.01822379066255,1.13209524321384
-"Puji","Anthony",0,"Female","Adult","Male","Subadult","male:female",0.892155885110381,0.988023915681484,1.09114375231877
-"Puji","Bumpus",0.43818980420364,"Female","Adult","Female","Adult","female:female",0.816458502791729,0.900850275367345,0.99155888618722
-"Puji","Cate",6.20581615146153e-07,"Female","Adult","Female","Adult","female:female",0.906920770523021,0.997296212463333,1.09414582300894
-"Puji","Christoffer",1.3190352716086e-05,"Female","Adult","Male","Adult","male:female",0.966379114955231,1.11604440148184,1.28252848283394
-"Puji","Elaine",1.35499632766047e-05,"Female","Adult","Female","Adult","female:female",0.699121957945029,0.95838201332931,1.27266942592695
-"Puji","Jackson",0.416169914311153,"Female","Adult","Male","Adult","male:female",0.908996290480078,1.01224740119309,1.12389998052325
-"Puji","Kyle",0.571666510457971,"Female","Adult","Male","Subadult","male:female",0.863446197226863,0.946562623744541,1.03541672609103
-"Puji","Little Rick",0.584986549595664,"Female","Adult","Male","Subadult","male:female",0.898357190429683,1.06448162163846,1.25360117568397
-"Puji","Makao",0.848254357758507,"Female","Adult","Female","Adult","female:female",0.826711090521969,0.920784781259136,1.02270299574682
-"Rodolfo","Alexander",0.239539928241451,"Male","Adult","Male","Adult","male:male",0.984639562709831,1.11553367083809,1.25897849215356
-"Rodolfo","Anthony",0.218563745129318,"Male","Adult","Male","Subadult","male:male",0.915306044971097,1.0349283061975,1.16624511880668
-"Rodolfo","Bumpus",0.243887038739579,"Male","Adult","Female","Adult","male:female",0.927237371699943,1.04831982300641,1.18097037140161
-"Rodolfo","Cate",0.264379439199704,"Male","Adult","Female","Adult","male:female",0.88023872329395,0.990493999695621,1.11103114344775
-"Rodolfo","Christoffer",0.150058654365244,"Male","Adult","Male","Adult","male:male",0.901235779339955,1.03026875217974,1.17179037792714
-"Rodolfo","Elaine",0.48422536164061,"Male","Adult","Female","Adult","male:female",0.172004107121789,0.194880260345604,0.220646188832658
-"Rodolfo","Jackson",0.042670318782511,"Male","Adult","Male","Adult","male:male",0.850267123833667,0.952108970305668,1.06291787121339
-"Rodolfo","Kyle",0.229470567020097,"Male","Adult","Male","Subadult","male:male",0.904417106182944,1.00685720550247,1.11786093677767
-"Rodolfo","Little Rick",0.0338813520928491,"Male","Adult","Male","Subadult","male:male",0.843188158464801,0.973549734450986,1.11808242207825
-"Rodolfo","Makao",0.063557495089154,"Male","Adult","Female","Adult","male:female",0.917308720668927,1.03613838135752,1.16610045041435
-"Rodolfo","Puji",0.0253100852198288,"Male","Adult","Female","Adult","male:female",0.936916550359849,1.05965073708342,1.1943129753744
+anteater_A,anteater_B,overlap,Sex.A,Age.A,Sex.B,Age.B,sex_comparison,proximity_low,proximity_est,proximity_high
+Anthony,Alexander,0,Male,Subadult,Male,Adult,male:male,0.927605744,1.037404839,1.156396031
+Bumpus,Alexander,0.54813899,Female,Adult,Male,Adult,male:female,0.820827279,0.916936645,1.020956444
+Bumpus,Anthony,0,Female,Adult,Male,Subadult,male:female,0.882263451,0.978448909,1.082096836
+Cate,Alexander,0.001192165,Female,Adult,Male,Adult,male:female,0.968926873,1.079735207,1.199357556
+Cate,Anthony,0.178127345,Female,Adult,Male,Subadult,male:female,0.921544135,1.018050477,1.121714113
+Cate,Bumpus,0.000282985,Female,Adult,Female,Adult,female:female,0.941530652,1.040427226,1.146650086
+Christoffer,Alexander,0.007186623,Male,Adult,Male,Adult,male:male,0.94970781,1.103859958,1.275211208
+Christoffer,Anthony,0.594550993,Male,Adult,Male,Subadult,male:male,0.882080111,1.017268598,1.167719983
+Christoffer,Bumpus,0.000399366,Male,Adult,Female,Adult,male:female,0.866787465,0.996644948,1.140669957
+Christoffer,Cate,0.207562096,Male,Adult,Female,Adult,male:female,0.913447753,1.05002128,1.201271975
+Elaine,Alexander,0.000207823,Female,Adult,Male,Adult,male:female,0.736669004,1.042640448,1.415910402
+Elaine,Anthony,0.568710981,Female,Adult,Male,Subadult,male:female,0.688426947,0.937901219,1.239977444
+Elaine,Bumpus,0.003546956,Female,Adult,Female,Adult,female:female,0.7286245,0.990945079,1.307386212
+Elaine,Cate,0.309492344,Female,Adult,Female,Adult,female:female,0.665131628,0.899796491,1.182068354
+Elaine,Christoffer,0.429513748,Female,Adult,Male,Adult,male:female,0.379858422,0.44417811,0.517565563
+Jackson,Alexander,0.139475675,Male,Adult,Male,Adult,male:male,0.902182487,1.007764517,1.122119566
+Jackson,Anthony,0,Male,Adult,Male,Subadult,male:male,0.894237445,0.995333566,1.104744279
+Jackson,Bumpus,0.411626163,Male,Adult,Female,Adult,male:female,0.904064255,1.007451283,1.119218796
+Jackson,Cate,7.66E-05,Male,Adult,Female,Adult,male:female,0.890468876,0.987624004,1.092377772
+Jackson,Christoffer,7.51E-05,Male,Adult,Male,Adult,male:male,0.880451343,1.007186849,1.146678133
+Jackson,Elaine,0.000425087,Male,Adult,Female,Adult,male:female,0.727056905,0.971541471,1.262183329
+Kyle,Alexander,0.569713688,Male,Subadult,Male,Adult,male:male,0.902366031,0.994235501,1.092753382
+Kyle,Anthony,2.00E-09,Male,Subadult,Male,Subadult,male:male,0.916246079,1.004946906,1.099859058
+Kyle,Bumpus,0.903747762,Male,Subadult,Female,Adult,male:female,0.777242041,0.849967521,0.927685619
+Kyle,Cate,0.003027125,Male,Subadult,Female,Adult,male:female,0.938607214,1.02805534,1.123554131
+Kyle,Christoffer,0.003313342,Male,Subadult,Male,Adult,male:male,1.017190263,1.154556042,1.304959044
+Kyle,Elaine,0.004632041,Male,Subadult,Female,Adult,male:female,0.742667028,0.968132652,1.233524375
+Kyle,Jackson,0.571133274,Male,Subadult,Male,Adult,male:male,0.857587148,0.941252817,1.030833685
+Little Rick,Alexander,0.162190556,Male,Subadult,Male,Adult,male:male,0.839463537,0.994691594,1.170844077
+Little Rick,Anthony,0,Male,Subadult,Male,Subadult,male:male,0.883812513,1.047334676,1.233615158
+Little Rick,Bumpus,0.264187668,Male,Subadult,Female,Adult,male:female,0.837906344,0.98610131,1.154195104
+Little Rick,Cate,9.18E-05,Male,Subadult,Female,Adult,male:female,0.941795274,1.109807776,1.300180641
+Little Rick,Christoffer,0.000174821,Male,Subadult,Male,Adult,male:male,0.888956947,1.038236096,1.205203204
+Little Rick,Elaine,0.000504039,Male,Subadult,Female,Adult,male:female,0.339318694,0.393408863,0.454758779
+Little Rick,Jackson,0.529508602,Male,Subadult,Male,Adult,male:male,0.793582826,0.925563989,1.073721938
+Little Rick,Kyle,0.403072169,Male,Subadult,Male,Subadult,male:male,0.83047381,0.958822775,1.102235586
+Makao,Alexander,0.305658489,Female,Adult,Male,Adult,male:female,0.895592773,1.007343949,1.128877617
+Makao,Anthony,0,Female,Adult,Male,Subadult,male:female,0.885102334,0.991922098,1.107946656
+Makao,Bumpus,0.693111112,Female,Adult,Female,Adult,female:female,0.792728744,0.883716515,0.982281339
+Makao,Cate,7.52E-06,Female,Adult,Female,Adult,female:female,0.883003416,0.980289911,1.085381169
+Makao,Christoffer,1.09E-05,Female,Adult,Male,Adult,male:female,0.839771859,0.965161793,1.103910744
+Makao,Elaine,0.000473082,Female,Adult,Female,Adult,female:female,0.695549267,0.96565036,1.292286873
+Makao,Jackson,0.657492033,Female,Adult,Male,Adult,male:female,0.832254791,0.928919842,1.033601655
+Makao,Kyle,0.772893144,Female,Adult,Male,Subadult,male:female,0.833937723,0.918655082,1.009565337
+Makao,Little Rick,0.603284729,Female,Adult,Male,Subadult,male:female,0.825996332,0.972116692,1.137280796
+Puji,Alexander,0.27197635,Female,Adult,Male,Adult,male:female,0.912946756,1.018223791,1.132095243
+Puji,Anthony,0,Female,Adult,Male,Subadult,male:female,0.892155885,0.988023916,1.091143752
+Puji,Bumpus,0.438189804,Female,Adult,Female,Adult,female:female,0.816458503,0.900850275,0.991558886
+Puji,Cate,6.21E-07,Female,Adult,Female,Adult,female:female,0.906920771,0.997296212,1.094145823
+Puji,Christoffer,1.32E-05,Female,Adult,Male,Adult,male:female,0.966379115,1.116044401,1.282528483
+Puji,Elaine,1.35E-05,Female,Adult,Female,Adult,female:female,0.699121958,0.958382013,1.272669426
+Puji,Jackson,0.416169914,Female,Adult,Male,Adult,male:female,0.90899629,1.012247401,1.123899981
+Puji,Kyle,0.57166651,Female,Adult,Male,Subadult,male:female,0.863446197,0.946562624,1.035416726
+Puji,Little Rick,0.58498655,Female,Adult,Male,Subadult,male:female,0.89835719,1.064481622,1.253601176
+Puji,Makao,0.848254358,Female,Adult,Female,Adult,female:female,0.826711091,0.920784781,1.022702996
+Rodolfo,Alexander,0.239539928,Male,Adult,Male,Adult,male:male,0.984639563,1.115533671,1.258978492
+Rodolfo,Anthony,0.218563745,Male,Adult,Male,Subadult,male:male,0.915306045,1.034928306,1.166245119
+Rodolfo,Bumpus,0.243887039,Male,Adult,Female,Adult,male:female,0.927237372,1.048319823,1.180970371
+Rodolfo,Cate,0.264379439,Male,Adult,Female,Adult,male:female,0.880238723,0.990494,1.111031143
+Rodolfo,Christoffer,0.150058654,Male,Adult,Male,Adult,male:male,0.901235779,1.030268752,1.171790378
+Rodolfo,Elaine,0.484225362,Male,Adult,Female,Adult,male:female,0.172004107,0.19488026,0.220646189
+Rodolfo,Jackson,0.042670319,Male,Adult,Male,Adult,male:male,0.850267124,0.95210897,1.062917871
+Rodolfo,Kyle,0.229470567,Male,Adult,Male,Subadult,male:male,0.904417106,1.006857206,1.117860937
+Rodolfo,Little Rick,0.033881352,Male,Adult,Male,Subadult,male:male,0.843188158,0.973549734,1.118082422
+Rodolfo,Makao,0.063557495,Male,Adult,Female,Adult,male:female,0.917308721,1.036138381,1.16610045
+Rodolfo,Puji,0.025310085,Male,Adult,Female,Adult,male:female,0.93691655,1.059650737,1.194312975
