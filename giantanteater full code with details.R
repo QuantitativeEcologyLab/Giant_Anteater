@@ -860,48 +860,6 @@ proximity.3.below1 <- DATA.proximity.3[which(DATA.proximity.3$proximity_high < 1
 proximity.3.above1
 proximity.3.below1
 
-## SUBSET INDIVIDUALS FOR PROXIMITY IDENTIFIED PAIRS
-
-# SITE 1 INDIVIDUALS
-Bumpus <- DATA$Bumpus
-FIT.Bumpus <- FIT.1$Bumpus
-Christoffer <- DATA$Christoffer
-FIT.Christoffer <- FIT.1$Christoffer
-Elaine <- DATA$Elaine
-FIT.Elaine <- FIT.1$Elaine
-Kyle <- DATA$Kyle
-FIT.Kyle <- FIT.1$Kyle
-Little_rick <- DATA$`Little Rick`
-FIT.Little_rick <- FIT.1$`Little Rick`
-Makao <- DATA$Makao
-FIT.Makao <- FIT.1$Makao
-Puji <- DATA$Puji
-FIT.Puji <- FIT.1$Puji
-Rodolfo <- DATA$Rodolfo
-
-
-pair.1.1 <- DATA[c(12,24)] # Christoffer/Kyle
-pair.1.2 <- DATA[c(12,15)] # Christoffer/Elaine
-pair.1.3 <- DATA[c(9,24)] # Bumpus/Kyle
-pair.1.4 <- DATA[c(15,27)] # Elaine/Little Rick
-pair.1.5 <- DATA[c(9,29)] # Bumpus/Makao
-pair.1.6 <- DATA[c(9,36)] # Bumpus/Puji
-pair.1.7 <- DATA[c(15,38)] # Elaine/Rodolfo
-
-overlap.pair.1.1. <- overlap(c(5,8))
-
-# SITE 2 INDIVIDUALS
-Annie <- DATA$Annie
-Larry <- DATA$`Larry 267`
-Margaret <- DATA$Margaret
-Reid <- DATA$Reid
-Thomas <- DATA$Thomas
-
-# SITE 3 INDIVIDUALS
-Maria <- DATA$Maria
-Sheron <- DATA$Sheron
-
-
 #### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS
 # distances() function further estimates the instantaneous distances between individuals
 # Use telemetry data
@@ -921,11 +879,12 @@ plot(log(est)~timestamp, data=metric, type="l") # type="l" changes the plot from
 # FIT.1 = 1:12
 
 # SITE 1 : above 1 (further apart)
-pair.1.1 <- DATA[c(12,24)] # Christoffer/Kyle
-FIT.pair.1.1 <- FIT.1[c(5,8)]
-metric1 <- distances(pair.1.1, FIT.pair.1.1) # distance measurement and time between the pair
+# PAIR 1: Christoffer/Kyle
+pair1 <- DATA[c(12,24)]
+FIT.pair1 <- FIT.1[c(5,8)]
+metric1 <- distances(pair1, FIT.pair1) # distance measurement and time between the pair
 names(metric1) 
-png(file = "metrics.pair.1.1.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair1.1.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric1, type="l",
@@ -939,9 +898,9 @@ dev.off()
 # SITE 1: below 1 (closer together)
 
 # PAIR 2: Christoffer/Elaine
-pair.1.2 <- DATA[c(12,15)] # Christoffer/Elaine
-FIT.pair.1.2 <- FIT.1[c(5,6)]
-metric2 <- distances(pair.1.2, FIT.pair.1.2) # distance measurement and time between the pair
+pair2 <- DATA[c(12,15)] # Christoffer/Elaine
+FIT.pair2 <- FIT.1[c(5,6)]
+metric2 <- distances(pair2, FIT.pair2) # distance measurement and time between the pair
 png(file = "metrics.pair.1.2.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -954,9 +913,9 @@ plot(est~timestamp, data=metric2, type="l",
 dev.off()
 
 # PAIR 3: Bumpus/Kyle
-pair.1.3 <- DATA[c(9,24)] # Bumpus/Kyle
-FIT.pair.1.3 <- FIT.1[c(3,8)]
-metric3 <- distances(pair.1.3, FIT.pair.1.3)
+pair3 <- DATA[c(9,24)] # Bumpus/Kyle
+FIT.pair3 <- FIT.1[c(3,8)]
+metric3 <- distances(pair3, FIT.pair3)
 png(file = "metrics.pair.1.3.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -969,9 +928,9 @@ plot(est~timestamp, data=metric3, type="l",
 dev.off()
 
 # PAIR 4: Elaine/Little Rick
-pair.1.4 <- DATA[c(15,27)] # Elaine/Little Rick
-FIT.pair.1.4 <- FIT.1[c(6,9)]
-metric4 <- distances(pair.1.4, FIT.pair.1.4)
+pair4 <- DATA[c(15,27)] # Elaine/Little Rick
+FIT.pair4<- FIT.1[c(6,9)]
+metric4 <- distances(pair4, FIT.pair4)
 png(file = "metrics.pair.1.4.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -984,9 +943,9 @@ plot(est~timestamp, data=metric4, type="l",
 dev.off()
 
 # PAIR 5: Bumpus/Makao
-pair.1.5 <- DATA[c(9,29)]
-FIT.pair.1.5 <- FIT.1[c(3,10)]
-metric5 <- distances(pair.1.5, FIT.pair.1.5)
+pair5<- DATA[c(9,29)]
+FIT.pair5 <- FIT.1[c(3,10)]
+metric5 <- distances(pair5, FIT.pair5)
 png(file = "metrics.pair.1.5.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -999,9 +958,9 @@ plot(est~timestamp, data=metric5, type="l",
 dev.off()
 
 # PAIR 6: Bumpus/Puji
-pair.1.6 <- DATA[c(9,36)]
-FIT.pair.1.6 <- FIT.1[c(3,11)]
-metric6 <- distances(pair.1.6, FIT.pair.1.6)
+pair6 <- DATA[c(9,36)]
+FIT.pair6 <- FIT.1[c(3,11)]
+metric6 <- distances(pair6, FIT.pair6)
 png(file = "metrics.pair.1.6.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -1014,9 +973,9 @@ plot(est~timestamp, data=metric6, type="l",
 dev.off()
 
 # PAIR 7: Elaine/Rodolfo
-pair.1.7 <- DATA[c(15,38)]
-FIT.pair.1.7 <- FIT.1[c(6,12)]
-metric7 <- distances(pair.1.7, FIT.pair.1.7)
+pair7 <- DATA[c(15,38)]
+FIT.pair7 <- FIT.1[c(6,12)]
+metric7 <- distances(pair7, FIT.pair7)
 png(file = "metrics.pair.1.7.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -1028,12 +987,11 @@ plot(est~timestamp, data=metric7, type="l",
      main = "Pair 7: Elaine/Rodolfo (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
-## SITE 2
-# below 1 (closer)
+## SITE 2: below 1 (closer)
 # PAIR 8: Annie/Larry
-pair.2.1 <- DATA[c(2,25)]
-FIT.pair.2.1 <- FIT.2[c(1,4)]
-metric8 <- distances(pair.2.1, FIT.pair.2.1)
+pair8 <- DATA[c(2,25)]
+FIT.pair8 <- FIT.2[c(1,4)]
+metric8 <- distances(pair8, FIT.pair8)
 png(file = "metrics.pair.2.1.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -1046,9 +1004,9 @@ plot(est~timestamp, data=metric8, type="l",
 dev.off()
 
 # PAIR 9: Larry/Reid
-pair.2.2 <- DATA[c(25,37)]
-FIT.pair.2.2 <- FIT.2[c(4,6)]
-metric9 <- distances(pair.2.2, FIT.pair.2.2)
+pair9 <- DATA[c(25,37)]
+FIT.pair9 <- FIT.2[c(4,6)]
+metric9 <- distances(pair9, FIT.pair9)
 png(file = "metrics.pair.2.2.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -1061,9 +1019,9 @@ plot(est~timestamp, data=metric9, type="l",
 dev.off()
 
 # PAIR 10: Margaret/Thomas
-pair.2.3 <- DATA[c(30,42)]
-FIT.pair.2.3 <- FIT.2[c(5,7)]
-metric10 <- distances(pair.2.3, FIT.pair.2.3)
+pair10 <- DATA[c(30,42)]
+FIT.pair10 <- FIT.2[c(5,7)]
+metric10 <- distances(pair10, FIT.pair10)
 png(file = "metrics.pair.2.3.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -1076,9 +1034,9 @@ plot(est~timestamp, data=metric10, type="l",
 dev.off()
 
 # PAIR 11: Reid/Thomas
-pair.2.4 <- DATA[c(37,42)]
-FIT.pair.2.4 <- FIT.2[c(6,7)]
-metric11 <- distances(pair.2.4, FIT.pair.2.4)
+pair11<- DATA[c(37,42)]
+FIT.pair11 <- FIT.2[c(6,7)]
+metric11 <- distances(pair11, FIT.pair11)
 png(file = "metrics.pair.2.4.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -1090,12 +1048,11 @@ plot(est~timestamp, data=metric11, type="l",
      main = "Pair 11: Reid/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
 
-# SITE 3
-# below 1 (closer)
+# SITE 3: below 1 (closer)
 # PAIR 12: Maria/Sheron
-pair.3.1 <- DATA[c(31,41)]
-FIT.pair.3.1 <- FIT.3[c(3,4)]
-metric12 <- distances(pair.3.1, FIT.pair.3.1)
+pair12 <- DATA[c(31,41)]
+FIT.pair12 <- FIT.3[c(3,4)]
+metric12 <- distances(pair12, FIT.pair12)
 png(file = "metrics.pair.3.1.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
@@ -1114,8 +1071,124 @@ dev.off()
 #DATA.proximity.2 <- DATA.proximity.2[!duplicated(DATA.proximity.2[,c(1,2)]),]
 #DATA.proximity.3 <- DATA.proximity.3[!duplicated(DATA.proximity.3[,c(1,2)]),]
 
-####################
+################## WORKFLOW VIA NOONAN
+#Extract some test individuals and do some data carpentry
+Elaine <- DATA$Elaine #data$Elaine
+Christoffer <- DATA$Christoffer # data$Christoffer
+plot(list(Elaine, Christoffer), col = c("red", "blue"))
+El <- data.frame(timestamp = round_date(Elaine$timestamp, "20 minutes") ,
+                 E.x = Elaine$longitude,
+                 E.y = Elaine$latitude)
+Chris <- data.frame(timestamp = round_date(Christoffer$timestamp, "20 minutes"),
+                    C.x = Christoffer$longitude,
+                    C.y = Christoffer$latitude)
+test <- merge(El, Chris)
+test <- test[, c(1,2,4,3,5)]
+test <- test[!duplicated(test$timestamp),]
+#Create corrData object.
+cdAnteater <- as.corrData(test)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater <- findPrts(cdAnteater, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater <- corrMove(cdAnteater, prtsAnteater)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater)
+title("Elaine and Christoffer")
+###########################
 
+# Create table that has 3 columns to compare time and space ie. at Time x where was anteater_A and anteater_B
+# Column 1: Time that spans first GPS time point to last GPS time point
+# Column 2: anteater_A location ie. GPS coordinate
+# Column 3: anteater_B location ie. GPS coordinate
+# refer to whiteboard photo for this visualization
+  # FIND THE TIME STAMPS OF PAIR INDIVIDUALS (ie. Column 1: Time)
+  # PREDICT THE LOCATION OF THE PAIR INDIVIDUALS (filling in Column 2 and 3)
+
+## PREP PROXIMITY RESULTS FOR CORRMOVE ANALYSIS for SITE 1 ----
+Bumpus <- DATA$Bumpus
+Christoffer <- DATA$Christoffer
+Elaine <- DATA$Elaine
+Kyle <- DATA$Kyle
+Little_rick <- DATA$`Little Rick`
+Makao <- DATA$Makao
+Puji <- DATA$Puji
+Rodolfo <- DATA$Rodolfo
+
+Bumpus.corr <- data.frame(timestamp = round_date(Bumpus$timestamp, "20 minutes"),
+                          Bumpus.x = Bumpus$longitude,
+                          Bumpus.y = Bumpus$latitude)
+Christoffer.corr <- data.frame(timestamp = round_date(Christoffer$timestamp, "20 minutes"),
+                               Christoffer.x = Christoffer$longitude,
+                               Christoffer.y = Christoffer$latitude)
+Elaine.corr <- data.frame(timestamp = round_date(Elaine$timestamp, "20 minutes"),
+                          Elaine.x = Elaine$longitude,
+                          Elaine.y = Elaine$latitude)
+Kyle.corr <- data.frame(timestamp = round_date(Kyle$timestamp, "20 minutes"),
+                        Kyle.x = Kyle$longitude,
+                        Kyle.y = Kyle$latitude)
+Little_rick.corr <- data.frame(timestamp = round_date(Little_rickr$timestamp, "20 minutes"),
+                               Little_rick.x = Little_rick$longitude,
+                               Little_rick.y = Little_rick$latitude)
+Makao.corr <- data.frame(timestamp = round_date(Makao$timestamp, "20 minutes"),
+                         Makao.x = Makao$longitude,
+                         Makao.y = Makao$latitude)
+Puji.corr <- data.frame(timestamp = round_date(Puji$timestamp, "20 minutes"),
+                        Puji.x = Puji$longitude,
+                        Puji.y = Puji$latitude)
+Rodolfo.corr <- data.frame(timestamp = round_date(Rodolfo$timestamp, "20 minutes"),
+                           Rodolfo.x = Rodolfo$longitude,
+                           Rodolfo.y = Rodolfo$latitude)
+
+## PREP PROXIMITY RESULTS FOR CORRMOVE ANALYSIS for SITE 2 ----
+Annie <- DATA$Annie
+Larry <- DATA$`Larry 267`
+Margaret <- DATA$Margaret
+Reid <- DATA$Reid
+Thomas <- DATA$Thomas
+
+Annie.corr <- data.frame(timestamp = round_date(Annie$timestamp, "20 minutes"),
+                         Annie.x = Annie$longitude,
+                         Annie.y = Annie$latitude)
+Larry.corr <- data.frame(timestamp = round_date(Larry$timestamp, "20 minutes"),
+                         Larry.x = Larry$longitude,
+                         Larry.y = Larry$latitude)
+Margaret.corr <- data.frame(timestamp = round_date(Margaret$timestamp, "20 minutes"),
+                            Margaret.x = Margaret$longitude,
+                            Margaret.y = Margaret$latitude)
+Reid.corr <- data.frame(timestamp = round_date(Reid$timestamp, "20 minutes"),
+                        Reid.x = Reid$longitude,
+                        Reid.y = Reid$latitude)
+Thomas.corr <- data.frame(timestamp = round_date(Thomas$timestamp, "20 minutes"),
+                          Thomas.x = Thomas$longitude,
+                          Thomas.y = Thomas$latitude)
+
+## PREP PROXIMITY RESULTS FOR CORRMOVE ANALYSIS for SITE 3 ----
+Maria <- DATA$Maria
+Sheron <- DATA$Sheron
+
+Maria.corr <- data.frame(timestamp = round_date(Maria$timestamp, "20 minutes"),
+                         Maria.x = Maria$longitude,
+                         Maria.y = Maria$latitude)
+Sheron.corr <- data.frame(timestamp = round_date(Sheron$timestamp, "20 minutes"),
+                          Sheron.x = Sheron$longitude,
+                          Sheron.y = Sheron$latitude)
+
+
+## SITE 1: above 1 (further apart)
+# PAIR 1: Christoffer/Kyle (1.1)
+plot(list(Christoffer, Kyle), col = c("blue3","lightblue1"),
+     main = "Pair 1: Christoffer/Kyle (Site 1)")
+Christoffer.corr <- data.frame(timestamp = round_date(Christoffer$timestamp, "20 minutes"),
+                               Christoffer.x = Christoffer$longitude,
+                               Christoffer.y = Christoffer$latitude)
+Kyle.corr <- data.frame(timestamp = round_date(Kyle$timestamp, "20 minutes"),
+                          Kyle.x = Kyle$longitude,
+                          Kyle.y = Kyle$latitude)
+test.pair1 <- merge(Christoffer.corr, Kyle.corr)
+test.pair1 <- test[, c(1,2,4,3,5)]
+test.pair1 <- test[!duplicated(test.pair1$timestamp),]
+
+#################### REQUIRED ANOTHER WORKFLOW/WORKAROUND
 # Create table that has 3 columns to compare time and space ie. at Time x where was anteater_A and anteater_B
 # Column 1: Time that spans first GPS time point to last GPS time point
 # Column 2: anteater_A location ie. GPS coordinate
@@ -1140,27 +1213,6 @@ predict.Makao <- predict(DATA[[14]], CTMM=FIT.ALL[[14]], t = anteater.time)
 predict.Puji <- predict(DATA[[16]], CTMM=FIT.ALL[[16]], t = anteater.time)
 predict.Rodolfo <- predict(DATA[[18]], CTMM=FIT.ALL[[18]], t = anteater.time)
 # [[#]] indicates the animal number
-
-saveRDS(object = predict.Alexander, file = "predict.Alexander.RDS")
-saveRDS(object = predict.Bumpus, file = "predict.Bumpus.RDS")
-saveRDS(object = predict.Christoffer, file = "predict.Christoffer.RDS")
-saveRDS(object = predict.Elaine, file = "predict.Elaine.RDS")
-saveRDS(object = predict.Kyle, file = "predict.Kyle.RDS")
-saveRDS(object = predict.LittleRick, file = "predict.LittleRick.RDS")
-saveRDS(object = predict.Makao, file = "predict.Makao.RDS")
-saveRDS(object = predict.Puji, file = "predict.Puji.RDS")
-saveRDS(object = predict.Rodolfo, file = "predict.Rodolfo.RDS")
-
-predict.Alexander <- readRDS("predict.Alexander.RDS")
-predict.Bumpus <- readRDS("predict.Bumpus.RDS")
-predict.Christoffer <- readRDS("predict.Christoffer.RDS")
-predict.Elaine <- readRDS("predict.Elaine.RDS")
-predict.Kyle <- readRDS("predict.Kyle.RDS")
-predict.LittleRick <- readRDS("predict.LittleRick.RDS")
-predict.Makao <- readRDS("predict.Makao.RDS")
-predict.Puji <- readRDS("predict.Puji.RDS")
-predict.Rodolfo <- readRDS("predict.Rodolfo.RDS")
-
 ##########################
 
 ### CORRELATIVE MOVEMENT ----
@@ -1176,104 +1228,169 @@ predict.Rodolfo <- readRDS("predict.Rodolfo.RDS")
 # getIC() function not working -> from CompR -> CompR package installed
 # Error related to duplicate timestamps?
 
-##################
-#Extract some test individuals and do some data carpentry
-Elaine <- DATA$Elaine #data$Elaine
-Christoffer <- DATA$Christoffer # data$Christoffer
-plot(list(Elaine, Christoffer), col = c("red", "blue"))
-El <- data.frame(timestamp = round_date(Elaine$timestamp, "20 minutes") ,
-                 E.x = Elaine$longitude,
-                 E.y = Elaine$latitude)
-Chris <- data.frame(timestamp = round_date(Christoffer$timestamp, "20 minutes"),
-                    S.x = Christoffer$longitude,
-                    S.y = Christoffer$latitude)
-test <- merge(El, Chris)
-test <- test[, c(1,2,4,3,5)]
-test <- test[!duplicated(test$timestamp),]
+### CORRELATIVE MOVEMENT SITE 1 ----
+## Site 1: above 1 (further apart)
+
+# PAIR 1: Christoffer/Kyle (1.1)
 #Create corrData object.
-cdAnteater <- as.corrData(test)
+cdAnteater.pair1 <- as.corrData(test.pair1)
 #Estimate the partition points for the khulan data, with W=25
-prtsAnteater <- findPrts(cdAnteater, W=5, IC = 2)
+prtsAnteater.pair1 <- findPrts(cdAnteater.pair1, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
-cmAnteater <- corrMove(cdAnteater, prtsAnteater)
+cmAnteater.pair1 <- corrMove(cdAnteater.pair1, prtsAnteater.pair1)
 #3-panel plot of the MCIs over time
-plot.corrMove(cmAnteater)
-title("Elaine and Christoffer")
+plot.corrMove(cmAnteater.pair1)
+title("Pair 1: Christoffer/Kyle (Site 1)")
 
-###########################
+## Site 1: below 1 (closer together)
 
-
-# ### CORRELATIVE MOVEMENT (above) -----
-# pair 1a: elaine/alexander
-
-Elaine <- DATA$Elaine #data$Elaine
-Christoffer <- DATA$Christoffer # data$Christoffer
-plot(list(Elaine, Christoffer), col = c("red", "blue"))
-El <- data.frame(timestamp = round_date(Elaine$timestamp, "20 minutes") ,
-                 E.x = Elaine$longitude,
-                 E.y = Elaine$latitude)
-Chris <- data.frame(timestamp = round_date(Christoffer$timestamp, "20 minutes"),
-                    S.x = Christoffer$longitude,
-                    S.y = Christoffer$latitude)
-test <- merge(El, Chris)
-test <- test[, c(1,2,4,3,5)]
-test <- test[!duplicated(test$timestamp),]
+# PAIR 2: Christoffer/Elaine (1.2)
 #Create corrData object.
-cdAnteater <- as.corrData(test)
+cdAnteater.pair2 <- as.corrData(test.pair2)
 #Estimate the partition points for the khulan data, with W=25
-prtsAnteater <- findPrts(cdAnteater, W=5, IC = 2)
+prtsAnteater.pair2 <- findPrts(cdAnteater.pair2, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
-cmAnteater <- corrMove(cdAnteater, prtsAnteater)
+cmAnteater.pair2 <- corrMove(cdAnteater.pair2, prtsAnteater.pair2)
 #3-panel plot of the MCIs over time
-plot.corrMove(cmAnteater)
-title("Elaine and Christoffer")
+plot.corrMove(cmAnteater.pair2)
+title("PAIR 2: Christoffer/Elaine (Site 1)")
 
-
-
-# pair 2a: kyle/christoffer
-plot(list(Kyle, Christoffer), col = c("red", "blue"))
-Ky <- data.frame(timestamp = round_date(Kyle$timestamp, "20 minutes") ,
-                 E.x = Elaine$longitude,
-                 E.y = Elaine$latitude)
-Chris <- data.frame(timestamp = round_date(Christoffer$timestamp, "20 minutes"),
-                    S.x = Christoffer$longitude,
-                    S.y = Christoffer$latitude)
-test.pair2a <- merge(Ky, Chris)
-test.pair2a <- test[, c(1,2,4,3,5)]
-test.pair2a <- test[!duplicated(test.pair2a$timestamp),]
+# PAIR 3: Bumpus/Kyle (1.3)
 #Create corrData object.
-cdAnteater.pair2a <- as.corrData(test)
+cdAnteater.pair3 <- as.corrData(test.pair3)
 #Estimate the partition points for the khulan data, with W=25
-prtsAnteater.pair2a <- findPrts(cdAnteater.pair2a, W=5, IC = 2)
+prtsAnteater.pair3 <- findPrts(cdAnteater.pair3, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
-cmAnteater.pair2a <- corrMove(cdAnteater.pair2a, prtsAnteater.pair2a)
+cmAnteater.pair3 <- corrMove(cdAnteater.pair3, prtsAnteater.pair3)
 #3-panel plot of the MCIs over time
-plot.corrMove(cmAnteater.pair2a)
-title("Kyle and Christoffer")
+plot.corrMove(cmAnteater.pair3)
+title("PAIR 3: Bumpus/Kyle (Site 1)")
 
-# pair 3a: little rick/elaine
+# PAIR 4: Elaine/Little Rick (1.4)
+#Create corrData object.
+cdAnteater.pair4 <- as.corrData(test.pair4)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater.pair4 <- findPrts(cdAnteater.pair4, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater.pair4 <- corrMove(cdAnteater.pair4, prtsAnteater.pair4)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater.pair4)
+title("PAIR 4: Elaine/Little Rick (Site 1)")
 
-# pair 1b: elaine/christoffer
-# pair 2b: kyle/bumpus
-# pair 3b: kyle/elaine
-# pair 4b: little rick/elaine
-# pair 5b: makao/bumpus
-# pair 6b: puji/bumpus
-# pair 7b: puji/elaine
-# pair 8b: rodolfo/elaine
+# PAIR 5: Bumpus/Makao (1.5)
+#Create corrData object.
+cdAnteater.pair5 <- as.corrData(test.pair5)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater.pair5 <- findPrts(cdAnteater.pair5, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater.pair5 <- corrMove(cdAnteater.pair5, prtsAnteater.pair5)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater.pair5)
+title("PAIR 5: Bumpus/Makao (Site 1)")
+
+# PAIR 6: Bumpus/Puji (1.6)
+#Create corrData object.
+cdAnteater.pair6 <- as.corrData(test.pair6)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater.pair6 <- findPrts(cdAnteater.pair6, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater.pair6 <- corrMove(cdAnteater.pair6, prtsAnteater.pair6)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater.pair6)
+title("PAIR 6: Bumpus/Puji (Site 1)")
+
+
+# PAIR 7: Elaine/Rodolfo (1.7)
+#Create corrData object.
+cdAnteater.pair7 <- as.corrData(test.pair7)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater.pair7 <- findPrts(cdAnteater.pair7, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater.pair7 <- corrMove(cdAnteater.pair7, prtsAnteater.pair7)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater.pair7)
+title("PAIR 7: Elaine/Rodolfo (Site 1)")
+
+## CORRELATIVE MOVEMENT SITE 2 ----
+## SITE 2: below 1 (closer)
+# PAIR 8: Annie/Larry (2.1)
+#Create corrData object.
+cdAnteater.pair8 <- as.corrData(test.pair8)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater.pair8 <- findPrts(cdAnteater.pair8, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater.pair8 <- corrMove(cdAnteater.pair8, prtsAnteater.pair8)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater.pair8)
+title("PAIR 8: Annie/Larry (Site 2)")
+
+# PAIR 9: Larry/Reid (2.2)
+#Create corrData object.
+cdAnteater.pair9 <- as.corrData(test.pair9)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater.pair9 <- findPrts(cdAnteater.pair9, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater.pair9 <- corrMove(cdAnteater.pair9, prtsAnteater.pair9)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater.pair9)
+title("PAIR 9: Larry/Reid (Site 2)")
+
+# PAIR 10: Margaret/Thomas (2.3)
+#Create corrData object.
+cdAnteater.pair10 <- as.corrData(test.pair10)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater.pair10 <- findPrts(cdAnteater.pair10, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater.pair10 <- corrMove(cdAnteater.pair10, prtsAnteater.pair10)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater.pair10)
+title("PAIR 10: Margaret/Thomas (Site 2)")
+
+# PAIR 11: Reid/Thomas (2.4)
+#Create corrData object.
+cdAnteater.pair11 <- as.corrData(test.pair11)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater.pair11 <- findPrts(cdAnteater.pair11, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater.pair11 <- corrMove(cdAnteater.pair11, prtsAnteater.pair11)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater.pair11)
+title("PAIR 11: Reid/Thomas (Site 2)")
+
+## CORRELATIVE MOVEMENT SITE 3 ----
+## SITE 3: below 1 (closer)
+# PAIR 12: Maria/Sheron (3.1)
+#Create corrData object.
+cdAnteater.pair12 <- as.corrData(test.pair12)
+#Estimate the partition points for the khulan data, with W=25
+prtsAnteater.pair12 <- findPrts(cdAnteater.pair12, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cmAnteater.pair12 <- corrMove(cdAnteater.pair12, prtsAnteater.pair12)
+#3-panel plot of the MCIs over time
+plot.corrMove(cmAnteater.pair12)
+title("PAIR 12: Maria/Sheron (Site 3)")
 
 
 
+## SITE 1: above 1 (further apart)
+# PAIR 1: Christoffer/Kyle (1.1)
 
+## SITE 1: below 1 (closer together)
+# PAIR 2: Christoffer/Elaine (1.2)
+# PAIR 3: Bumpus/Kyle (1.3)
+# PAIR 4: Elaine/Little Rick (1.4)
+# PAIR 5: Bumpus/Makao (1.5)
+# PAIR 6: Bumpus/Puji (1.6)
+# PAIR 7: Elaine/Rodolfo (1.7)
 
-overlap(AKDE.1)
+## SITE 2: below 1 (closer)
+# PAIR 8: Annie/Larry (2.1)
+# PAIR 9: Larry/Reid  (2.2)
+# PAIR 10: Margaret/Thomas (2.3)
+# PAIR 11: Reid/Thomas (2.4)
 
-
-
-
-
-
-
+## SITE 3: below 1 (closer)
+# PAIR 12: Maria/Sheron (3.1)
 
 
 
