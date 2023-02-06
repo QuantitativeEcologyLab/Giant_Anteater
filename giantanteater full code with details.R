@@ -1336,8 +1336,10 @@ prtsAnteater.pair1 <- findPrts(cdAnteater.pair1, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair1 <- corrMove(cdAnteater.pair1, prtsAnteater.pair1)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair1.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair1)
 title("Pair 1: Christoffer/Kyle (Site 1)")
+dev.off()
 
 ## Site 1: below 1 (closer together)
 
@@ -1350,7 +1352,9 @@ prtsAnteater.pair2 <- findPrts(cdAnteater.pair2, W=5, IC = 2)
 cmAnteater.pair2 <- corrMove(cdAnteater.pair2, prtsAnteater.pair2)
 #3-panel plot of the MCIs over time
 plot.corrMove(cmAnteater.pair2)
+png(file = "corrmove_pair2.png", width = 6.86, height = 6, units = "in", res = 600)
 title("PAIR 2: Christoffer/Elaine (Site 1)")
+dev.off()
 
 # PAIR 3: Bumpus/Kyle (1.3)
 #Create corrData object.
@@ -1360,8 +1364,10 @@ prtsAnteater.pair3 <- findPrts(cdAnteater.pair3, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair3 <- corrMove(cdAnteater.pair3, prtsAnteater.pair3)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair3.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair3)
 title("PAIR 3: Bumpus/Kyle (Site 1)")
+dev.off()
 
 # PAIR 4: Elaine/Little Rick (1.4)
 #Create corrData object.
@@ -1371,8 +1377,10 @@ prtsAnteater.pair4 <- findPrts(cdAnteater.pair4, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair4 <- corrMove(cdAnteater.pair4, prtsAnteater.pair4)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair4.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair4)
 title("PAIR 4: Elaine/Little Rick (Site 1)")
+dev.off()
 
 # PAIR 5: Bumpus/Makao (1.5)
 #Create corrData object.
@@ -1382,8 +1390,10 @@ prtsAnteater.pair5 <- findPrts(cdAnteater.pair5, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair5 <- corrMove(cdAnteater.pair5, prtsAnteater.pair5)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair5.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair5)
 title("PAIR 5: Bumpus/Makao (Site 1)")
+dev.off()
 
 # PAIR 6: Bumpus/Puji (1.6)
 #Create corrData object.
@@ -1393,9 +1403,10 @@ prtsAnteater.pair6 <- findPrts(cdAnteater.pair6, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair6 <- corrMove(cdAnteater.pair6, prtsAnteater.pair6)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair6.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair6)
 title("PAIR 6: Bumpus/Puji (Site 1)")
-
+dev.off()
 
 # PAIR 7: Elaine/Rodolfo (1.7)
 #Create corrData object.
@@ -1405,8 +1416,10 @@ prtsAnteater.pair7 <- findPrts(cdAnteater.pair7, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair7 <- corrMove(cdAnteater.pair7, prtsAnteater.pair7)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair7.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair7)
 title("PAIR 7: Elaine/Rodolfo (Site 1)")
+dev.off()
 
 ## CORRELATIVE MOVEMENT SITE 2 ----
 ## SITE 2: below 1 (closer)
@@ -1418,8 +1431,10 @@ prtsAnteater.pair8 <- findPrts(cdAnteater.pair8, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair8 <- corrMove(cdAnteater.pair8, prtsAnteater.pair8)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair8.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair8)
 title("PAIR 8: Annie/Larry (Site 2)")
+dev.off()
 
 # PAIR 9: Larry/Reid (2.2)
 #Create corrData object.
@@ -1429,8 +1444,10 @@ prtsAnteater.pair9 <- findPrts(cdAnteater.pair9, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair9 <- corrMove(cdAnteater.pair9, prtsAnteater.pair9)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair9.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair9)
 title("PAIR 9: Larry/Reid (Site 2)")
+dev.off()
 
 # PAIR 10: Margaret/Thomas (2.3)
 #Create corrData object.
@@ -1440,8 +1457,10 @@ prtsAnteater.pair10 <- findPrts(cdAnteater.pair10, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair10 <- corrMove(cdAnteater.pair10, prtsAnteater.pair10)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair10.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair10)
 title("PAIR 10: Margaret/Thomas (Site 2)")
+dev.off()
 
 # PAIR 11: Reid/Thomas (2.4)
 #Create corrData object.
@@ -1451,8 +1470,10 @@ prtsAnteater.pair11 <- findPrts(cdAnteater.pair11, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair11 <- corrMove(cdAnteater.pair11, prtsAnteater.pair11)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair11.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair11)
 title("PAIR 11: Reid/Thomas (Site 2)")
+dev.off()
 
 ## CORRELATIVE MOVEMENT SITE 3 ----
 ## SITE 3: below 1 (closer)
@@ -1464,9 +1485,10 @@ prtsAnteater.pair12 <- findPrts(cdAnteater.pair12, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair12 <- corrMove(cdAnteater.pair12, prtsAnteater.pair12)
 #3-panel plot of the MCIs over time
+png(file = "corrmove_pair12.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair12)
 title("PAIR 12: Maria/Sheron (Site 3)")
-
+dev.off()
 
 
 ## SITE 1: above 1 (further apart)
