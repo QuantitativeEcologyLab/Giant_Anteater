@@ -1126,7 +1126,7 @@ Elaine.corr <- data.frame(timestamp = round_date(Elaine$timestamp, "20 minutes")
 Kyle.corr <- data.frame(timestamp = round_date(Kyle$timestamp, "20 minutes"),
                         Kyle.x = Kyle$longitude,
                         Kyle.y = Kyle$latitude)
-Little_rick.corr <- data.frame(timestamp = round_date(Little_rickr$timestamp, "20 minutes"),
+Little_rick.corr <- data.frame(timestamp = round_date(Little_rick$timestamp, "20 minutes"),
                                Little_rick.x = Little_rick$longitude,
                                Little_rick.y = Little_rick$latitude)
 Makao.corr <- data.frame(timestamp = round_date(Makao$timestamp, "20 minutes"),
@@ -1176,91 +1176,114 @@ Sheron.corr <- data.frame(timestamp = round_date(Sheron$timestamp, "20 minutes")
 
 ## SITE 1: above 1 (further apart)
 # PAIR 1: Christoffer/Kyle (1.1)
+png(file = "pair1.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Christoffer, Kyle), col = c("blue3","lightblue1"),
      main = "Pair 1: Christoffer/Kyle (Site 1)")
+dev.off()
 test.pair1 <- merge(Christoffer.corr, Kyle.corr)
-test.pair1 <- test[, c(1,2,4,3,5)]
-test.pair1 <- test[!duplicated(test.pair1$timestamp),]
+test.pair1 <- test.pair1[, c(1,2,4,3,5)]
+test.pair1 <- test.pair1[!duplicated(test.pair1$timestamp),]
 
 ## SITE 1: below 1 (closer together)
 # PAIR 2: Christoffer/Elaine (1.2)
+png(file = "pair2.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Christoffer, Elaine), col = c("blue3","red"),
      main = "PAIR 2: Christoffer/Elaine (Site 1)")
 test.pair2 <- merge(Christoffer.corr, Elaine.corr)
-test.pair2 <- test[, c(1,2,4,3,5)]
-test.pair2 <- test[!duplicated(test.pair2$timestamp),]
+test.pair2 <- test.pair2[, c(1,2,4,3,5)]
+test.pair2 <- test.pair2[!duplicated(test.pair2$timestamp),]
 
 # PAIR 3: Bumpus/Kyle (1.3)
+png(file = "pair3.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Bumpus, Kyle), col = c("red","lightblue1"),
      main = "PAIR 3: Bumpus/Kyle (Site 1)")
+dev.off()
 test.pair3 <- merge(Bumpus.corr, Kyle.corr)
-test.pair3 <- test[, c(1,2,4,3,5)]
-test.pair3 <- test[!duplicated(test.pair3$timestamp),]
+test.pair3 <- test.pair3[, c(1,2,4,3,5)]
+test.pair3 <- test.pair3[!duplicated(test.pair3$timestamp),]
 
 # PAIR 4: Elaine/Little Rick (1.4)
-plot(list(Elaine, Little_Rick), col = c("red","lightblue1"),
+png(file = "pair4.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(list(Elaine, Little_rick), col = c("red","lightblue1"),
      main = "PAIR 4: Elaine/Little Rick (Site 1)")
-test.pair4 <- merge(Elaine.corr, Little_Rick.corr)
-test.pair4 <- test[, c(1,2,4,3,5)]
-test.pair4 <- test[!duplicated(test.pair4$timestamp),]
+dev.off()
+test.pair4 <- merge(Elaine.corr, Little_rick.corr)
+test.pair4 <- test.pair4[, c(1,2,4,3,5)]
+test.pair4 <- test.pair4[!duplicated(test.pair4$timestamp),]
 
 # PAIR 5: Bumpus/Makao (1.5)
+png(file = "pair5.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Bumpus, Makao), col = c("red","red"),
      main = "PAIR 5: Bumpus/Makao (Site 1)")
+dev.off()
 test.pair5 <- merge(Bumpus.corr, Makao.corr)
-test.pair5 <- test[, c(1,2,4,3,5)]
-test.pair5 <- test[!duplicated(test.pair5$timestamp),]
+test.pair5 <- test.pair5[, c(1,2,4,3,5)]
+test.pair5 <- test.pair5[!duplicated(test.pair5$timestamp),]
 
 # PAIR 6: Bumpus/Puji (1.6)
+png(file = "pair6.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Bumpus, Puji), col = c("red","red"),
      main = "PAIR 6: Bumpus/Puji (Site 1)")
+dev.off()
 test.pair6 <- merge(Bumpus.corr, Puji.corr)
-test.pair6 <- test[, c(1,2,4,3,5)]
-test.pair6 <- test[!duplicated(test.pair6$timestamp),]
+test.pair6 <- test.pair6[, c(1,2,4,3,5)]
+test.pair6 <- test.pair6[!duplicated(test.pair6$timestamp),]
 
 # PAIR 7: Elaine/Rodolfo (1.7)
+png(file = "pair7.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Elaine, Rodolfo), col = c("red","blue3"),
      main = "PAIR 7: Elaine/Rodolfo (Site 1)")
+dev.off()
 test.pair7 <- merge(Elaine.corr, Rodolfo.corr)
-test.pair7 <- test[, c(1,2,4,3,5)]
-test.pair7 <- test[!duplicated(test.pair7$timestamp),]
+test.pair7 <- test.pair7[, c(1,2,4,3,5)]
+test.pair7 <- test.pair7[!duplicated(test.pair7$timestamp),]
 
 ## SITE 2: below 1 (closer)
 # PAIR 8: Annie/Larry (2.1)
+png(file = "pair8.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Annie, Larry), col = c("red","blue3"),
      main = "PAIR 8: Annie/Larry (Site 2)")
+dev.off()
 test.pair8 <- merge(Annie.corr, Larry.corr)
-test.pair8 <- test[, c(1,2,4,3,5)]
-test.pair8 <- test[!duplicated(test.pair8$timestamp),]
+test.pair8 <- test.pair8[, c(1,2,4,3,5)]
+test.pair8 <- test.pair8[!duplicated(test.pair8$timestamp),]
 
 # PAIR 9: Larry/Reid (2.2)
+png(file = "pair9.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Larry, Reid), col = c("blue3","lightblue1"),
      main = "PAIR 9: Larry/Reid (Site 2)")
+dev.off()
 test.pair9 <- merge(Larry.corr, Reid.corr)
-test.pair9 <- test[, c(1,2,4,3,5)]
-test.pair9 <- test[!duplicated(test.pair9$timestamp),]
+test.pair9 <- test.pair9[, c(1,2,4,3,5)]
+test.pair9 <- test.pair9[!duplicated(test.pair9$timestamp),]
 
 # PAIR 10: Margaret/Thomas (2.3)
+png(file = "pair10.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Margaret, Thomas), col = c("red","blue3"),
      main = "PAIR 10: Margaret/Thomas (Site 2)")
+dev.off()
 test.pair10 <- merge(Margaret.corr, Thomas.corr)
-test.pair10 <- test[, c(1,2,4,3,5)]
-test.pair10 <- test[!duplicated(test.pair10$timestamp),]
+test.pair10 <- test.pair10[, c(1,2,4,3,5)]
+test.pair10 <- test.pair10[!duplicated(test.pair10$timestamp),]
 
 # PAIR 11: Reid/Thomas (2.4)
+png(file = "pair11.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Reid, Thomas), col = c("lightblue1","blue3"),
      main = "PAIR 11: Reid/Thomas (Site 2)")
+dev.off()
 test.pair11 <- merge(Reid.corr, Thomas.corr)
-test.pair11 <- test[, c(1,2,4,3,5)]
-test.pair11 <- test[!duplicated(test.pair11$timestamp),]
+test.pair11 <- test.pair11[, c(1,2,4,3,5)]
+test.pair11 <- test.pair11[!duplicated(test.pair11$timestamp),]
 
 ## SITE 3: below 1 (closer)
 # PAIR 12: Maria/Sheron (3.1)
+png(file = "pair12.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Maria, Sheron), col = c("red","red"),
      main = "Maria/Sheron (Site 3)")
+dev.off()
 test.pair12 <- merge(Maria.corr, Sheron.corr)
-test.pair12<- test[, c(1,2,4,3,5)]
-test.pair12 <- test[!duplicated(test.pair12$timestamp),]
+test.pair12 <- test.pair12[, c(1,2,4,3,5)]
+test.pair12 <- test.pair12[!duplicated(test.pair12$timestamp),]
 
 #################### REQUIRED ANOTHER WORKFLOW/WORKAROUND
 # Create table that has 3 columns to compare time and space ie. at Time x where was anteater_A and anteater_B
