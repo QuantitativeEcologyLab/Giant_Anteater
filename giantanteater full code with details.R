@@ -107,6 +107,20 @@ AKDE.3 <- readRDS("AKDE.3.RDS")
 AKDE.3.male <- readRDS("AKDE.3.male.RDS")
 AKDE.3.female <- readRDS("AKDE.3.female.RDS")
 
+## LOAD SAVED CORRMOVE RESULTS (quick reference) ----
+cmAnteater.pair1 <- readRDS("cmAnteater.pair1.RDS")
+cmAnteater.pair2 <- readRDS("cmAnteater.pair2.RDS")
+cmAnteater.pair3 <- readRDS("cmAnteater.pair3.RDS")
+cmAnteater.pair4 <- readRDS("cmAnteater.pair4.RDS")
+cmAnteater.pair5 <- readRDS("cmAnteater.pair5.RDS")
+cmAnteater.pair6 <- readRDS("cmAnteater.pair6.RDS")
+cmAnteater.pair7 <- readRDS("cmAnteater.pair7.RDS")
+cmAnteater.pair8 <- readRDS("cmAnteater.pair8.RDS")
+cmAnteater.pair9 <- readRDS("cmAnteater.pair9.RDS")
+cmAnteater.pair10 <- readRDS("cmAnteater.pair10.RDS")
+cmAnteater.pair11 <- readRDS("cmAnteater.pair11.RDS")
+cmAnteater.pair12 <- readRDS("cmAnteater.pair12.RDS")
+
 ## META DATASET (quick reference) ----
 # Adding a meta dataset from a supplementary dataset
 METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteater_Results_Final.csv")
@@ -129,6 +143,49 @@ DATA.proximity.1 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed S
 DATA.proximity.2 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.2.csv")
 # Load Proximity Analysis results for SITE 3
 DATA.proximity.3 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.3.csv")
+
+# SUBSET PAIR DATA (quick reference) ----
+Bumpus <- DATA$Bumpus
+Christoffer <- DATA$Christoffer
+Elaine <- DATA$Elaine
+Kyle <- DATA$Kyle
+Little_rick <- DATA$`Little Rick`
+Makao <- DATA$Makao
+Puji <- DATA$Puji
+Rodolfo <- DATA$Rodolfo
+Annie <- DATA$Annie
+Larry <- DATA$`Larry 267`
+Margaret <- DATA$Margaret
+Reid <- DATA$Reid
+Thomas <- DATA$Thomas
+Maria <- DATA$Maria
+Sheron <- DATA$Sheron
+pair1 <- DATA[c(12,24)] # Christoffer/Kyle
+FIT.pair1 <- FIT.1[c(5,8)]
+pair2 <- DATA[c(12,15)] # Christoffer/Elaine
+FIT.pair2 <- FIT.1[c(5,6)]
+pair3 <- DATA[c(9,24)] # Bumpus/Kyle
+FIT.pair3 <- FIT.1[c(3,8)]
+pair4 <- DATA[c(15,27)] # Elaine/Little Rick
+FIT.pair4<- FIT.1[c(6,9)]
+pair5<- DATA[c(9,29)] # PAIR 5: Bumpus/Makao
+FIT.pair5 <- FIT.1[c(3,10)]
+pair6 <- DATA[c(9,36)] # Bumpus/Puji
+FIT.pair6 <- FIT.1[c(3,11)]
+pair7 <- DATA[c(15,38)] # Elaine/Rodolfo
+FIT.pair7 <- FIT.1[c(6,12)]
+pair8 <- DATA[c(2,25)] # Annie/Larry
+FIT.pair8 <- FIT.2[c(1,4)]
+pair9 <- DATA[c(25,37)] # Larry/Reid
+FIT.pair9 <- FIT.2[c(4,6)]
+pair10 <- DATA[c(30,42)] # Margaret/Thomas
+FIT.pair10 <- FIT.2[c(5,7)]
+pair11<- DATA[c(37,42)] # Reid/Thomas
+FIT.pair11 <- FIT.2[c(6,7)]
+pair12 <- DATA[c(31,41)] # Maria/Sheron
+FIT.pair12 <- FIT.3[c(3,4)]
+
+
 
 ### FIT MOVEMENT MODELS ----
 
@@ -466,7 +523,7 @@ DATA.pairwise.1.adult <- pairwise.1.df.A[which(pairwise.1.df.A$Age.B != "Subadul
 saveRDS(object = DATA.pairwise.1.adult, file = "DATA.pairwise.1.adult.RDS")
 DATA.pairwise.1.adult <- readRDS("DATA.pairwise.1.adult.RDS")
 
-# Plot pairwise sex comparison for SITE 1 ----
+# Plot pairwise sex comparison for SITE 1
 ## SITE 1 plot pairwise comparison (male and female)
 ggplot(data = DATA.pairwise.1, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
   geom_boxplot() +
@@ -572,7 +629,7 @@ saveRDS(object = DATA.pairwise.3, file = "DATA.pairwise.3.RDS")
 #DATA.pairwise.3 # to check if matrix is good, has all the correct columns, variables etc. ie. no NA values
 DATA.pairwise.3 <- readRDS("DATA.pairwise.3.RDS")
 
-# Plot pairwise sex comparison for SITE 3 ----
+# Plot pairwise sex comparison for SITE 3
 
 ## SITE 3 plot pairwise comparison (male and female)
 ggplot(data = DATA.pairwise.3, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
@@ -847,13 +904,11 @@ proximity.1.above1 <- DATA.proximity.1[which(DATA.proximity.1$proximity_low > 1)
 proximity.1.below1 <- DATA.proximity.1[which(DATA.proximity.1$proximity_high < 1),] # 6 pairs
 proximity.1.above1
 proximity.1.below1
-
 # SITE 2
 proximity.2.above1 <- DATA.proximity.2[which(DATA.proximity.2$proximity_low > 1),] # none
 proximity.2.below1 <- DATA.proximity.2[which(DATA.proximity.2$proximity_high < 1),] # 4 pairs
 proximity.2.above1
 proximity.2.below1
-
 # SITE 3
 proximity.3.above1 <- DATA.proximity.3[which(DATA.proximity.3$proximity_low > 1),] # none
 proximity.3.below1 <- DATA.proximity.3[which(DATA.proximity.3$proximity_high < 1),] # 1 pair
@@ -878,19 +933,22 @@ plot(log(est)~timestamp, data=metric, type="l") # type="l" changes the plot from
 # DATA = 1:43
 # FIT.1 = 1:12
 
+### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 1 ----
+
+
 # SITE 1 : above 1 (further apart)
 # PAIR 1: Christoffer/Kyle
-pair1 <- DATA[c(12,24)]
+pair1 <- DATA[c(12,24)] 
 FIT.pair1 <- FIT.1[c(5,8)]
 metric1 <- distances(pair1, FIT.pair1) # distance measurement and time between the pair
 names(metric1) 
-png(file = "metrics.pair1.1.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair1.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric1, type="l",
      main = "Log-scaled Pair 1: Christoffer/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.1.1.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair1.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric1, type="l",
      main = "Pair 1: Christoffer/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -901,13 +959,13 @@ dev.off()
 pair2 <- DATA[c(12,15)] # Christoffer/Elaine
 FIT.pair2 <- FIT.1[c(5,6)]
 metric2 <- distances(pair2, FIT.pair2) # distance measurement and time between the pair
-png(file = "metrics.pair.1.2.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair2.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric2, type="l",
      main = "Log-scaled Pair 2: Christoffer/Elaine (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.1.2.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair2.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric2, type="l",
      main = "Pair 2: Christoffer/Elaine (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -916,13 +974,13 @@ dev.off()
 pair3 <- DATA[c(9,24)] # Bumpus/Kyle
 FIT.pair3 <- FIT.1[c(3,8)]
 metric3 <- distances(pair3, FIT.pair3)
-png(file = "metrics.pair.1.3.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair3.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric3, type="l",
      main = "Log-scaled Pair 3: Bumpus/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.1.3.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair3.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric3, type="l",
      main = "Pair 3: Bumpus/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -931,135 +989,137 @@ dev.off()
 pair4 <- DATA[c(15,27)] # Elaine/Little Rick
 FIT.pair4<- FIT.1[c(6,9)]
 metric4 <- distances(pair4, FIT.pair4)
-png(file = "metrics.pair.1.4.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair4.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric4, type="l",
      main = "Log-scaled Pair 4: Elaine/Little Rick (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.1.4.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair4.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric4, type="l",
      main = "Pair 4: Elaine/Little Rick (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 5: Bumpus/Makao
-pair5<- DATA[c(9,29)]
+pair5<- DATA[c(9,29)] # PAIR 5: Bumpus/Makao
 FIT.pair5 <- FIT.1[c(3,10)]
 metric5 <- distances(pair5, FIT.pair5)
-png(file = "metrics.pair.1.5.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair5.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric5, type="l",
      main = "Log-scaled Pair 5: Bumpus/Makao (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.1.5.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair5.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric5, type="l",
      main = "Pair 5: Bumpus/Makao (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 6: Bumpus/Puji
-pair6 <- DATA[c(9,36)]
+pair6 <- DATA[c(9,36)] # Bumpus/Puji
 FIT.pair6 <- FIT.1[c(3,11)]
 metric6 <- distances(pair6, FIT.pair6)
-png(file = "metrics.pair.1.6.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair6.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric6, type="l",
      main = "Log-scaled Pair 6: Bumpus/Puji (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.1.6.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair6.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric6, type="l",
      main = "Pair 6: Bumpus/Puji (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 7: Elaine/Rodolfo
-pair7 <- DATA[c(15,38)]
+pair7 <- DATA[c(15,38)] # Elaine/Rodolfo
 FIT.pair7 <- FIT.1[c(6,12)]
 metric7 <- distances(pair7, FIT.pair7)
-png(file = "metrics.pair.1.7.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair7.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric7, type="l",
      main = "Log-scaled Pair 7: Elaine/Rodolfo (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.1.7.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair7.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric7, type="l",
      main = "Pair 7: Elaine/Rodolfo (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
+### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 2 ----
 ## SITE 2: below 1 (closer)
 # PAIR 8: Annie/Larry
-pair8 <- DATA[c(2,25)]
+pair8 <- DATA[c(2,25)] # Annie/Larry
 FIT.pair8 <- FIT.2[c(1,4)]
 metric8 <- distances(pair8, FIT.pair8)
-png(file = "metrics.pair.2.1.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair8.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric8, type="l",
      main = "Log-scaled Pair 8: Annie/Larry (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.2.1.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair8.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric8, type="l",
      main = "Pair 8: Annie/Larry (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 9: Larry/Reid
-pair9 <- DATA[c(25,37)]
+pair9 <- DATA[c(25,37)] # Larry/Reid
 FIT.pair9 <- FIT.2[c(4,6)]
 metric9 <- distances(pair9, FIT.pair9)
-png(file = "metrics.pair.2.2.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair9.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric9, type="l",
      main = "Log-scaled Pair 9: Larry/Reid (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.2.2.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair9.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric9, type="l",
      main = "Pair 8: Larry/Reid (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 10: Margaret/Thomas
-pair10 <- DATA[c(30,42)]
+pair10 <- DATA[c(30,42)] # Margaret/Thomas
 FIT.pair10 <- FIT.2[c(5,7)]
 metric10 <- distances(pair10, FIT.pair10)
-png(file = "metrics.pair.2.3.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair10.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric10, type="l",
      main = "Log-scaled Pair 10: Margaret/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.2.3.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair10.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric10, type="l",
      main = "Pair 10: Margaret/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 11: Reid/Thomas
-pair11<- DATA[c(37,42)]
+pair11<- DATA[c(37,42)] # Reid/Thomas
 FIT.pair11 <- FIT.2[c(6,7)]
 metric11 <- distances(pair11, FIT.pair11)
-png(file = "metrics.pair.2.4.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair11.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric11, type="l",
      main = "Log-scaled Pair 11: Reid/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.2.4.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair11.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric11, type="l",
      main = "Pair 11: Reid/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
 
+### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 3 ----
 # SITE 3: below 1 (closer)
 # PAIR 12: Maria/Sheron
-pair12 <- DATA[c(31,41)]
+pair12 <- DATA[c(31,41)] # Maria/Sheron
 FIT.pair12 <- FIT.3[c(3,4)]
 metric12 <- distances(pair12, FIT.pair12)
-png(file = "metrics.pair.3.1.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair12.log.png", width = 6.86, height = 6, units = "in", res = 600)
 # x = time
 # y = measurement metric
 plot(log(est)~timestamp, data=metric12, type="l",
      main = "Log-scaled Pair 12: Maria/Sheron (Site 3)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair.3.1.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "metrics.pair12.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=metric12, type="l",
      main = "Pair 12: Maria/Sheron (Site 3)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1071,7 +1131,7 @@ dev.off()
 #DATA.proximity.2 <- DATA.proximity.2[!duplicated(DATA.proximity.2[,c(1,2)]),]
 #DATA.proximity.3 <- DATA.proximity.3[!duplicated(DATA.proximity.3[,c(1,2)]),]
 
-################## WORKFLOW VIA NOONAN
+################## WORKFLOW VIA NOONAN ----
 #Extract some test individuals and do some data carpentry
 Elaine <- DATA$Elaine #data$Elaine
 Christoffer <- DATA$Christoffer # data$Christoffer
@@ -1173,7 +1233,7 @@ Sheron.corr <- data.frame(timestamp = round_date(Sheron$timestamp, "20 minutes")
                           Sheron.x = Sheron$longitude,
                           Sheron.y = Sheron$latitude)
 
-
+### PLOT GPS TRACKING DATA OF IDENTIFIED PAIRS ----
 ## SITE 1: above 1 (further apart)
 # PAIR 1: Christoffer/Kyle (1.1)
 png(file = "pair1.png", width = 6.86, height = 6, units = "in", res = 600)
@@ -1213,7 +1273,7 @@ test.pair4 <- test.pair4[!duplicated(test.pair4$timestamp),]
 
 # PAIR 5: Bumpus/Makao (1.5)
 png(file = "pair5.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Bumpus, Makao), col = c("red","red"),
+plot(list(Bumpus, Makao), col = c("red","purple"),
      main = "PAIR 5: Bumpus/Makao (Site 1)")
 dev.off()
 test.pair5 <- merge(Bumpus.corr, Makao.corr)
@@ -1222,7 +1282,7 @@ test.pair5 <- test.pair5[!duplicated(test.pair5$timestamp),]
 
 # PAIR 6: Bumpus/Puji (1.6)
 png(file = "pair6.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Bumpus, Puji), col = c("red","red"),
+plot(list(Bumpus, Puji), col = c("red","purple"),
      main = "PAIR 6: Bumpus/Puji (Site 1)")
 dev.off()
 test.pair6 <- merge(Bumpus.corr, Puji.corr)
@@ -1278,14 +1338,14 @@ test.pair11 <- test.pair11[!duplicated(test.pair11$timestamp),]
 ## SITE 3: below 1 (closer)
 # PAIR 12: Maria/Sheron (3.1)
 png(file = "pair12.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Maria, Sheron), col = c("red","red"),
+plot(list(Maria, Sheron), col = c("red","purple"),
      main = "Maria/Sheron (Site 3)")
 dev.off()
 test.pair12 <- merge(Maria.corr, Sheron.corr)
 test.pair12 <- test.pair12[, c(1,2,4,3,5)]
 test.pair12 <- test.pair12[!duplicated(test.pair12$timestamp),]
 
-#################### REQUIRED ANOTHER WORKFLOW/WORKAROUND
+#################### REQUIRED ANOTHER WORKFLOW/WORKAROUND -----
 # Create table that has 3 columns to compare time and space ie. at Time x where was anteater_A and anteater_B
 # Column 1: Time that spans first GPS time point to last GPS time point
 # Column 2: anteater_A location ie. GPS coordinate
@@ -1335,6 +1395,8 @@ cdAnteater.pair1 <- as.corrData(test.pair1)
 prtsAnteater.pair1 <- findPrts(cdAnteater.pair1, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair1 <- corrMove(cdAnteater.pair1, prtsAnteater.pair1)
+saveRDS(object = cmAnteater.pair1, file = "cmAnteater.pair1.RDS")
+cmAnteater.pair1 <- readRDS("cmAnteater.pair1.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair1.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair1)
@@ -1350,6 +1412,8 @@ cdAnteater.pair2 <- as.corrData(test.pair2)
 prtsAnteater.pair2 <- findPrts(cdAnteater.pair2, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair2 <- corrMove(cdAnteater.pair2, prtsAnteater.pair2)
+saveRDS(object = cmAnteater.pair2, file = "cmAnteater.pair2.RDS")
+cmAnteater.pair2 <- readRDS("cmAnteater.pair2.RDS")
 #3-panel plot of the MCIs over time
 plot.corrMove(cmAnteater.pair2)
 png(file = "corrmove_pair2.png", width = 6.86, height = 6, units = "in", res = 600)
@@ -1363,6 +1427,8 @@ cdAnteater.pair3 <- as.corrData(test.pair3)
 prtsAnteater.pair3 <- findPrts(cdAnteater.pair3, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair3 <- corrMove(cdAnteater.pair3, prtsAnteater.pair3)
+saveRDS(object = cmAnteater.pair3, file = "cmAnteater.pair3.RDS")
+cmAnteater.pair3 <- readRDS("cmAnteater.pair3.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair3.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair3)
@@ -1376,6 +1442,8 @@ cdAnteater.pair4 <- as.corrData(test.pair4)
 prtsAnteater.pair4 <- findPrts(cdAnteater.pair4, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair4 <- corrMove(cdAnteater.pair4, prtsAnteater.pair4)
+saveRDS(object = cmAnteater.pair4, file = "cmAnteater.pair4.RDS")
+cmAnteater.pair4 <- readRDS("cmAnteater.pair4.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair4.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair4)
@@ -1389,6 +1457,8 @@ cdAnteater.pair5 <- as.corrData(test.pair5)
 prtsAnteater.pair5 <- findPrts(cdAnteater.pair5, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair5 <- corrMove(cdAnteater.pair5, prtsAnteater.pair5)
+saveRDS(object = cmAnteater.pair5, file = "cmAnteater.pair5.RDS")
+cmAnteater.pair5 <- readRDS("cmAnteater.pair5.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair5.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair5)
@@ -1402,6 +1472,8 @@ cdAnteater.pair6 <- as.corrData(test.pair6)
 prtsAnteater.pair6 <- findPrts(cdAnteater.pair6, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair6 <- corrMove(cdAnteater.pair6, prtsAnteater.pair6)
+saveRDS(object = cmAnteater.pair6, file = "cmAnteater.pair6.RDS")
+cmAnteater.pair6 <- readRDS("cmAnteater.pair6.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair6.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair6)
@@ -1415,6 +1487,8 @@ cdAnteater.pair7 <- as.corrData(test.pair7)
 prtsAnteater.pair7 <- findPrts(cdAnteater.pair7, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair7 <- corrMove(cdAnteater.pair7, prtsAnteater.pair7)
+saveRDS(object = cmAnteater.pair7, file = "cmAnteater.pair7.RDS")
+cmAnteater.pair7 <- readRDS("cmAnteater.pair7.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair7.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair7)
@@ -1430,6 +1504,8 @@ cdAnteater.pair8 <- as.corrData(test.pair8)
 prtsAnteater.pair8 <- findPrts(cdAnteater.pair8, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair8 <- corrMove(cdAnteater.pair8, prtsAnteater.pair8)
+saveRDS(object = cmAnteater.pair8, file = "cmAnteater.pair8.RDS")
+cmAnteater.pair8 <- readRDS("cmAnteater.pair8.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair8.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair8)
@@ -1443,6 +1519,8 @@ cdAnteater.pair9 <- as.corrData(test.pair9)
 prtsAnteater.pair9 <- findPrts(cdAnteater.pair9, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair9 <- corrMove(cdAnteater.pair9, prtsAnteater.pair9)
+saveRDS(object = cmAnteater.pair9, file = "cmAnteater.pair9.RDS")
+cmAnteater.pair9 <- readRDS("cmAnteater.pair9.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair9.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair9)
@@ -1456,6 +1534,8 @@ cdAnteater.pair10 <- as.corrData(test.pair10)
 prtsAnteater.pair10 <- findPrts(cdAnteater.pair10, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair10 <- corrMove(cdAnteater.pair10, prtsAnteater.pair10)
+saveRDS(object = cmAnteater.pair10, file = "cmAnteater.pair10.RDS")
+cmAnteater.pair10 <- readRDS("cmAnteater.pair10.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair10.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair10)
@@ -1469,6 +1549,8 @@ cdAnteater.pair11 <- as.corrData(test.pair11)
 prtsAnteater.pair11 <- findPrts(cdAnteater.pair11, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair11 <- corrMove(cdAnteater.pair11, prtsAnteater.pair11)
+saveRDS(object = cmAnteater.pair11, file = "cmAnteater.pair11.RDS")
+cmAnteater.pair11 <- readRDS("cmAnteater.pair11.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair11.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair11)
@@ -1484,6 +1566,8 @@ cdAnteater.pair12 <- as.corrData(test.pair12)
 prtsAnteater.pair12 <- findPrts(cdAnteater.pair12, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair12 <- corrMove(cdAnteater.pair12, prtsAnteater.pair12)
+saveRDS(object = cmAnteater.pair12, file = "cmAnteater.pair12.RDS")
+cmAnteater.pair12 <- readRDS("cmAnteater.pair12.RDS")
 #3-panel plot of the MCIs over time
 png(file = "corrmove_pair12.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair12)
