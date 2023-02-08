@@ -644,9 +644,13 @@ ggsave(filename = "pairwise.3.png", plot = last_plot(), device = NULL,
 # use bind_rows() to join the 2 pairwise comparison and then plot it
 
 # male and female
+
+
 DATA.pairwise <- bind_rows(DATA.pairwise.1, DATA.pairwise.2, DATA.pairwise.3)
 # Adult only
 DATA.pairwise.adult <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult, DATA.pairwise.3)
+DATA.pairwise12 <- bind_rows(DATA.pairwise.1, DATA.pairwise.2)
+DATA.pairwise.adult12 <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult)
 
 # NOTE: pairwise coding comprehension from Stefano -> re-coded the pipe version
 
@@ -674,7 +678,11 @@ ggsave(filename = "pairwise.combined.adult.png", plot = last_plot(), device = NU
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 #ERROR ############# Quick test to see if differences are significant -------
+# for site 1, 2, 3
 test.sex <- glmer(overlap ~ sex_comparison + (1|Sex.A), family = "binomial", data = DATA.pairwise.adult)
+summary(test.sex)
+# for site 1 & 2
+test.sex.12 <- glmer(overlap ~ sex_comparison + (1|Sex.A), family = "binomial", data = DATA.pairwise.adult12)
 summary(test.sex)
 # male-female, pvalue = 0.1716
 # male-male, pvalue = 1.00
@@ -857,10 +865,10 @@ DATA.proximity.3 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed S
 
 ## Plot Proximity Analysis between sex
 FIG.proximity.3 <- 
-  ggplot(data = DATA.pairwise.3, aes(y = proximity_est, x = overlap, col = sex_comparison)) +
+  ggplot(data = DATA.proximity.3, aes(y = proximity_est, x = overlap, col = sex_comparison)) +
   geom_hline(yintercept = 1, col = "grey70", linetype = "dashed") +
   geom_point(size = 0.5) +
-  geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), size = 0.3) +
+  geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), linewidth = 0.3) +
   scale_y_log10(expand = c(0,0.1)) +
   scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
   scale_color_manual(values = c("#d1495b", "#009E73", "#0072B2"),
@@ -1128,7 +1136,6 @@ png(file = "metrics.pair12.png", width = 6.86, height = 6, units = "in", res = 6
 plot(est~timestamp, data=metric12, type="l",
      main = "Pair 12: Maria/Sheron (Site 3)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair12.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=metric12, type="l",
      main = "Log-scaled Pair 12: Maria/Sheron (Site 3)") # type="l" changes the plot from dots to a line
 dev.off()
