@@ -9,14 +9,15 @@ install.packages("knitr")
 install.packages("ctmm")
 install.packages("tidyr")
 install.packages("dplyr") # for %>% and other function, join functions
+install.packages("tibble")
 install.packages("ggplot2")
 install.packages("lme4")
-install.packages("tibble")
 install.packages("lubridate") # for round_date() for corrMove
+install.packages("usethis")
 
-# Using github packages that are not on CRAN i.e. cannot be used via install.packages()
+# Using github packages that are not on CRAN i.e. cannot be used via install.packages(), check for updates
 devtools::install_github("r-lib/devtools", force = TRUE)
-devtools::install_github("ctmm-initiative/ctmm")
+devtools::install_github("ctmm-initiative/ctmm", force = TRUE)
 devtools::install_github("jmcalabrese/corrMove", force = TRUE)
 
 ### LOAD PACKAGES ###
@@ -28,10 +29,11 @@ library("ctmm")
 library("ggplot2")
 library("dplyr") # for mutate
 library("tidyr") # for pivot_longer()
+library("tibble")
 library("lme4") # test to see if differences are significant using glmer()
 library("corrMove")
-library("tibble")
 library("lubridate") # for round_date() for corrMove
+library("usethis")
 
 ### DATA PREPARATION ----
 
@@ -121,6 +123,9 @@ DATA.pairwise.1.adult <- readRDS("DATA.pairwise.1.adult.RDS")
 DATA.pairwise.2 <- readRDS("DATA.pairwise.2.RDS")
 DATA.pairwise.2.adult <- readRDS("DATA.pairwise.2.adult.RDS")
 DATA.pairwise.3 <- readRDS("DATA.pairwise.3.RDS")
+# Site 1, 2, 3 combined
+DATA.pairwise <- bind_rows(DATA.pairwise.1, DATA.pairwise.2, DATA.pairwise.3)
+DATA.pairwise.adult <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult, DATA.pairwise.3)
 
 ## LOAD ALL PROXIMITY DATA ANALYSIS RESULTS (quick reference) ----
 # Load Proximity Analysis results for SITE 1
@@ -404,7 +409,7 @@ saveRDS(object = AKDE.2.male, file = "AKDE.2.male.RDS")
 # Load saved AKDE aligned UDs
 AKDE.2.male <- readRDS("AKDE.2.male.RDS")
 overlap(AKDE.2.male)
-png(file = "Overlap.2.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "Overlap.2.male.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.2.male.adult, col.DF = "dodgerblue", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 2: male)")
 dev.off()
@@ -529,6 +534,9 @@ ggplot(data = DATA.pairwise.1, mapping = aes(x = sex_comparison, y = overlap, fi
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 1: male and female)") +
   theme_bw() +
+  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+                    labels = c("Female - Female", "Male - Female", "Male - Male"),
+                    name = "") +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.1.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
@@ -540,6 +548,9 @@ ggplot(data = DATA.pairwise.1.adult, mapping = aes(x = sex_comparison, y = overl
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 1: adult only)") +
   theme_bw() +
+  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+                    labels = c("Female - Female", "Male - Female", "Male - Male"),
+                    name = "") +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.1.adult.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
@@ -585,6 +596,9 @@ ggplot(data = DATA.pairwise.2, mapping = aes(x = sex_comparison, y = overlap, fi
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 2: male and female)") +
   theme_bw() +
+  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+                    labels = c("Female - Female", "Male - Female", "Male - Male"),
+                    name = "") +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.2.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
@@ -596,6 +610,9 @@ ggplot(data = DATA.pairwise.2.adult, mapping = aes(x = sex_comparison, y = overl
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 2: adult only)") +
   theme_bw() +
+  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+                    labels = c("Female - Female", "Male - Female", "Male - Male"),
+                    name = "") +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.2.adult.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
@@ -636,6 +653,9 @@ ggplot(data = DATA.pairwise.3, mapping = aes(x = sex_comparison, y = overlap, fi
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 3: male and female)") +
   theme_bw() +
+  scale_fill_manual(values = c("#d1495b", "#009E73"),
+                    labels = c("Female - Female", "Male - Female"),
+                    name = "") +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.3.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
@@ -644,13 +664,10 @@ ggsave(filename = "pairwise.3.png", plot = last_plot(), device = NULL,
 # use bind_rows() to join the 2 pairwise comparison and then plot it
 
 # male and female
-
-
 DATA.pairwise <- bind_rows(DATA.pairwise.1, DATA.pairwise.2, DATA.pairwise.3)
 # Adult only
 DATA.pairwise.adult <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult, DATA.pairwise.3)
-DATA.pairwise12 <- bind_rows(DATA.pairwise.1, DATA.pairwise.2)
-DATA.pairwise.adult12 <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult)
+
 
 # NOTE: pairwise coding comprehension from Stefano -> re-coded the pipe version
 
@@ -662,6 +679,9 @@ ggplot(data = DATA.pairwise, mapping = aes(x = sex_comparison, y = overlap, fill
   xlab("Sex") +
   ggtitle("Anteater overlap pairwise comparison of sexes (SITE 1-3: male and female)") +
   theme_bw() +
+  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+                    labels = c("Female - Female", "Male - Female", "Male - Male"),
+                    name = "") +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.combined.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
@@ -673,6 +693,9 @@ ggplot(data = DATA.pairwise.adult, mapping = aes(x = sex_comparison, y = overlap
   xlab("Sex") +
   ggtitle("Anteater overlap pairwise comparison of sexes (SITE 1-3: adult only)") +
   theme_bw() +
+  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+                    labels = c("Female - Female", "Male - Female", "Male - Male"),
+                    name = "") +
   scale_y_continuous(limits = c(0,1))
 ggsave(filename = "pairwise.combined.adult.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
@@ -681,7 +704,11 @@ ggsave(filename = "pairwise.combined.adult.png", plot = last_plot(), device = NU
 # for site 1, 2, 3
 test.sex <- glmer(overlap ~ sex_comparison + (1|Sex.A), family = "binomial", data = DATA.pairwise.adult)
 summary(test.sex)
+###
 # for site 1 & 2
+DATA.pairwise12 <- bind_rows(DATA.pairwise.1, DATA.pairwise.2)
+DATA.pairwise.adult12 <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult)
+# site 1 and 2 only
 test.sex.12 <- glmer(overlap ~ sex_comparison + (1|Sex.A), family = "binomial", data = DATA.pairwise.adult12)
 summary(test.sex)
 # male-female, pvalue = 0.1716
@@ -736,14 +763,14 @@ FIG.proximity.1 <-
   ggplot(data = DATA.proximity.1, aes(y = proximity_est, x = overlap, col = sex_comparison)) +
   geom_hline(yintercept = 1, col = "grey70", linetype = "dashed") +
   geom_point(size = 0.5) +
-  geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), size = 0.3) +
+  geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), linewidth = 0.3) +
   scale_y_log10(expand = c(0,0.1)) +
   scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
   scale_color_manual(values = c("#d1495b", "#009E73", "#0072B2"),
                      labels = c("Female - Female", "Male - Female", "Male - Male"),
                      name = "") +
   ylab("Proximity ratio") +
-  xlab("Home range overlap") +
+  xlab("Home range overlap (Site 1)") +
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -802,14 +829,14 @@ FIG.proximity.2 <-
   ggplot(data = DATA.proximity.2, aes(y = proximity_est, x = overlap, col = sex_comparison)) +
   geom_hline(yintercept = 1, col = "grey70", linetype = "dashed") +
   geom_point(size = 0.5) +
-  geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), size = 0.3) +
+  geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), linewidth = 0.3) +
   scale_y_log10(expand = c(0,0.1)) +
   scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
   scale_color_manual(values = c("#d1495b", "#009E73", "#0072B2"),
                      labels = c("Female - Female", "Male - Female", "Male - Male"),
                      name = "") +
   ylab("Proximity ratio") +
-  xlab("Home range overlap") +
+  xlab("Home range overlap (Site 2)") +
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -819,7 +846,7 @@ FIG.proximity.2 <-
         axis.text.x  = element_text(size=6, family = "sans"),
         legend.text = element_text(size=6, family = "sans", face = "bold"),
         plot.title = element_text(hjust = -0.05, size = 12, family = "sans", face = "bold"),
-        legend.position = c(0.8, 0.8),
+        legend.position = c(0.8, 0.25),
         legend.key=element_blank(),
         panel.background = element_rect(fill = "transparent"),
         legend.background = element_rect(fill = "transparent"),
@@ -827,7 +854,7 @@ FIG.proximity.2 <-
         plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
 FIG.proximity.2
 ggsave(FIG.proximity.2,
-       width = 3.23, height = 2, units = "in",
+       width = 3.23, height = 2.25, units = "in",
        dpi = 600,
        bg = "transparent",
        file="Proximity_site_2.png")
@@ -875,7 +902,7 @@ FIG.proximity.3 <-
                      labels = c("Female - Female", "Male - Female", "Male - Male"),
                      name = "") +
   ylab("Proximity ratio") +
-  xlab("Home range overlap") +
+  xlab("Home range overlap (Site 3)") +
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
@@ -891,7 +918,6 @@ FIG.proximity.3 <-
         legend.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = NA),
         plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
-
 ggsave(FIG.proximity.3,
        width = 3.23, height = 2, units = "in",
        dpi = 600,
@@ -1265,6 +1291,7 @@ test.pair1 <- test.pair1[!duplicated(test.pair1$timestamp),]
 png(file = "pair2.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Christoffer, Elaine), col = c("blue3","red"),
      main = "PAIR 2: Christoffer/Elaine (Site 1)")
+dev.off()
 test.pair2 <- merge(Christoffer.corr, Elaine.corr)
 test.pair2 <- test.pair2[, c(1,2,4,3,5)]
 test.pair2 <- test.pair2[!duplicated(test.pair2$timestamp),]
