@@ -58,33 +58,10 @@ METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies -
 METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
                                                        true = 'Larry 267',
                                                        false = ID))
-metadatatest <- METADATA[1:3]
 
 ## TEMPERATURE DATA
 TEMPDATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/anteater_annotated.csv")
-testdata <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/anteater_annotated.csv")
-names(testdata)[19] <- "temperature"
-testtel <- as.telemetry("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/anteater_annotated.csv")
-
-
-Bumpus2 <- c(DATA$Bumpus, testtel$Bumpus)
-Christoffer <- DATA$Christoffer
-Elaine <- DATA$Elaine
-Kyle <- DATA$Kyle
-Little_rick <- DATA$`Little Rick`
-Makao <- DATA$Makao
-Puji <- DATA$Puji
-Rodolfo <- DATA$Rodolfo
-Annie <- DATA$Annie
-Larry <- DATA$`Larry 267`
-Margaret <- DATA$Margaret
-Reid <- DATA$Reid
-Thomas <- DATA$Thomas
-Maria <- DATA$Maria
-Sheron <- DATA$Sheron
-
-
-
+names(TEMPDATA)[19] <- "temperature"
 
 ### SUBSET DATA FOR INDIVIDUALS IN SPECIFIC SITES  ----
 # Subset data to isolate individuals found only in specific sites
@@ -162,7 +139,7 @@ DATA.proximity.2 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed S
 # Load Proximity Analysis results for SITE 3
 DATA.proximity.3 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.3.csv")
 
-# SUBSET PAIR DATA (quick reference) ----
+# SUBSET INDIVIDUAL AND PAIR DATA (quick reference) ----
 Bumpus <- DATA$Bumpus
 Christoffer <- DATA$Christoffer
 Elaine <- DATA$Elaine
@@ -203,6 +180,9 @@ FIT.pair11 <- FIT.2[c(6,7)]
 pair12 <- DATA[c(31,41)] # Maria/Sheron
 FIT.pair12 <- FIT.3[c(3,4)]
 
+### PROXIMITY DISTANCE METRIC MEASUREMENTS OF IDENTIFIED PAIRS (quick reference) ----
+distance <- readRDS("distance.RDS")
+
 ## LOAD SAVED CORRMOVE RESULTS (quick reference) ----
 cmAnteater.pair1 <- readRDS("cmAnteater.pair1.RDS")
 cmAnteater.pair2 <- readRDS("cmAnteater.pair2.RDS")
@@ -220,7 +200,6 @@ cmAnteater.pair12 <- readRDS("cmAnteater.pair12.RDS")
 ### FIT MOVEMENT MODELS ----
 
 ## FITTING MODELS FOR SITE 1 ----
-
 # SITE 1 - MALE AND FEMALE (n=12)
 GUESS.1 <- lapply(site.1[1:12], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.1 <- lapply(1:12, function(i) ctmm.select(site.1[[i]],GUESS.1[[i]]) )
@@ -258,7 +237,6 @@ FIT.1.female <- readRDS("FIT.1.female.RDS")
 overlap(FIT.1.female)
 
 ## FITTING MODELS FOR SITE 2 ----
-
 # SITE 2 - MALE AND FEMALE (n=7)
 GUESS.2 <- lapply(site.2[1:7], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.2 <- lapply(1:7, function(i) ctmm.select(site.2[[i]],GUESS.2[[i]]) )
@@ -296,7 +274,6 @@ FIT.2.female <- readRDS("FIT.2.female.RDS")
 overlap(FIT.2.female)
 
 ## FITTING MODELS FOR SITE 3 ----
-
 # SITE 3 - MALE AND FEMALE (n=4)
 GUESS.3 <- lapply(site.3[1:4], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.3 <- lapply(1:4, function(i) ctmm.select(site.3[[i]],GUESS.3[[i]]) )
@@ -464,7 +441,6 @@ title("aKDE Overlap (Site 2: female)")
 dev.off()
 
 ## AKDE OVERLAP SITE 3 ----
-
 # SITE 3 - MALE AND FEMALE (n=4)
 AKDE.3 <- akde(site.3[1:4],FIT.3)
 saveRDS(object = AKDE.3, file = "AKDE.3.RDS")
@@ -503,7 +479,6 @@ title("aKDE Overlap (Site 3: female)")
 dev.off()
 
 ### META DATASET (for pairwise analysis) ## ----
-
 # Adding a meta dataset from a supplementary dataset
 METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteater_Results_Final.csv")
 
@@ -672,7 +647,6 @@ saveRDS(object = DATA.pairwise.3, file = "DATA.pairwise.3.RDS")
 DATA.pairwise.3 <- readRDS("DATA.pairwise.3.RDS")
 
 # Plot pairwise sex comparison for SITE 3
-
 ## SITE 3 plot pairwise comparison (male and female)
 ggplot(data = DATA.pairwise.3, mapping = aes(x = sex_comparison, y = overlap, fill = sex_comparison)) + 
   geom_boxplot() +
@@ -694,7 +668,6 @@ ggsave(filename = "pairwise.3.png", plot = last_plot(), device = NULL,
 DATA.pairwise <- bind_rows(DATA.pairwise.1, DATA.pairwise.2, DATA.pairwise.3)
 # Adult only
 DATA.pairwise.adult <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult, DATA.pairwise.3)
-
 
 # NOTE: pairwise coding comprehension from Stefano -> re-coded the pipe version
 
@@ -747,11 +720,9 @@ summary(test.sex)
 # refer to help("proximity")
 
 ################## 
-
 # combining the fitted models for both sites so you don't have to do the proximity looping test twice 
 # FIT.ALL <- c(FIT.1, FIT.2)
 # ***** splitting analysis -> doing each site one at a time ********
-
 ################
 ### PROXIMITY ANALYSIS BETWEEN SEX FOR SITE 1 ----
 
@@ -960,18 +931,12 @@ ggsave(FIG.proximity.3,
 # SITE 1
 proximity.1.above1 <- DATA.proximity.1[which(DATA.proximity.1$proximity_low > 1),] # 1 pair
 proximity.1.below1 <- DATA.proximity.1[which(DATA.proximity.1$proximity_high < 1),] # 6 pairs
-proximity.1.above1
-proximity.1.below1
 # SITE 2
 proximity.2.above1 <- DATA.proximity.2[which(DATA.proximity.2$proximity_low > 1),] # none
 proximity.2.below1 <- DATA.proximity.2[which(DATA.proximity.2$proximity_high < 1),] # 4 pairs
-proximity.2.above1
-proximity.2.below1
 # SITE 3
 proximity.3.above1 <- DATA.proximity.3[which(DATA.proximity.3$proximity_low > 1),] # none
 proximity.3.below1 <- DATA.proximity.3[which(DATA.proximity.3$proximity_high < 1),] # 1 pair
-proximity.3.above1
-proximity.3.below1
 
 #### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS ----
 # distances() function further estimates the instantaneous distances between individuals
@@ -987,11 +952,11 @@ plot(log(est)~timestamp, data=metric, type="l") # type="l" changes the plot from
 # Error in distances(), requires a model for a single animal (in this case, 
 # .-. fit model for 2 animals for the vector length to match (ie. 2 individuals in a pair))
 
-# REMINDER: DATA is full data set, FIT is a subset. .-. range differs
+# REMINDER: 'DATA' is full data set, 'FIT' is a subset. .-. range differs
 # DATA = 1:43
 # FIT.1 = 1:12
 
-### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS (quick reference) ----
+### PROXIMITY DISTANCE METRIC MEASUREMENTS OF IDENTIFIED PAIRS (quick reference) ----
 # takes a few minutes to go through them all
 distance1 <- distances(pair1, FIT.pair1)
 distance2 <- distances(pair2, FIT.pair2)
@@ -1005,12 +970,10 @@ distance9 <- distances(pair9, FIT.pair9)
 distance10 <- distances(pair10, FIT.pair10)
 distance11 <- distances(pair11, FIT.pair11)
 distance12 <- distances(pair12, FIT.pair12)
-
 distance <- c(distance1, distance2, distance3, distance4, distance5, distance6, distance7,
             distance8, distance9, distance10, distance11, distance12)
 saveRDS(object = distance, file = "distance.RDS")
 distance <- readRDS("distance.RDS")
-
 
 ### PROXIMITY DISTANCE METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 1 ----
 ## SITE 1 : above 1 (further apart)
@@ -1446,20 +1409,20 @@ predict.Makao <- predict(DATA[[14]], CTMM=FIT.ALL[[14]], t = anteater.time)
 predict.Puji <- predict(DATA[[16]], CTMM=FIT.ALL[[16]], t = anteater.time)
 predict.Rodolfo <- predict(DATA[[18]], CTMM=FIT.ALL[[18]], t = anteater.time)
 # [[#]] indicates the animal number
-##########################
-
-### CORRELATIVE MOVEMENT ----
-## DETERMINE IF THE MOVEMENTS ARE CORRELATED
-#Help files available for main functions in corrMove
-#?as.corrData
-#?findPrts
-#?corrMove
-#?plot.corrMove
 
 #findPrts() #Error with -> Estimate the partition points for the anteater data
 #Error with dICold > dICnew
 # getIC() function not working -> from CompR -> CompR package installed
 # Error related to duplicate timestamps?
+##########################
+
+### CORRELATIVE MOVEMENT ----
+# DETERMINE IF THE MOVEMENTS ARE CORRELATED BETWEEN INDIVIDUALS IN THE PAIR
+#Help files available for main functions in corrMove
+#?as.corrData
+#?findPrts
+#?corrMove
+#?plot.corrMove
 
 ### CORRELATIVE MOVEMENT SITE 1 ----
 ## Site 1: above 1 (further apart)
