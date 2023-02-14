@@ -51,6 +51,41 @@ anteater.DATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Stud
 #Error in strptime(xx, f, tz = tz) : input string is too long .-. used code below
 DATA <- as.telemetry("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteaters_NoOutliers (original data).csv")
 
+## META DATASET (quick reference) ----
+# Adding a meta dataset from a supplementary dataset
+METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteater_Results_Final.csv")
+# Must correct a mismatch entry for 'Larry 267' and 'Larry' between dataset and meta dataset
+METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
+                                                       true = 'Larry 267',
+                                                       false = ID))
+metadatatest <- METADATA[1:3]
+
+## TEMPERATURE DATA
+TEMPDATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/anteater_annotated.csv")
+testdata <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/anteater_annotated.csv")
+names(testdata)[19] <- "temperature"
+testtel <- as.telemetry("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/anteater_annotated.csv")
+
+
+Bumpus2 <- c(DATA$Bumpus, testtel$Bumpus)
+Christoffer <- DATA$Christoffer
+Elaine <- DATA$Elaine
+Kyle <- DATA$Kyle
+Little_rick <- DATA$`Little Rick`
+Makao <- DATA$Makao
+Puji <- DATA$Puji
+Rodolfo <- DATA$Rodolfo
+Annie <- DATA$Annie
+Larry <- DATA$`Larry 267`
+Margaret <- DATA$Margaret
+Reid <- DATA$Reid
+Thomas <- DATA$Thomas
+Maria <- DATA$Maria
+Sheron <- DATA$Sheron
+
+
+
+
 ### SUBSET DATA FOR INDIVIDUALS IN SPECIFIC SITES  ----
 # Subset data to isolate individuals found only in specific sites
 # general syntax: subsetname <- originaldataset[c(listofelements)] 
@@ -108,14 +143,6 @@ AKDE.2.female <- readRDS("AKDE.2.female.RDS")
 AKDE.3 <- readRDS("AKDE.3.RDS")
 AKDE.3.male <- readRDS("AKDE.3.male.RDS")
 AKDE.3.female <- readRDS("AKDE.3.female.RDS")
-
-## META DATASET (quick reference) ----
-# Adding a meta dataset from a supplementary dataset
-METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteater_Results_Final.csv")
-# Must correct a mismatch entry for 'Larry 267' and 'Larry' between dataset and meta dataset
-METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
-                                                       true = 'Larry 267',
-                                                       false = ID))
 
 ## LOAD ALL PAIRWISE DATA ANALYSIS RESULTS (quick reference) ----
 DATA.pairwise.1 <- readRDS("DATA.pairwise.1.RDS")
@@ -966,34 +993,40 @@ plot(log(est)~timestamp, data=metric, type="l") # type="l" changes the plot from
 
 ### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS (quick reference) ----
 # takes a few minutes to go through them all
-metric1 <- distances(pair1, FIT.pair1)
-metric2 <- distances(pair2, FIT.pair2)
-metric3 <- distances(pair3, FIT.pair3)
-metric4 <- distances(pair4, FIT.pair4)
-metric5 <- distances(pair5, FIT.pair5)
-metric6 <- distances(pair6, FIT.pair6)
-metric7 <- distances(pair7, FIT.pair7)
-metric8 <- distances(pair8, FIT.pair8)
-metric9 <- distances(pair9, FIT.pair9)
-metric10 <- distances(pair10, FIT.pair10)
-metric11 <- distances(pair11, FIT.pair11)
-metric12 <- distances(pair12, FIT.pair12)
+distance1 <- distances(pair1, FIT.pair1)
+distance2 <- distances(pair2, FIT.pair2)
+distance3 <- distances(pair3, FIT.pair3)
+distance4 <- distances(pair4, FIT.pair4)
+distance5 <- distances(pair5, FIT.pair5)
+distance6 <- distances(pair6, FIT.pair6)
+distance7 <- distances(pair7, FIT.pair7)
+distance8 <- distances(pair8, FIT.pair8)
+distance9 <- distances(pair9, FIT.pair9)
+distance10 <- distances(pair10, FIT.pair10)
+distance11 <- distances(pair11, FIT.pair11)
+distance12 <- distances(pair12, FIT.pair12)
 
-### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 1 ----
+distance <- c(distance1, distance2, distance3, distance4, distance5, distance6, distance7,
+            distance8, distance9, distance10, distance11, distance12)
+saveRDS(object = distance, file = "distance.RDS")
+distance <- readRDS("distance.RDS")
+
+
+### PROXIMITY DISTANCE METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 1 ----
 ## SITE 1 : above 1 (further apart)
 # PAIR 1: Christoffer/Kyle
 pair1 <- DATA[c(12,24)] 
 FIT.pair1 <- FIT.1[c(5,8)]
-metric1 <- distances(pair1, FIT.pair1) # distance measurement and time between the pair
-names(metric1) 
+distance1 <- distances(pair1, FIT.pair1) # distance measurement and time between the pair
+names(distance1) 
 # x = time
 # y = measurement metric
-png(file = "metrics.pair1.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric1, type="l",
+png(file = "distance.pair1.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance1, type="l",
      main = "Pair 1: Christoffer/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair1.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric1, type="l",
+png(file = "distance.pair1.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance1, type="l",
      main = "Log-scaled Pair 1: Christoffer/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
@@ -1001,168 +1034,168 @@ dev.off()
 # PAIR 2: Christoffer/Elaine
 pair2 <- DATA[c(12,15)] # Christoffer/Elaine
 FIT.pair2 <- FIT.1[c(5,6)]
-metric2 <- distances(pair2, FIT.pair2) # distance measurement and time between the pair
+distance2 <- distances(pair2, FIT.pair2) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair2.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric2, type="l",
+png(file = "distance.pair2.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance2, type="l",
      main = "Pair 2: Christoffer/Elaine (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair2.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric2, type="l",
+png(file = "distance.pair2.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance2, type="l",
      main = "Log-scaled Pair 2: Christoffer/Elaine (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 3: Bumpus/Kyle
 pair3 <- DATA[c(9,24)] # Bumpus/Kyle
 FIT.pair3 <- FIT.1[c(3,8)]
-metric3 <- distances(pair3, FIT.pair3) # distance measurement and time between the pair
+distance3 <- distances(pair3, FIT.pair3) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair3.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric3, type="l",
+png(file = "distance.pair3.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance3, type="l",
      main = "Pair 3: Bumpus/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair3.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric3, type="l",
+png(file = "distance.pair3.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance3, type="l",
      main = "Log-scaled Pair 3: Bumpus/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 4: Elaine/Little Rick
 pair4 <- DATA[c(15,27)] # Elaine/Little Rick
 FIT.pair4<- FIT.1[c(6,9)]
-metric4 <- distances(pair4, FIT.pair4) # distance measurement and time between the pair
+distance4 <- distances(pair4, FIT.pair4) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair4.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric4, type="l",
+png(file = "distance.pair4.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance4, type="l",
      main = "Pair 4: Elaine/Little Rick (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair4.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric4, type="l",
+png(file = "distance.pair4.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance4, type="l",
      main = "Log-scaled Pair 4: Elaine/Little Rick (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 5: Bumpus/Makao
 pair5<- DATA[c(9,29)] # PAIR 5: Bumpus/Makao
 FIT.pair5 <- FIT.1[c(3,10)]
-metric5 <- distances(pair5, FIT.pair5) # distance measurement and time between the pair
+distance5 <- distances(pair5, FIT.pair5) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair5.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric5, type="l",
+png(file = "distance.pair5.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance5, type="l",
      main = "Pair 5: Bumpus/Makao (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair5.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric5, type="l",
+png(file = "distance.pair5.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance5, type="l",
      main = "Log-scaled Pair 5: Bumpus/Makao (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 6: Bumpus/Puji
 pair6 <- DATA[c(9,36)] # Bumpus/Puji
 FIT.pair6 <- FIT.1[c(3,11)]
-metric6 <- distances(pair6, FIT.pair6) # distance measurement and time between the pair
+distance6 <- distances(pair6, FIT.pair6) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair6.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric6, type="l",
+png(file = "distance.pair6.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance6, type="l",
      main = "Pair 6: Bumpus/Puji (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair6.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric6, type="l",
+png(file = "distance.pair6.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance6, type="l",
      main = "Log-scaled Pair 6: Bumpus/Puji (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 7: Elaine/Rodolfo
 pair7 <- DATA[c(15,38)] # Elaine/Rodolfo
 FIT.pair7 <- FIT.1[c(6,12)]
-metric7 <- distances(pair7, FIT.pair7) # distance measurement and time between the pair
+distance7 <- distances(pair7, FIT.pair7) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair7.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric7, type="l",
+png(file = "distance.pair7.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance7, type="l",
      main = "Pair 7: Elaine/Rodolfo (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair7.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric7, type="l",
+png(file = "distance.pair7.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance7, type="l",
      main = "Log-scaled Pair 7: Elaine/Rodolfo (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
 
-### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 2 ----
+### PROXIMITY DISTANCE METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 2 ----
 ## SITE 2: below 1 (closer)
 # PAIR 8: Annie/Larry
 pair8 <- DATA[c(2,25)] # Annie/Larry
 FIT.pair8 <- FIT.2[c(1,4)]
-metric8 <- distances(pair8, FIT.pair8) # distance measurement and time between the pair
+distance8 <- distances(pair8, FIT.pair8) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair8.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric8, type="l",
+png(file = "distance.pair8.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance8, type="l",
      main = "Pair 8: Annie/Larry (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair8.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric8, type="l",
+png(file = "distance.pair8.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance8, type="l",
      main = "Log-scaled Pair 8: Annie/Larry (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 9: Larry/Reid
 pair9 <- DATA[c(25,37)] # Larry/Reid
 FIT.pair9 <- FIT.2[c(4,6)]
-metric9 <- distances(pair9, FIT.pair9) # distance measurement and time between the pair
+distance9 <- distances(pair9, FIT.pair9) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair9.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric9, type="l",
+png(file = "distance.pair9.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance9, type="l",
      main = "Pair 8: Larry/Reid (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair9.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric9, type="l",
+png(file = "distance.pair9.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance9, type="l",
      main = "Log-scaled Pair 9: Larry/Reid (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 10: Margaret/Thomas
 pair10 <- DATA[c(30,42)] # Margaret/Thomas
 FIT.pair10 <- FIT.2[c(5,7)]
-metric10 <- distances(pair10, FIT.pair10) # distance measurement and time between the pair
+distance10 <- distances(pair10, FIT.pair10) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair10.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric10, type="l",
+png(file = "distance.pair10.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance10, type="l",
      main = "Pair 10: Margaret/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair10.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric10, type="l",
+png(file = "distance.pair10.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance10, type="l",
      main = "Log-scaled Pair 10: Margaret/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
 
 # PAIR 11: Reid/Thomas
 pair11<- DATA[c(37,42)] # Reid/Thomas
 FIT.pair11 <- FIT.2[c(6,7)]
-metric11 <- distances(pair11, FIT.pair11) # distance measurement and time between the pair
+distance11 <- distances(pair11, FIT.pair11) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair11.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric11, type="l",
+png(file = "distance.pair11.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance11, type="l",
      main = "Pair 11: Reid/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "metrics.pair11.log.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(log(est)~timestamp, data=metric11, type="l",
+png(file = "distance.pair11.log.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(log(est)~timestamp, data=distance11, type="l",
      main = "Log-scaled Pair 11: Reid/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
 
-### PROXIMITY METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 3 ----
+### PROXIMITY DISTANCE METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 3 ----
 # SITE 3: below 1 (closer)
 # PAIR 12: Maria/Sheron
 pair12 <- DATA[c(31,41)] # Maria/Sheron
 FIT.pair12 <- FIT.3[c(3,4)]
-metric12 <- distances(pair12, FIT.pair12) # distance measurement and time between the pair
+distance12 <- distances(pair12, FIT.pair12) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "metrics.pair12.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(est~timestamp, data=metric12, type="l",
+png(file = "distance.pair12.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(est~timestamp, data=distance12, type="l",
      main = "Pair 12: Maria/Sheron (Site 3)") # type="l" changes the plot from dots to a line
 dev.off()
-plot(log(est)~timestamp, data=metric12, type="l",
+plot(log(est)~timestamp, data=distance12, type="l",
      main = "Log-scaled Pair 12: Maria/Sheron (Site 3)") # type="l" changes the plot from dots to a line
 dev.off()
 
