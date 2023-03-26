@@ -14,53 +14,58 @@ install.packages("ggplot2")
 install.packages("lme4")
 install.packages("lubridate") # for round_date() for corrMove
 install.packages("usethis")
+install.packages("moveVis")
 
 # Using github packages that are not on CRAN i.e. cannot be used via install.packages(), check for updates
 devtools::install_github("r-lib/devtools", force = TRUE)
 devtools::install_github("ctmm-initiative/ctmm", force = TRUE)
 devtools::install_github("jmcalabrese/corrMove", force = TRUE)
+devtools::install_github("16EAGLE/moveVis") # development version
 
 ### LOAD PACKAGES ###
 # install the R packages you be using for your analysis
 # packages will change based on what you are doing
-library("devtools")
-library("readr")
-library("ctmm")
-library("ggplot2")
-library("dplyr") # for mutate
-library("tidyr") # for pivot_longer()
-library("tibble")
-library("lme4") # test to see if differences are significant using glmer()
-library("corrMove")
-library("lubridate") # for round_date() for corrMove
-library("usethis")
+library(usethis)
+library(devtools)
+library(readr)
+library(ctmm)
+library(ggplot2)
+library(dplyr) # for mutate
+library(tidyr) # for pivot_longer()
+library(tibble)
+library(lme4) # test to see if differences are significant using glmer(), Generalized Linear Mixed-Effects Models
+library(corrMove)
+library(lubridate) # for round_date() for corrMove
+library(moveVis)
+library(move)
 
 ### DATA PREPARATION ----
 
 ## WORKING DIRECTORY
 # set working directory to where everything will be saved such as figures, RDS, etc.
 # Only applicable to R files, not R Markdown files
-setwd("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory")
+setwd("C:/Users/achhen/OneDrive - UBC/Github/giantanteater")
+
 
 ## IMPORT DATASET
-anteater.DATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteaters_NoOutliers (original data).csv", col_types = cols(timestamp = "c", class = "c", identity = "c", id = "c", .default = "d"))
+anteater.DATA <- read_csv("data/Anteaters_NoOutliers (original data).csv", col_types = cols(timestamp = "c", class = "c", identity = "c", id = "c", .default = "d"))
 
 ## TELEMETRY FORMAT
 # Convert dataset to a telemetry object, assuming the data has been cleaned and containing no outliers
 #DATA <- as.telemetry(anteater.DATA) # n=19
 #Error in strptime(xx, f, tz = tz) : input string is too long .-. used code below
-DATA <- as.telemetry("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteaters_NoOutliers (original data).csv")
+DATA <- as.telemetry("data/Anteaters_NoOutliers (original data).csv")
 
 ## META DATASET (quick reference) ----
 # Adding a meta dataset from a supplementary dataset
-METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteater_Results_Final.csv")
+METADATA <- read_csv("data/Anteater_Results_Final.csv")
 # Must correct a mismatch entry for 'Larry 267' and 'Larry' between dataset and meta dataset
 METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
                                                        true = 'Larry 267',
                                                        false = ID))
 
 ## TEMPERATURE DATA
-TEMPDATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/anteater_annotated.csv")
+TEMPDATA <- read_csv("data/anteater_annotated.csv")
 names(TEMPDATA)[19] <- "temperature"
 
 ### SUBSET DATA FOR INDIVIDUALS IN SPECIFIC SITES  ----
@@ -89,55 +94,56 @@ site.3.male <- DATA[28] # male (n=1)
 site.3.female <- DATA[c(19,31,41)] # female (n=3)
 # names() to check if individuals are correct and accounted for
 
+### LOAD RDS FILES ###
 ## LOAD ALL SAVED FITTED MODELS (quick reference) ----
 # Load all saved fitted models for SITE 1
-FIT.1 <- readRDS("FIT.1.RDS")
-FIT.1.male <- readRDS("FIT.1.male.RDS")
-FIT.1.male.adult <- readRDS("FIT.1.male.adult.RDS")
-FIT.1.female <- readRDS("FIT.1.female.RDS")
+FIT.1 <- readRDS("RDS/FIT.1.RDS")
+FIT.1.male <- readRDS("RDS/FIT.1.male.RDS")
+FIT.1.male.adult <- readRDS("RDS/FIT.1.male.adult.RDS")
+FIT.1.female <- readRDS("RDS/FIT.1.female.RDS")
 # Load all saved fitted models for SITE 2
-FIT.2 <- readRDS("FIT.2.RDS")
-FIT.2.male <- readRDS("FIT.2.male.RDS")
-FIT.2.male.adult <- readRDS("FIT.2.male.adult.RDS")
-FIT.2.female <- readRDS("FIT.2.female.RDS")
+FIT.2 <- readRDS("RDS/FIT.2.RDS")
+FIT.2.male <- readRDS("RDS/FIT.2.male.RDS")
+FIT.2.male.adult <- readRDS("RDS/FIT.2.male.adult.RDS")
+FIT.2.female <- readRDS("RDS/FIT.2.female.RDS")
 # Load all saved fitted models for SITE 3
-FIT.3 <- readRDS("FIT.3.RDS")
-FIT.3.male <- readRDS("FIT.3.male.RDS")
-FIT.3.female <- readRDS("FIT.3.female.RDS")
+FIT.3 <- readRDS("RDS/FIT.3.RDS")
+FIT.3.male <- readRDS("RDS/FIT.3.male.RDS")
+FIT.3.female <- readRDS("RDS/FIT.3.female.RDS")
 
 ## LOAD ALL AKDE ALIGNED UDS (quick reference) ----
 # Load all saved AKDE aligned UDs for SITE 1
-AKDE.1 <- readRDS("AKDE.1.RDS")
-AKDE.1.male <- readRDS("AKDE.1.male.RDS")
-AKDE.1.male.adult <- readRDS("AKDE.1.male.adult.RDS")
-AKDE.1.female <- readRDS("AKDE.1.female.RDS")
+AKDE.1 <- readRDS("RDS/AKDE.1.RDS")
+AKDE.1.male <- readRDS("RDS/AKDE.1.male.RDS")
+AKDE.1.male.adult <- readRDS("RDS/AKDE.1.male.adult.RDS")
+AKDE.1.female <- readRDS("RDS/AKDE.1.female.RDS")
 # Load all saved AKDE aligned UDs for SITE 2
-AKDE.2 <- readRDS("AKDE.2.RDS")
-AKDE.2.male <- readRDS("AKDE.2.male.RDS")
-AKDE.2.male.adult <- readRDS("AKDE.2.male.adult.RDS")
-AKDE.2.female <- readRDS("AKDE.2.female.RDS")
+AKDE.2 <- readRDS("RDS/AKDE.2.RDS")
+AKDE.2.male <- readRDS("RDS/AKDE.2.male.RDS")
+AKDE.2.male.adult <- readRDS("RDS/AKDE.2.male.adult.RDS")
+AKDE.2.female <- readRDS("RDS/AKDE.2.female.RDS")
 # Load all saved AKDE aligned UDs for SITE 3
-AKDE.3 <- readRDS("AKDE.3.RDS")
-AKDE.3.male <- readRDS("AKDE.3.male.RDS")
-AKDE.3.female <- readRDS("AKDE.3.female.RDS")
+AKDE.3 <- readRDS("RDS/AKDE.3.RDS")
+AKDE.3.male <- readRDS("RDS/AKDE.3.male.RDS")
+AKDE.3.female <- readRDS("RDS/AKDE.3.female.RDS")
 
 ## LOAD ALL PAIRWISE DATA ANALYSIS RESULTS (quick reference) ----
-DATA.pairwise.1 <- readRDS("DATA.pairwise.1.RDS")
-DATA.pairwise.1.adult <- readRDS("DATA.pairwise.1.adult.RDS")
-DATA.pairwise.2 <- readRDS("DATA.pairwise.2.RDS")
-DATA.pairwise.2.adult <- readRDS("DATA.pairwise.2.adult.RDS")
-DATA.pairwise.3 <- readRDS("DATA.pairwise.3.RDS")
+DATA.pairwise.1 <- readRDS("RDS/DATA.pairwise.1.RDS")
+DATA.pairwise.1.adult <- readRDS("RDS/DATA.pairwise.1.adult.RDS")
+DATA.pairwise.2 <- readRDS("RDS/DATA.pairwise.2.RDS")
+DATA.pairwise.2.adult <- readRDS("RDS/DATA.pairwise.2.adult.RDS")
+DATA.pairwise.3 <- readRDS("RDS/DATA.pairwise.3.RDS")
 # Site 1, 2, 3 combined
 DATA.pairwise <- bind_rows(DATA.pairwise.1, DATA.pairwise.2, DATA.pairwise.3)
 DATA.pairwise.adult <- bind_rows(DATA.pairwise.1.adult, DATA.pairwise.2.adult, DATA.pairwise.3)
 
 ## LOAD ALL PROXIMITY DATA ANALYSIS RESULTS (quick reference) ----
 # Load Proximity Analysis results for SITE 1
-DATA.proximity.1 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.1.csv")
+DATA.proximity.1 <- read.csv("data/DATA.proximity.1.csv")
 # Load Proximity Analysis results for SITE 2
-DATA.proximity.2 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.2.csv")
+DATA.proximity.2 <- read.csv("data/DATA.proximity.2.csv")
 # Load Proximity Analysis results for SITE 3
-DATA.proximity.3 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.3.csv")
+DATA.proximity.3 <- read.csv("data/DATA.proximity.3.csv")
 
 # SUBSET INDIVIDUAL AND PAIR DATA (quick reference) ----
 Bumpus <- DATA$Bumpus
@@ -181,21 +187,21 @@ pair12 <- DATA[c(31,41)] # Maria/Sheron
 FIT.pair12 <- FIT.3[c(3,4)]
 
 ### PROXIMITY DISTANCE METRIC MEASUREMENTS OF IDENTIFIED PAIRS (quick reference) ----
-distance <- readRDS("distance.RDS")
+distance <- readRDS("RDS/distance.RDS")
 
 ## LOAD SAVED CORRMOVE RESULTS (quick reference) ----
-cmAnteater.pair1 <- readRDS("cmAnteater.pair1.RDS")
-cmAnteater.pair2 <- readRDS("cmAnteater.pair2.RDS")
-cmAnteater.pair3 <- readRDS("cmAnteater.pair3.RDS")
-cmAnteater.pair4 <- readRDS("cmAnteater.pair4.RDS")
-cmAnteater.pair5 <- readRDS("cmAnteater.pair5.RDS")
-cmAnteater.pair6 <- readRDS("cmAnteater.pair6.RDS")
-cmAnteater.pair7 <- readRDS("cmAnteater.pair7.RDS")
-cmAnteater.pair8 <- readRDS("cmAnteater.pair8.RDS")
-cmAnteater.pair9 <- readRDS("cmAnteater.pair9.RDS")
-cmAnteater.pair10 <- readRDS("cmAnteater.pair10.RDS")
-cmAnteater.pair11 <- readRDS("cmAnteater.pair11.RDS")
-cmAnteater.pair12 <- readRDS("cmAnteater.pair12.RDS")
+cmAnteater.pair1 <- readRDS("RDS/cmAnteater.pair1.RDS")
+cmAnteater.pair2 <- readRDS("RDS/cmAnteater.pair2.RDS")
+cmAnteater.pair3 <- readRDS("RDS/cmAnteater.pair3.RDS")
+cmAnteater.pair4 <- readRDS("RDS/cmAnteater.pair4.RDS")
+cmAnteater.pair5 <- readRDS("RDS/cmAnteater.pair5.RDS")
+cmAnteater.pair6 <- readRDS("RDS/cmAnteater.pair6.RDS")
+cmAnteater.pair7 <- readRDS("RDS/cmAnteater.pair7.RDS")
+cmAnteater.pair8 <- readRDS("RDS/cmAnteater.pair8.RDS")
+cmAnteater.pair9 <- readRDS("RDS/cmAnteater.pair9.RDS")
+cmAnteater.pair10 <- readRDS("RDS/cmAnteater.pair10.RDS")
+cmAnteater.pair11 <- readRDS("RDS/cmAnteater.pair11.RDS")
+cmAnteater.pair12 <- readRDS("RDS/cmAnteater.pair12.RDS")
 
 ### FIT MOVEMENT MODELS ----
 
@@ -204,36 +210,36 @@ cmAnteater.pair12 <- readRDS("cmAnteater.pair12.RDS")
 GUESS.1 <- lapply(site.1[1:12], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.1 <- lapply(1:12, function(i) ctmm.select(site.1[[i]],GUESS.1[[i]]) )
 names(FIT.1) <- names(site.1[1:12])
-saveRDS(object = FIT.1, file = "FIT.1.RDS")
+saveRDS(object = FIT.1, file = "RDS/FIT.1.RDS")
 # Load saved fitted model
-FIT.1 <- readRDS("FIT.1.RDS")
+FIT.1 <- readRDS("RDS/FIT.1.RDS")
 overlap(FIT.1)
 
 # SITE 1 - MALE (n=7)
 GUESS.1.male <- lapply(site.1.male[1:7], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.1.male <- lapply(1:7, function(i) ctmm.select(site.1.male[[i]],GUESS.1.male[[i]]) )
 names(FIT.1.male) <- names(site.1.male[1:7])
-saveRDS(object = FIT.1.male, file = "FIT.1.male.RDS")
+saveRDS(object = FIT.1.male, file = "RDS/FIT.1.male.RDS")
 # Load saved fitted model
-FIT.1.male <- readRDS("FIT.1.male.RDS")
+FIT.1.male <- readRDS("RDS/FIT.1.male.RDS")
 overlap(FIT.1.male)
 
 # SITE 1 - MALE ADULT (n=4)
 GUESS.1.male.adult <- lapply(site.1[1:4], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.1.male.adult <- lapply(1:4, function(i) ctmm.select(site.1.male.adult[[i]],GUESS.1.male.adult[[i]]) )
 names(FIT.1.male.adult) <- names(site.1.male.adult[1:4])
-saveRDS(object = FIT.1.male.adult, file = "FIT.1.male.adult.RDS")
+saveRDS(object = FIT.1.male.adult, file = "RDS/FIT.1.male.adult.RDS")
 # Load saved fitted model
-FIT.1.male.adult <- readRDS("FIT.1.male.adult.RDS")
+FIT.1.male.adult <- readRDS("RDS/FIT.1.male.adult.RDS")
 overlap(FIT.1.male.adult)
 
 # SITE 1 - FEMALE (n=5)
 GUESS.1.female <- lapply(site.1.female[1:5], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.1.female <- lapply(1:5, function(i) ctmm.select(site.1.female[[i]],GUESS.1.female[[i]]) )
 names(FIT.1.female) <- names(site.1.female[1:5])
-saveRDS(object = FIT.1.female, file = "FIT.1.female.RDS")
+saveRDS(object = FIT.1.female, file = "RDS/FIT.1.female.RDS")
 # Load saved fitted model
-FIT.1.female <- readRDS("FIT.1.female.RDS")
+FIT.1.female <- readRDS("RDS/FIT.1.female.RDS")
 overlap(FIT.1.female)
 
 ## FITTING MODELS FOR SITE 2 ----
@@ -241,36 +247,36 @@ overlap(FIT.1.female)
 GUESS.2 <- lapply(site.2[1:7], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.2 <- lapply(1:7, function(i) ctmm.select(site.2[[i]],GUESS.2[[i]]) )
 names(FIT.2) <- names(site.2[1:7])
-saveRDS(object = FIT.2, file = "FIT.2.RDS")
+saveRDS(object = FIT.2, file = "RDS/FIT.2.RDS")
 # Load saved fitted model
-FIT.2 <- readRDS("FIT.2.RDS")
+FIT.2 <- readRDS("RDS/FIT.2.RDS")
 overlap(FIT.2)
 
 # SITE 2 - MALE (n=4)
 GUESS.2.male <- lapply(site.2.male[1:4], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.2.male <- lapply(1:4, function(i) ctmm.select(site.2.male[[i]],GUESS.2.male[[i]]) )
 names(FIT.2.male) <- names(site.2.male[1:4])
-saveRDS(object = FIT.2.male, file = "FIT.2.male.RDS")
+saveRDS(object = FIT.2.male, file = "RDS/FIT.2.male.RDS")
 # Load saved fitted model
-FIT.2.male <- readRDS("FIT.2.male.RDS")
+FIT.2.male <- readRDS("RDS/FIT.2.male.RDS")
 overlap(FIT.2.male)
 
 # SITE 2 - MALE ADULT (n=3)
 GUESS.2.male.adult <- lapply(site.2.male.adult[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.2.male.adult <- lapply(1:3, function(i) ctmm.select(site.2.male.adult[[i]],GUESS.2.male.adult[[i]]) )
 names(FIT.2.male.adult) <- names(site.2.male.adult[1:3])
-saveRDS(object = FIT.2.male.adult, file = "FIT.2.male.adult.RDS")
+saveRDS(object = FIT.2.male.adult, file = "RDS/FIT.2.male.adult.RDS")
 # Load saved fitted model
-FIT.2.male.adult <- readRDS("FIT.2.male.adult.RDS")
+FIT.2.male.adult <- readRDS("RDS/FIT.2.male.adult.RDS")
 overlap(FIT.2.male.adult)
 
 # SITE 2 - FEMALE (n=3)
 GUESS.2.female <- lapply(site.2.female[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.2.female <- lapply(1:3, function(i) ctmm.select(site.2.female[[i]],GUESS.2.female[[i]]) )
 names(FIT.2.female) <- names(site.2.female[1:3])
-saveRDS(object = FIT.2.female, file = "FIT.2.female.RDS")
+saveRDS(object = FIT.2.female, file = "RDS/FIT.2.female.RDS")
 # Load saved fitted model
-FIT.2.female <- readRDS("FIT.2.female.RDS")
+FIT.2.female <- readRDS("RDS/FIT.2.female.RDS")
 overlap(FIT.2.female)
 
 ## FITTING MODELS FOR SITE 3 ----
@@ -278,27 +284,27 @@ overlap(FIT.2.female)
 GUESS.3 <- lapply(site.3[1:4], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.3 <- lapply(1:4, function(i) ctmm.select(site.3[[i]],GUESS.3[[i]]) )
 names(FIT.3) <- names(site.3[1:4])
-saveRDS(object = FIT.3, file = "FIT.3.RDS")
+saveRDS(object = FIT.3, file = "RDS/FIT.3.RDS")
 # Load saved fitted model
-FIT.3 <- readRDS("FIT.3.RDS")
+FIT.3 <- readRDS("RDS/FIT.3.RDS")
 overlap(FIT.3)
 
 # SITE 3 - MALE (n=1)
 GUESS.3.male <- lapply(site.3.male[1], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.3.male <- lapply(1, function(i) ctmm.select(site.3.male[[i]],GUESS.3.male[[i]]) )
 names(FIT.3.male) <- names(site.3.male[1])
-saveRDS(object = FIT.3.male, file = "FIT.3.male.RDS")
+saveRDS(object = FIT.3.male, file = "RDS/FIT.3.male.RDS")
 # Load saved fitted model
-FIT.3.male <- readRDS("FIT.3.male.RDS")
+FIT.3.male <- readRDS("RDS/FIT.3.male.RDS")
 overlap(FIT.3.male)
 
 # SITE 3 - FEMALE (n=3)
 GUESS.3.female <- lapply(site.3.female[1:3], function(b) ctmm.guess(b,interactive=FALSE) )
 FIT.3.female <- lapply(1:3, function(i) ctmm.select(site.3.female[[i]],GUESS.3.female[[i]]) )
 names(FIT.3.female) <- names(site.3.female[1:3])
-saveRDS(object = FIT.3.female, file = "FIT.3.female.RDS")
+saveRDS(object = FIT.3.female, file = "RDS/FIT.3.female.RDS")
 # Load saved fitted model
-FIT.3.female <- readRDS("FIT.3.female.RDS")
+FIT.3.female <- readRDS("RDS/FIT.3.female.RDS")
 overlap(FIT.3.female)
 
 ###################################################
@@ -307,24 +313,23 @@ overlap(FIT.3.female)
 
 # SITE 1 - ALL INDIVIDUALS (n=12)
 GUESS.1 <- lapply(site.1[1:12], function(b) ctmm.guess(b,interactive=FALSE) ) #shouldn't take too long to run, may not be necessary to save as RDS
-if(!file.exists("FIT.1.RDS"))  {# ! = not
+if(!file.exists("RDS/FIT.1.RDS"))  {# ! = not
   FIT.1 <- lapply(1:12, function(i) ctmm.select(site.1[[i]],GUESS.1[[i]]) )
   names(FIT.1) <- names(site.1[1:12])
-  saveRDS(object = FIT.1, file = "FIT.1.RDS")
+  saveRDS(object = FIT.1, file = "RDS/FIT.1.RDS")
 } else {# to import/load RDS file, it will appear in the console .-. need to load
-  FIT.1 <- readRDS("FIT.1.RDS")
+  FIT.1 <- readRDS("RDS/FIT.1.RDS")
 }
 overlap(FIT.1)
-
 
 # SITE 2 - ALL INDIVIDUALS (n=7)
 GUESS.2 <- lapply(site.2[1:7], function(b) ctmm.guess(b,interactive=FALSE) ) #shouldn't take too long to run, may not be necessary to save as RDS
 if(!file.exists("FIT.2.RDS"))  {# ! = not
   FIT.2 <- lapply(1:7, function(i) ctmm.select(site.2[[i]],GUESS.2[[i]]) )
   names(FIT.2) <- names(site.2[1:7])
-  saveRDS(object = FIT.2, file = "FIT.2.RDS")
+  saveRDS(object = FIT.2, file = "RDS/FIT.2.RDS")
 } else {# to import/load RDS file, it will appear in the console .-. need to load
-  FIT.2 <- readRDS("FIT.2.RDS")
+  FIT.2 <- readRDS("RDS/FIT.2.RDS")
 }
 overlap(FIT.2)
 ###################################################
@@ -343,49 +348,49 @@ overlap(FIT.2)
 
 # SITE 1 - MALE AND FEMALE (n=12)
 AKDE.1 <- akde(site.1[1:12],FIT.1)
-saveRDS(object = AKDE.1, file = "AKDE.1.RDS")
+saveRDS(object = AKDE.1, file = "RDS/AKDE.1.RDS")
 # Load saved AKDE aligned UDs
-AKDE.1 <- readRDS("AKDE.1.RDS")
+AKDE.1 <- readRDS("RDS/AKDE.1.RDS")
 overlap(AKDE.1)
 # colour coding sexes for plot
 # Make a list of colours that matches the order of the HR estimates
 #ggplot has a different saving code/method -> ggsave()
-COL.1 <- c("blue3", "lightblue1", "red", "red", "blue3", "red", "blue3", "lightblue1", "lightblue1", "red",
-                  "red", "blue3")
-png(file = "Overlap.1.png", width = 6.86, height = 6, units = "in", res = 600)
+COL.1 <- c("blue3", "forestgreen", "red", "red", "blue3", "red", "blue3", "forestgreen", "forestgreen", "red",
+                  "red", "blue3") # blue = male; green = subadult male; red = female
+png(file = "figures/overlap/Overlap.1.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.1, col.DF = COL.1, col.level = COL.1, col.grid = NA, level = NA)
 title("aKDE Overlap (Site 1: male and female)")
 dev.off()
                   
 # SITE 1 - MALE (n=7)
 AKDE.1.male <- akde(site.1[1:7],FIT.1.male)
-saveRDS(object = AKDE.1.male, file = "AKDE.1.male.RDS")
+saveRDS(object = AKDE.1.male, file = "RDS/AKDE.1.male.RDS")
 # Load saved AKDE aligned UDs
-AKDE.1.male <- readRDS("AKDE.1.male.RDS")
+AKDE.1.male <- readRDS("RDS/AKDE.1.male.RDS")
 overlap(AKDE.1.male)
-png(file = "Overlap.1.male.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/overlap/Overlap.1.male.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.1.male, col.DF = "dodgerblue", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 1: male)")
 dev.off()
 
 # SITE 1 - MALE ADULT (n=4)
 AKDE.1.male.adult <- akde(site.1.male.adult[1:4],FIT.1.male.adult)
-saveRDS(object = AKDE.1.male.adult, file = "AKDE.1.male.adult.RDS")
+saveRDS(object = AKDE.1.male.adult, file = "RDS/AKDE.1.male.adult.RDS")
 # Load saved AKDE aligned UDs
-AKDE.1.male.adult <- readRDS("AKDE.1.male.adult.RDS")
+AKDE.1.male.adult <- readRDS("RDS/AKDE.1.male.adult.RDS")
 overlap(AKDE.1.male.adult)
-png(file = "Overlap.1.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/overlap/Overlap.1.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.1.male.adult, col.DF = "blue3", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 1: male adult)")
 dev.off()
 
 # SITE 1 - FEMALE (n=5)
 AKDE.1.female <- akde(site.1.female[1:5],FIT.1.female)
-saveRDS(object = AKDE.1.female, file = "AKDE.1.female.RDS")
+saveRDS(object = AKDE.1.female, file = "RDS/AKDE.1.female.RDS")
 # Load saved AKDE aligned UDs, see original file for code
-AKDE.1.female <- readRDS("AKDE.1.female.RDS")
+AKDE.1.female <- readRDS("RDS/AKDE.1.female.RDS")
 overlap(AKDE.1.female)
-png(file = "Overlap.1.female.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/overlap/Overlap.1.female.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.1.female, col.DF = "red", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 1: female)")
 dev.off()
@@ -394,48 +399,48 @@ dev.off()
 
 # SITE 2 - MALE AND FEMALE (n=7)
 AKDE.2 <- akde(site.2[1:7],FIT.2)
-saveRDS(object = AKDE.2, file = "AKDE.2.RDS")
+saveRDS(object = AKDE.2, file = "RDS/AKDE.2.RDS")
 # Load saved AKDE aligned UDs
-AKDE.2 <- readRDS("AKDE.2.RDS")
+AKDE.2 <- readRDS("RDS/AKDE.2.RDS")
 overlap(AKDE.2)
 # colour coding sexes for plot
 # Make a list of colours that matches the order of the HR estimates
 #ggplot has a different saving code/method -> ggsave()
-COL.2 <- c("red", "blue3", "red", "blue3", "red", "lightblue1", "blue3") # blue = male; light blue = subadult male; red = female
-png(file = "Overlap.2.png", width = 6.86, height = 6, units = "in", res = 600)
+COL.2 <- c("red", "blue3", "red", "blue3", "red", "forestgreen", "blue3") # blue = male; green = subadult male; red = female
+png(file = "figures/overlap/Overlap.2.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.2, col.DF = COL.2, col.level = COL.2, col.grid = NA, level = NA) 
 title("aKDE Overlap (Site 2: male and female)")
 dev.off()
 
 # SITE 2 - MALE (n=4)
 AKDE.2.male <- akde(site.2[1:4],FIT.2.male)
-saveRDS(object = AKDE.2.male, file = "AKDE.2.male.RDS")
+saveRDS(object = AKDE.2.male, file = "RDS/AKDE.2.male.RDS")
 # Load saved AKDE aligned UDs
-AKDE.2.male <- readRDS("AKDE.2.male.RDS")
+AKDE.2.male <- readRDS("RDS/AKDE.2.male.RDS")
 overlap(AKDE.2.male)
-png(file = "Overlap.2.male.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/overlap/Overlap.2.male.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.2.male.adult, col.DF = "dodgerblue", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 2: male)")
 dev.off()
 
 # SITE 2 - MALE ADULT (n=3)
 AKDE.2.male.adult <- akde(site.2.male.adult[1:3],FIT.2.male.adult)
-saveRDS(object = AKDE.2.male.adult, file = "AKDE.2.male.adult.RDS")
+saveRDS(object = AKDE.2.male.adult, file = "RDS/AKDE.2.male.adult.RDS")
 # Load saved AKDE aligned UDs, see original file for code
-AKDE.2.male.adult <- readRDS("AKDE.2.male.adult.RDS")
+AKDE.2.male.adult <- readRDS("RDS/AKDE.2.male.adult.RDS")
 overlap(AKDE.2.male.adult)
-png(file = "Overlap.2.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/overlap/Overlap.2.male.adult.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.2.male.adult, col.DF = "blue3", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 2: male adult)")
 dev.off()
 
 # SITE 2 - FEMALE (n=3)
 AKDE.2.female <- akde(site.2.female[1:3],FIT.2.female)
-saveRDS(object = AKDE.2.female, file = "AKDE.2.female.RDS")
+saveRDS(object = AKDE.2.female, file = "RDS/AKDE.2.female.RDS")
 # Load saved AKDE aligned UDs, see original file for code
-AKDE.2.female <- readRDS("AKDE.2.female.RDS")
+AKDE.2.female <- readRDS("RDS/AKDE.2.female.RDS")
 overlap(AKDE.2.female)
-png(file = "Overlap.2.female.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/overlap/Overlap.2.female.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.2.female, col.DF = "red", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 2: female)")
 dev.off()
@@ -443,44 +448,44 @@ dev.off()
 ## AKDE OVERLAP SITE 3 ----
 # SITE 3 - MALE AND FEMALE (n=4)
 AKDE.3 <- akde(site.3[1:4],FIT.3)
-saveRDS(object = AKDE.3, file = "AKDE.3.RDS")
+saveRDS(object = AKDE.3, file = "RDS/AKDE.3.RDS")
 # Load saved AKDE aligned UDs
-AKDE.3 <- readRDS("AKDE.3.RDS")
+AKDE.3 <- readRDS("RDS/AKDE.3.RDS")
 overlap(AKDE.3)
 # colour coding sexes for plot
 # Make a list of colours that matches the order of the HR estimates
 #ggplot has a different saving code/method -> ggsave()
-COL.3 <- c("red", "blue3", "red", "red") # blue = male; light blue = subadult male; red = female
-png(file = "Overlap.3.png", width = 6.86, height = 6, units = "in", res = 600)
+COL.3 <- c("red", "blue3", "red", "red") # blue = male; red = female
+png(file = "figures/overlap/Overlap.3.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.3, col.DF = COL.3, col.level = COL.3, col.grid = NA, level = NA) 
 title("aKDE Overlap (Site 3: male and female)")
 dev.off()
 
 # SITE 3 - MALE (n=1)
 AKDE.3.male <- akde(site.3[1],FIT.3.male)
-saveRDS(object = AKDE.3.male, file = "AKDE.3.male.RDS")
+saveRDS(object = AKDE.3.male, file = "RDS/AKDE.3.male.RDS")
 # Load saved AKDE aligned UDs
-AKDE.3.male <- readRDS("AKDE.3.male.RDS")
+AKDE.3.male <- readRDS("RDS/AKDE.3.male.RDS")
 overlap(AKDE.3.male)
-png(file = "Overlap.3.male.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/overlap/Overlap.3.male.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.2.male.adult, col.DF = "dodgerblue", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 3: male)")
 dev.off()
 
 # SITE 3 - FEMALE (n=3)
 AKDE.3.female <- akde(site.3.female[1:3],FIT.3.female)
-saveRDS(object = AKDE.3.female, file = "AKDE.3.female.RDS")
+saveRDS(object = AKDE.3.female, file = "RDS/AKDE.3.female.RDS")
 # Load saved AKDE aligned UDs
-AKDE.3.female <- readRDS("AKDE.3.female.RDS")
+AKDE.3.female <- readRDS("RDS/AKDE.3.female.RDS")
 overlap(AKDE.3.female)
-png(file = "Overlap.3.female.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/overlap/Overlap.3.female.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(AKDE.3.female, col.DF = "red", col.level = "black", col.grid = NA, level = NA)
 title("aKDE Overlap (Site 3: female)")
 dev.off()
 
 ### META DATASET (for pairwise analysis) ## ----
 # Adding a meta dataset from a supplementary dataset
-METADATA <- read_csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/Anteater_Results_Final.csv")
+METADATA <- read_csv("data/Anteater_Results_Final.csv")
 
 # Must correct a mismatch entry for 'Larry 267' and 'Larry' between dataset and meta dataset
 METADATA <- mutate(select(METADATA, 1:3), ID = if_else(condition = ID == 'Larry',
@@ -518,15 +523,15 @@ DATA.pairwise.1 <- mutate(pairwise.1.pivot.B, sex_comparison = case_when(paste(S
                                                                          paste(Sex.A, Sex.B) == "Male Female" ~ "male-female",
                                                                          paste(Sex.A, Sex.B) == "Female Male" ~ "male-female"))
 # adding column to indicate which sexes that are being compared
-saveRDS(object = DATA.pairwise.1, file = "DATA.pairwise.1.RDS")
+saveRDS(object = DATA.pairwise.1, file = "RDS/DATA.pairwise.1.RDS")
 # DATA.pairwise.1 # to check if matrix has all the correct columns, variables etc., with no NA values
-DATA.pairwise.1 <- readRDS("DATA.pairwise.1.RDS")
+DATA.pairwise.1 <- readRDS("RDS/DATA.pairwise.1.RDS")
 
 # removing subadults from dataframe matrix
 pairwise.1.df.A <- DATA.pairwise.1[which(DATA.pairwise.1$Age.A != "Subadult"),] # removing subadults from anteater_A from matrix
 DATA.pairwise.1.adult <- pairwise.1.df.A[which(pairwise.1.df.A$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
-saveRDS(object = DATA.pairwise.1.adult, file = "DATA.pairwise.1.adult.RDS")
-DATA.pairwise.1.adult <- readRDS("DATA.pairwise.1.adult.RDS")
+saveRDS(object = DATA.pairwise.1.adult, file = "RDS/DATA.pairwise.1.adult.RDS")
+DATA.pairwise.1.adult <- readRDS("RDS/DATA.pairwise.1.adult.RDS")
 
 # Plot pairwise sex comparison for SITE 1
 ## SITE 1 plot pairwise comparison (male and female)
@@ -536,11 +541,11 @@ ggplot(data = DATA.pairwise.1, mapping = aes(x = sex_comparison, y = overlap, fi
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 1: male and female)") +
   theme_bw() +
-  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+  scale_fill_manual(values = c("#d1495b", "purple", "#0072B2"),
                     labels = c("Female - Female", "Male - Female", "Male - Male"),
                     name = "") +
   scale_y_continuous(limits = c(0,1))
-ggsave(filename = "pairwise.1.png", plot = last_plot(), device = NULL,
+ggsave(filename = "figures/pairwise/pairwise.1.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 ## SITE 1 plot pairwise comparison (adult only)
@@ -550,11 +555,11 @@ ggplot(data = DATA.pairwise.1.adult, mapping = aes(x = sex_comparison, y = overl
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 1: adult only)") +
   theme_bw() +
-  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+  scale_fill_manual(values = c("#d1495b", "purple", "#0072B2"),
                     labels = c("Female - Female", "Male - Female", "Male - Male"),
                     name = "") +
   scale_y_continuous(limits = c(0,1))
-ggsave(filename = "pairwise.1.adult.png", plot = last_plot(), device = NULL,
+ggsave(filename = "figures/pairwise/pairwise.1.adult.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 ## PAIRWISE ANALYSIS SEX COMPARISON FOR SITE 2 ----
@@ -580,15 +585,15 @@ DATA.pairwise.2 <- mutate(pairwise.2.pivot.B, sex_comparison = case_when(paste(S
                                                                          paste(Sex.A, Sex.B) == "Male Female" ~ "male-female",
                                                                          paste(Sex.A, Sex.B) == "Female Male" ~ "male-female"))
 # adding column to indicate which sexes that are being compared
-saveRDS(object = DATA.pairwise.2, file = "DATA.pairwise.2.RDS")
+saveRDS(object = DATA.pairwise.2, file = "RDS/DATA.pairwise.2.RDS")
 #DATA.pairwise.2 # to check if matrix is good, has all the correct columns, variables etc. ie. no NA values
-DATA.pairwise.2 <- readRDS("DATA.pairwise.2.RDS")
+DATA.pairwise.2 <- readRDS("RDS/DATA.pairwise.2.RDS")
 
 # removing subadults from dataframe matrix
 pairwise.2.df.A <- DATA.pairwise.2[which(DATA.pairwise.2$Age.A != "Subadult"),] # removing subadults from anteater_A from matrix
 DATA.pairwise.2.adult <- pairwise.2.df.A[which(pairwise.2.df.A$Age.B != "Subadult"),] # removing subadults from anteater_B from matrix with anteater_A filtered
-saveRDS(object = DATA.pairwise.2.adult, file = "DATA.pairwise.2.adult.RDS")
-DATA.pairwise.2.adult <- readRDS("DATA.pairwise.2.adult.RDS")
+saveRDS(object = DATA.pairwise.2.adult, file = "RDS/DATA.pairwise.2.adult.RDS")
+DATA.pairwise.2.adult <- readRDS("RDS/DATA.pairwise.2.adult.RDS")
 
 # Plot pairwise sex comparison for SITE 2
 ## SITE 2 plot pairwise comparison (male and female)
@@ -598,11 +603,11 @@ ggplot(data = DATA.pairwise.2, mapping = aes(x = sex_comparison, y = overlap, fi
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 2: male and female)") +
   theme_bw() +
-  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+  scale_fill_manual(values = c("#d1495b", "purple", "#0072B2"),
                     labels = c("Female - Female", "Male - Female", "Male - Male"),
                     name = "") +
   scale_y_continuous(limits = c(0,1))
-ggsave(filename = "pairwise.2.png", plot = last_plot(), device = NULL,
+ggsave(filename = "figures/pairwise/pairwise.2.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 ## SITE 2 plot pairwise comparison (adults only)
@@ -612,11 +617,11 @@ ggplot(data = DATA.pairwise.2.adult, mapping = aes(x = sex_comparison, y = overl
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 2: adult only)") +
   theme_bw() +
-  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+  scale_fill_manual(values = c("#d1495b", "purple", "#0072B2"),
                     labels = c("Female - Female", "Male - Female", "Male - Male"),
                     name = "") +
   scale_y_continuous(limits = c(0,1))
-ggsave(filename = "pairwise.2.adult.png", plot = last_plot(), device = NULL,
+ggsave(filename = "figures/pairwise/pairwise.2.adult.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 ## PAIRWISE ANALYSIS SEX COMPARISON FOR SITE 3 ----
@@ -642,9 +647,9 @@ DATA.pairwise.3 <- mutate(pairwise.3.pivot.B, sex_comparison = case_when(paste(S
                                                                          paste(Sex.A, Sex.B) == "Male Female" ~ "male-female",
                                                                          paste(Sex.A, Sex.B) == "Female Male" ~ "male-female"))
 # adding column to indicate which sexes that are being compared
-saveRDS(object = DATA.pairwise.3, file = "DATA.pairwise.3.RDS")
+saveRDS(object = DATA.pairwise.3, file = "RDS/DATA.pairwise.3.RDS")
 #DATA.pairwise.3 # to check if matrix is good, has all the correct columns, variables etc. ie. no NA values
-DATA.pairwise.3 <- readRDS("DATA.pairwise.3.RDS")
+DATA.pairwise.3 <- readRDS("RDS/DATA.pairwise.3.RDS")
 
 # Plot pairwise sex comparison for SITE 3
 ## SITE 3 plot pairwise comparison (male and female)
@@ -654,11 +659,11 @@ ggplot(data = DATA.pairwise.3, mapping = aes(x = sex_comparison, y = overlap, fi
   xlab("Sex Comparison") +
   ggtitle("Overlap pairwise comparison of sexes (Site 3: male and female)") +
   theme_bw() +
-  scale_fill_manual(values = c("#d1495b", "#009E73"),
+  scale_fill_manual(values = c("#d1495b", "purple"),
                     labels = c("Female - Female", "Male - Female"),
                     name = "") +
   scale_y_continuous(limits = c(0,1))
-ggsave(filename = "pairwise.3.png", plot = last_plot(), device = NULL,
+ggsave(filename = "figures/pairwise/pairwise.3.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 # PAIRWISE COMPARISON ANALYSIS OF SEX OVERALL COMPARISON ## ----
@@ -679,11 +684,11 @@ ggplot(data = DATA.pairwise, mapping = aes(x = sex_comparison, y = overlap, fill
   xlab("Sex") +
   ggtitle("Anteater overlap pairwise comparison of sexes (SITE 1-3: male and female)") +
   theme_bw() +
-  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+  scale_fill_manual(values = c("#d1495b", "purple", "#0072B2"),
                     labels = c("Female - Female", "Male - Female", "Male - Male"),
                     name = "") +
   scale_y_continuous(limits = c(0,1))
-ggsave(filename = "pairwise.combined.png", plot = last_plot(), device = NULL,
+ggsave(filename = "figures/pairwise/pairwise.123.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 # Plot combined SITE 1, 2, 3 pairwise analysis (Adult only)
@@ -693,11 +698,11 @@ ggplot(data = DATA.pairwise.adult, mapping = aes(x = sex_comparison, y = overlap
   xlab("Sex") +
   ggtitle("Anteater overlap pairwise comparison of sexes (SITE 1-3: adult only)") +
   theme_bw() +
-  scale_fill_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+  scale_fill_manual(values = c("#d1495b", "purple", "#0072B2"),
                     labels = c("Female - Female", "Male - Female", "Male - Male"),
                     name = "") +
   scale_y_continuous(limits = c(0,1))
-ggsave(filename = "pairwise.combined.adult.png", plot = last_plot(), device = NULL,
+ggsave(filename = "figures/pairwise/pairwise.123.adult.png", plot = last_plot(), device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 #ERROR ############# Quick test to see if differences are significant -------
@@ -750,11 +755,11 @@ for(i in 1:nrow(DATA.pairwise.1)){
   DATA.pairwise.1[i, c("proximity_low")] <- PROXIMITY.1[1]
   DATA.pairwise.1[i, c("proximity_est")] <- PROXIMITY.1[2]
   DATA.pairwise.1[i, c("proximity_high")] <- PROXIMITY.1[3]
-  write.csv(DATA.pairwise.1, "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory/DATA.proximity.1.csv", row.names = FALSE)
+  write.csv(DATA.pairwise.1, "data/DATA.proximity.1.csv", row.names = FALSE)
 }
 
 # Load Proximity Analysis results for SITE 1
-DATA.proximity.1 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.1.csv")
+DATA.proximity.1 <- read.csv("data/DATA.proximity.1.csv")
 
 # Plot Proximity Analysis between sex (SITE 1)
 FIG.proximity.1 <- 
@@ -764,7 +769,7 @@ FIG.proximity.1 <-
   geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), linewidth = 0.3) +
   scale_y_log10(expand = c(0,0.1)) +
   scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
-  scale_color_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+  scale_color_manual(values = c("#d1495b", "purple", "#0072B2"),
                      labels = c("Female - Female", "Male - Female", "Male - Male"),
                      name = "") +
   ylab("Proximity ratio") +
@@ -789,7 +794,7 @@ ggsave(FIG.proximity.1,
        width = 3.23,height = 2, units = "in",
        dpi = 600,
        bg = "transparent",
-       file="Proximity_site_1.png")
+       file="figures/proximity/Proximity_site_1.png")
 
 ### PROXIMITY ANALYSIS BETWEEN SEX FOR SITE 2 ----
 # create empty columns for where the result information will be added/filled into
@@ -816,11 +821,11 @@ for(i in 1:nrow(DATA.pairwise.2)){
   DATA.pairwise.2[i, c("proximity_low")] <- PROXIMITY.2[1]
   DATA.pairwise.2[i, c("proximity_est")] <- PROXIMITY.2[2]
   DATA.pairwise.2[i, c("proximity_high")] <- PROXIMITY.2[3]
-  write.csv(DATA.pairwise.2, "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.2.csv", row.names = FALSE)
+  write.csv(DATA.pairwise.2, "data/DATA.proximity.2.csv", row.names = FALSE)
 }
 
 # Load Proximity Analysis results for SITE 2
-DATA.proximity.2 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.2.csv")
+DATA.proximity.2 <- read.csv("data/DATA.proximity.2.csv")
 
 # Plot Proximity Analysis between sex
 FIG.proximity.2 <- 
@@ -830,7 +835,7 @@ FIG.proximity.2 <-
   geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), linewidth = 0.3) +
   scale_y_log10(expand = c(0,0.1)) +
   scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
-  scale_color_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+  scale_color_manual(values = c("#d1495b", "purple", "#0072B2"),
                      labels = c("Female - Female", "Male - Female", "Male - Male"),
                      name = "") +
   ylab("Proximity ratio") +
@@ -855,7 +860,7 @@ ggsave(FIG.proximity.2,
        width = 3.23, height = 2.25, units = "in",
        dpi = 600,
        bg = "transparent",
-       file="Proximity_site_2.png")
+       file="figures/proximity/Proximity_site_2.png")
 
 ### PROXIMITY ANALYSIS BETWEEN SEX FOR SITE 3 ----
 ## create empty columns for where the result information will be added/filled into
@@ -882,11 +887,11 @@ for(i in 1:nrow(DATA.pairwise.3)){
   DATA.pairwise.3[i, c("proximity_low")] <- PROXIMITY.3[1]
   DATA.pairwise.3[i, c("proximity_est")] <- PROXIMITY.3[2]
   DATA.pairwise.3[i, c("proximity_high")] <- PROXIMITY.3[3]
-  write.csv(DATA.pairwise.3, "C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/R working directory/DATA.proximity.3.csv", row.names = FALSE)
+  write.csv(DATA.pairwise.3, "data/DATA.proximity.3.csv", row.names = FALSE)
 }
 
 # Load Proximity Analysis results for SITE 3
-DATA.proximity.3 <- read.csv("C:/Users/achhen/OneDrive - UBC/BIOL 452 Directed Studies - Giant Anteaters/Github/giantanteater/data/DATA.proximity.3.csv")
+DATA.proximity.3 <- read.csv("data/DATA.proximity.3.csv")
 
 ## Plot Proximity Analysis between sex
 FIG.proximity.3 <- 
@@ -896,7 +901,7 @@ FIG.proximity.3 <-
   geom_segment(aes(x = overlap, xend = overlap, y = proximity_low, yend = proximity_high), linewidth = 0.3) +
   scale_y_log10(expand = c(0,0.1)) +
   scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
-  scale_color_manual(values = c("#d1495b", "#009E73", "#0072B2"),
+  scale_color_manual(values = c("#d1495b", "purple", "#0072B2"),
                      labels = c("Female - Female", "Male - Female", "Male - Male"),
                      name = "") +
   ylab("Proximity ratio") +
@@ -920,7 +925,7 @@ ggsave(FIG.proximity.3,
        width = 3.23, height = 2, units = "in",
        dpi = 600,
        bg = "transparent",
-       file="Proximity_site_3.png")
+       file="figures/proximity/Proximity_site_3.png")
 
 ## IDENTIFY PAIRS THAT WERE CLOSER/FURTHER TO EACH OTHER ----
 # To do this, subset proximity analysis results for proximity values above and below 1
@@ -943,7 +948,7 @@ proximity.3.below1 <- DATA.proximity.3[which(DATA.proximity.3$proximity_high < 1
 # Use telemetry data
 # 'DATA' needs to contain the pair, 2 individuals being compared
 ######## GENERAL SYNTAX
-metric <- distances(DATA,FITS)
+metric <- distances(DATA,FIT)
 metric # distance measurement and time between the pair
 names(metric)
 plot(log(est)~timestamp, data=metric, type="l") # type="l" changes the plot from dots to a line
@@ -958,6 +963,7 @@ plot(log(est)~timestamp, data=metric, type="l") # type="l" changes the plot from
 
 ### PROXIMITY DISTANCE METRIC MEASUREMENTS OF IDENTIFIED PAIRS (quick reference) ----
 # takes a few minutes to go through them all
+#' *NOT PRELOADED FROM ABOVE*
 distance1 <- distances(pair1, FIT.pair1)
 distance2 <- distances(pair2, FIT.pair2)
 distance3 <- distances(pair3, FIT.pair3)
@@ -970,10 +976,34 @@ distance9 <- distances(pair9, FIT.pair9)
 distance10 <- distances(pair10, FIT.pair10)
 distance11 <- distances(pair11, FIT.pair11)
 distance12 <- distances(pair12, FIT.pair12)
+saveRDS(object = distance1, file = "RDS/distance1.RDS")
+saveRDS(object = distance2, file = "RDS/distance2.RDS")
+saveRDS(object = distance3, file = "RDS/distance3.RDS")
+saveRDS(object = distance4, file = "RDS/distance4.RDS")
+saveRDS(object = distance5, file = "RDS/distance5.RDS")
+saveRDS(object = distance6, file = "RDS/distance6.RDS")
+saveRDS(object = distance7, file = "RDS/distance7.RDS")
+saveRDS(object = distance8, file = "RDS/distance8.RDS")
+saveRDS(object = distance9, file = "RDS/distance9.RDS")
+saveRDS(object = distance10, file = "RDS/distance10.RDS")
+saveRDS(object = distance11, file = "RDS/distance11.RDS")
+saveRDS(object = distance12, file = "RDS/distance12.RDS")
+distance1 <- readRDS("RDS/distance1.RDS")
+distance2 <- readRDS("RDS/distance2.RDS")
+distance3 <- readRDS("RDS/distance3.RDS")
+distance4 <- readRDS("RDS/distance4.RDS")
+distance5 <- readRDS("RDS/distance5.RDS")
+distance6 <- readRDS("RDS/distance6.RDS")
+distance7 <- readRDS("RDS/distance7.RDS")
+distance8 <- readRDS("RDS/distance8.RDS")
+distance9 <- readRDS("RDS/distance9.RDS")
+distance10 <- readRDS("RDS/distance10.RDS")
+distance11 <- readRDS("RDS/distance11.RDS")
+distance12 <- readRDS("RDS/distance12.RDS")
 distance <- c(distance1, distance2, distance3, distance4, distance5, distance6, distance7,
             distance8, distance9, distance10, distance11, distance12)
-saveRDS(object = distance, file = "distance.RDS")
-distance <- readRDS("distance.RDS")
+saveRDS(object = distance, file = "RDS/distance.RDS")
+distance <- readRDS("RDS/distance.RDS")
 
 ### PROXIMITY DISTANCE METRIC MEASUREMENTS OF IDENTIFIED PAIRS SITE 1 ----
 ## SITE 1 : above 1 (further apart)
@@ -984,11 +1014,11 @@ distance1 <- distances(pair1, FIT.pair1) # distance measurement and time between
 names(distance1) 
 # x = time
 # y = measurement metric
-png(file = "distance.pair1.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair1.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance1, type="l",
      main = "Pair 1: Christoffer/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair1.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair1.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance1, type="l",
      main = "Log-scaled Pair 1: Christoffer/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1000,11 +1030,11 @@ FIT.pair2 <- FIT.1[c(5,6)]
 distance2 <- distances(pair2, FIT.pair2) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair2.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair2.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance2, type="l",
      main = "Pair 2: Christoffer/Elaine (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair2.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair2.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance2, type="l",
      main = "Log-scaled Pair 2: Christoffer/Elaine (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1015,11 +1045,11 @@ FIT.pair3 <- FIT.1[c(3,8)]
 distance3 <- distances(pair3, FIT.pair3) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair3.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair3.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance3, type="l",
      main = "Pair 3: Bumpus/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair3.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair3.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance3, type="l",
      main = "Log-scaled Pair 3: Bumpus/Kyle (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1030,11 +1060,11 @@ FIT.pair4<- FIT.1[c(6,9)]
 distance4 <- distances(pair4, FIT.pair4) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair4.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair4.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance4, type="l",
      main = "Pair 4: Elaine/Little Rick (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair4.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair4.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance4, type="l",
      main = "Log-scaled Pair 4: Elaine/Little Rick (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1045,11 +1075,11 @@ FIT.pair5 <- FIT.1[c(3,10)]
 distance5 <- distances(pair5, FIT.pair5) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair5.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair5.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance5, type="l",
      main = "Pair 5: Bumpus/Makao (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair5.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair5.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance5, type="l",
      main = "Log-scaled Pair 5: Bumpus/Makao (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1060,11 +1090,11 @@ FIT.pair6 <- FIT.1[c(3,11)]
 distance6 <- distances(pair6, FIT.pair6) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair6.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair6.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance6, type="l",
      main = "Pair 6: Bumpus/Puji (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair6.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair6.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance6, type="l",
      main = "Log-scaled Pair 6: Bumpus/Puji (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1075,11 +1105,11 @@ FIT.pair7 <- FIT.1[c(6,12)]
 distance7 <- distances(pair7, FIT.pair7) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair7.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair7.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance7, type="l",
      main = "Pair 7: Elaine/Rodolfo (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair7.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair7.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance7, type="l",
      main = "Log-scaled Pair 7: Elaine/Rodolfo (Site 1)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1092,11 +1122,11 @@ FIT.pair8 <- FIT.2[c(1,4)]
 distance8 <- distances(pair8, FIT.pair8) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair8.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair8.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance8, type="l",
      main = "Pair 8: Annie/Larry (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair8.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair8.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance8, type="l",
      main = "Log-scaled Pair 8: Annie/Larry (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1107,11 +1137,11 @@ FIT.pair9 <- FIT.2[c(4,6)]
 distance9 <- distances(pair9, FIT.pair9) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair9.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair9.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance9, type="l",
      main = "Pair 8: Larry/Reid (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair9.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair9.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance9, type="l",
      main = "Log-scaled Pair 9: Larry/Reid (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1122,11 +1152,11 @@ FIT.pair10 <- FIT.2[c(5,7)]
 distance10 <- distances(pair10, FIT.pair10) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair10.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair10.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance10, type="l",
      main = "Pair 10: Margaret/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair10.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair10.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance10, type="l",
      main = "Log-scaled Pair 10: Margaret/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1137,11 +1167,11 @@ FIT.pair11 <- FIT.2[c(6,7)]
 distance11 <- distances(pair11, FIT.pair11) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair11.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair11.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance11, type="l",
      main = "Pair 11: Reid/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
-png(file = "distance.pair11.log.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/log-scaled/distance.pair11.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance11, type="l",
      main = "Log-scaled Pair 11: Reid/Thomas (Site 2)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1154,10 +1184,11 @@ FIT.pair12 <- FIT.3[c(3,4)]
 distance12 <- distances(pair12, FIT.pair12) # distance measurement and time between the pair
 # x = time
 # y = measurement metric
-png(file = "distance.pair12.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/distance/distance.pair12.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(est~timestamp, data=distance12, type="l",
      main = "Pair 12: Maria/Sheron (Site 3)") # type="l" changes the plot from dots to a line
 dev.off()
+png(file = "figures/distance/log-scaled/distance.pair12.log.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(log(est)~timestamp, data=distance12, type="l",
      main = "Log-scaled Pair 12: Maria/Sheron (Site 3)") # type="l" changes the plot from dots to a line
 dev.off()
@@ -1274,8 +1305,8 @@ Sheron.corr <- data.frame(timestamp = round_date(Sheron$timestamp, "20 minutes")
 ### PLOT GPS TRACKING DATA OF IDENTIFIED PAIRS ----
 ## SITE 1: above 1 (further apart)
 # PAIR 1: Christoffer/Kyle (1.1)
-png(file = "pair1.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Christoffer, Kyle), col = c("blue3","lightblue1"),
+png(file = "figures/tracking data/pair1.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(list(Christoffer, Kyle), col = c("blue3","forestgreen"),
      main = "Pair 1: Christoffer/Kyle (Site 1)")
 dev.off()
 test.pair1 <- merge(Christoffer.corr, Kyle.corr)
@@ -1284,7 +1315,7 @@ test.pair1 <- test.pair1[!duplicated(test.pair1$timestamp),]
 
 ## SITE 1: below 1 (closer together)
 # PAIR 2: Christoffer/Elaine (1.2)
-png(file = "pair2.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/tracking data/pair2.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Christoffer, Elaine), col = c("blue3","red"),
      main = "PAIR 2: Christoffer/Elaine (Site 1)")
 dev.off()
@@ -1293,8 +1324,8 @@ test.pair2 <- test.pair2[, c(1,2,4,3,5)]
 test.pair2 <- test.pair2[!duplicated(test.pair2$timestamp),]
 
 # PAIR 3: Bumpus/Kyle (1.3)
-png(file = "pair3.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Bumpus, Kyle), col = c("red","lightblue1"),
+png(file = "figures/tracking data/pair3.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(list(Bumpus, Kyle), col = c("red","forestgreen"),
      main = "PAIR 3: Bumpus/Kyle (Site 1)")
 dev.off()
 test.pair3 <- merge(Bumpus.corr, Kyle.corr)
@@ -1302,8 +1333,8 @@ test.pair3 <- test.pair3[, c(1,2,4,3,5)]
 test.pair3 <- test.pair3[!duplicated(test.pair3$timestamp),]
 
 # PAIR 4: Elaine/Little Rick (1.4)
-png(file = "pair4.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Elaine, Little_rick), col = c("red","lightblue1"),
+png(file = "figures/tracking data/pair4.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(list(Elaine, Little_rick), col = c("red","forestgreen"),
      main = "PAIR 4: Elaine/Little Rick (Site 1)")
 dev.off()
 test.pair4 <- merge(Elaine.corr, Little_rick.corr)
@@ -1311,8 +1342,8 @@ test.pair4 <- test.pair4[, c(1,2,4,3,5)]
 test.pair4 <- test.pair4[!duplicated(test.pair4$timestamp),]
 
 # PAIR 5: Bumpus/Makao (1.5)
-png(file = "pair5.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Bumpus, Makao), col = c("red","purple"),
+png(file = "figures/tracking data/pair5.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(list(Bumpus, Makao), col = c("red","yellow"),
      main = "PAIR 5: Bumpus/Makao (Site 1)")
 dev.off()
 test.pair5 <- merge(Bumpus.corr, Makao.corr)
@@ -1320,8 +1351,8 @@ test.pair5 <- test.pair5[, c(1,2,4,3,5)]
 test.pair5 <- test.pair5[!duplicated(test.pair5$timestamp),]
 
 # PAIR 6: Bumpus/Puji (1.6)
-png(file = "pair6.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Bumpus, Puji), col = c("red","purple"),
+png(file = "figures/tracking data/pair6.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(list(Bumpus, Puji), col = c("red","yellow"),
      main = "PAIR 6: Bumpus/Puji (Site 1)")
 dev.off()
 test.pair6 <- merge(Bumpus.corr, Puji.corr)
@@ -1329,7 +1360,7 @@ test.pair6 <- test.pair6[, c(1,2,4,3,5)]
 test.pair6 <- test.pair6[!duplicated(test.pair6$timestamp),]
 
 # PAIR 7: Elaine/Rodolfo (1.7)
-png(file = "pair7.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/tracking data/pair7.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Elaine, Rodolfo), col = c("red","blue3"),
      main = "PAIR 7: Elaine/Rodolfo (Site 1)")
 dev.off()
@@ -1339,7 +1370,7 @@ test.pair7 <- test.pair7[!duplicated(test.pair7$timestamp),]
 
 ## SITE 2: below 1 (closer)
 # PAIR 8: Annie/Larry (2.1)
-png(file = "pair8.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/tracking data/pair8.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Annie, Larry), col = c("red","blue3"),
      main = "PAIR 8: Annie/Larry (Site 2)")
 dev.off()
@@ -1348,8 +1379,8 @@ test.pair8 <- test.pair8[, c(1,2,4,3,5)]
 test.pair8 <- test.pair8[!duplicated(test.pair8$timestamp),]
 
 # PAIR 9: Larry/Reid (2.2)
-png(file = "pair9.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Larry, Reid), col = c("blue3","lightblue1"),
+png(file = "figures/tracking data/pair9.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(list(Larry, Reid), col = c("blue3","forestgreen"),
      main = "PAIR 9: Larry/Reid (Site 2)")
 dev.off()
 test.pair9 <- merge(Larry.corr, Reid.corr)
@@ -1357,7 +1388,7 @@ test.pair9 <- test.pair9[, c(1,2,4,3,5)]
 test.pair9 <- test.pair9[!duplicated(test.pair9$timestamp),]
 
 # PAIR 10: Margaret/Thomas (2.3)
-png(file = "pair10.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/tracking data/pair10.png", width = 6.86, height = 6, units = "in", res = 600)
 plot(list(Margaret, Thomas), col = c("red","blue3"),
      main = "PAIR 10: Margaret/Thomas (Site 2)")
 dev.off()
@@ -1366,8 +1397,8 @@ test.pair10 <- test.pair10[, c(1,2,4,3,5)]
 test.pair10 <- test.pair10[!duplicated(test.pair10$timestamp),]
 
 # PAIR 11: Reid/Thomas (2.4)
-png(file = "pair11.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Reid, Thomas), col = c("lightblue1","blue3"),
+png(file = "figures/tracking data/pair11.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(list(Reid, Thomas), col = c("forestgreen","blue3"),
      main = "PAIR 11: Reid/Thomas (Site 2)")
 dev.off()
 test.pair11 <- merge(Reid.corr, Thomas.corr)
@@ -1376,8 +1407,8 @@ test.pair11 <- test.pair11[!duplicated(test.pair11$timestamp),]
 
 ## SITE 3: below 1 (closer)
 # PAIR 12: Maria/Sheron (3.1)
-png(file = "pair12.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(list(Maria, Sheron), col = c("red","purple"),
+png(file = "figures/tracking data/pair12.png", width = 6.86, height = 6, units = "in", res = 600)
+plot(list(Maria, Sheron), col = c("red","yellow"),
      main = "Maria/Sheron (Site 3)")
 dev.off()
 test.pair12 <- merge(Maria.corr, Sheron.corr)
@@ -1434,10 +1465,10 @@ cdAnteater.pair1 <- as.corrData(test.pair1)
 prtsAnteater.pair1 <- findPrts(cdAnteater.pair1, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair1 <- corrMove(cdAnteater.pair1, prtsAnteater.pair1)
-saveRDS(object = cmAnteater.pair1, file = "cmAnteater.pair1.RDS")
-cmAnteater.pair1 <- readRDS("cmAnteater.pair1.RDS")
+saveRDS(object = cmAnteater.pair1, file = "RDS/cmAnteater.pair1.RDS")
+cmAnteater.pair1 <- readRDS("RDS/cmAnteater.pair1.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair1.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair1.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair1)
 title("Pair 1: Christoffer/Kyle (Site 1)")
 dev.off()
@@ -1451,10 +1482,10 @@ cdAnteater.pair2 <- as.corrData(test.pair2)
 prtsAnteater.pair2 <- findPrts(cdAnteater.pair2, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair2 <- corrMove(cdAnteater.pair2, prtsAnteater.pair2)
-saveRDS(object = cmAnteater.pair2, file = "cmAnteater.pair2.RDS")
-cmAnteater.pair2 <- readRDS("cmAnteater.pair2.RDS")
+saveRDS(object = cmAnteater.pair2, file = "RDS/cmAnteater.pair2.RDS")
+cmAnteater.pair2 <- readRDS("RDS/cmAnteater.pair2.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair2.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair2.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair2)
 title("PAIR 2: Christoffer/Elaine (Site 1)")
 dev.off()
@@ -1466,10 +1497,10 @@ cdAnteater.pair3 <- as.corrData(test.pair3)
 prtsAnteater.pair3 <- findPrts(cdAnteater.pair3, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair3 <- corrMove(cdAnteater.pair3, prtsAnteater.pair3)
-saveRDS(object = cmAnteater.pair3, file = "cmAnteater.pair3.RDS")
-cmAnteater.pair3 <- readRDS("cmAnteater.pair3.RDS")
+saveRDS(object = cmAnteater.pair3, file = "RDS/cmAnteater.pair3.RDS")
+cmAnteater.pair3 <- readRDS("RDS/cmAnteater.pair3.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair3.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair3.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair3)
 title("PAIR 3: Bumpus/Kyle (Site 1)")
 dev.off()
@@ -1481,10 +1512,10 @@ cdAnteater.pair4 <- as.corrData(test.pair4)
 prtsAnteater.pair4 <- findPrts(cdAnteater.pair4, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair4 <- corrMove(cdAnteater.pair4, prtsAnteater.pair4)
-saveRDS(object = cmAnteater.pair4, file = "cmAnteater.pair4.RDS")
-cmAnteater.pair4 <- readRDS("cmAnteater.pair4.RDS")
+saveRDS(object = cmAnteater.pair4, file = "RDS/cmAnteater.pair4.RDS")
+cmAnteater.pair4 <- readRDS("RDS/cmAnteater.pair4.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair4.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair4.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair4)
 title("PAIR 4: Elaine/Little Rick (Site 1)")
 dev.off()
@@ -1496,10 +1527,10 @@ cdAnteater.pair5 <- as.corrData(test.pair5)
 prtsAnteater.pair5 <- findPrts(cdAnteater.pair5, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair5 <- corrMove(cdAnteater.pair5, prtsAnteater.pair5)
-saveRDS(object = cmAnteater.pair5, file = "cmAnteater.pair5.RDS")
-cmAnteater.pair5 <- readRDS("cmAnteater.pair5.RDS")
+saveRDS(object = cmAnteater.pair5, file = "RDS/cmAnteater.pair5.RDS")
+cmAnteater.pair5 <- readRDS("RDS/cmAnteater.pair5.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair5.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair5.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair5)
 title("PAIR 5: Bumpus/Makao (Site 1)")
 dev.off()
@@ -1511,10 +1542,10 @@ cdAnteater.pair6 <- as.corrData(test.pair6)
 prtsAnteater.pair6 <- findPrts(cdAnteater.pair6, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair6 <- corrMove(cdAnteater.pair6, prtsAnteater.pair6)
-saveRDS(object = cmAnteater.pair6, file = "cmAnteater.pair6.RDS")
-cmAnteater.pair6 <- readRDS("cmAnteater.pair6.RDS")
+saveRDS(object = cmAnteater.pair6, file = "RDS/cmAnteater.pair6.RDS")
+cmAnteater.pair6 <- readRDS("RDS/cmAnteater.pair6.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair6.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair6.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair6)
 title("PAIR 6: Bumpus/Puji (Site 1)")
 dev.off()
@@ -1526,10 +1557,10 @@ cdAnteater.pair7 <- as.corrData(test.pair7)
 prtsAnteater.pair7 <- findPrts(cdAnteater.pair7, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair7 <- corrMove(cdAnteater.pair7, prtsAnteater.pair7)
-saveRDS(object = cmAnteater.pair7, file = "cmAnteater.pair7.RDS")
-cmAnteater.pair7 <- readRDS("cmAnteater.pair7.RDS")
+saveRDS(object = cmAnteater.pair7, file = "RDS/cmAnteater.pair7.RDS")
+cmAnteater.pair7 <- readRDS("RDS/cmAnteater.pair7.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair7.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair7.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair7)
 title("PAIR 7: Elaine/Rodolfo (Site 1)")
 dev.off()
@@ -1543,10 +1574,10 @@ cdAnteater.pair8 <- as.corrData(test.pair8)
 prtsAnteater.pair8 <- findPrts(cdAnteater.pair8, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair8 <- corrMove(cdAnteater.pair8, prtsAnteater.pair8)
-saveRDS(object = cmAnteater.pair8, file = "cmAnteater.pair8.RDS")
-cmAnteater.pair8 <- readRDS("cmAnteater.pair8.RDS")
+saveRDS(object = cmAnteater.pair8, file = "RDS/cmAnteater.pair8.RDS")
+cmAnteater.pair8 <- readRDS("RDS/cmAnteater.pair8.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair8.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair8.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair8)
 title("PAIR 8: Annie/Larry (Site 2)")
 dev.off()
@@ -1558,10 +1589,10 @@ cdAnteater.pair9 <- as.corrData(test.pair9)
 prtsAnteater.pair9 <- findPrts(cdAnteater.pair9, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair9 <- corrMove(cdAnteater.pair9, prtsAnteater.pair9)
-saveRDS(object = cmAnteater.pair9, file = "cmAnteater.pair9.RDS")
-cmAnteater.pair9 <- readRDS("cmAnteater.pair9.RDS")
+saveRDS(object = cmAnteater.pair9, file = "RDS/cmAnteater.pair9.RDS")
+cmAnteater.pair9 <- readRDS("RDS/cmAnteater.pair9.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair9.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair9.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair9)
 title("PAIR 9: Larry/Reid (Site 2)")
 dev.off()
@@ -1573,10 +1604,10 @@ cdAnteater.pair10 <- as.corrData(test.pair10)
 prtsAnteater.pair10 <- findPrts(cdAnteater.pair10, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair10 <- corrMove(cdAnteater.pair10, prtsAnteater.pair10)
-saveRDS(object = cmAnteater.pair10, file = "cmAnteater.pair10.RDS")
-cmAnteater.pair10 <- readRDS("cmAnteater.pair10.RDS")
+saveRDS(object = cmAnteater.pair10, file = "RDS/cmAnteater.pair10.RDS")
+cmAnteater.pair10 <- readRDS("RDS/cmAnteater.pair10.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair10.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair10.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair10)
 title("PAIR 10: Margaret/Thomas (Site 2)")
 dev.off()
@@ -1588,10 +1619,10 @@ cdAnteater.pair11 <- as.corrData(test.pair11)
 prtsAnteater.pair11 <- findPrts(cdAnteater.pair11, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair11 <- corrMove(cdAnteater.pair11, prtsAnteater.pair11)
-saveRDS(object = cmAnteater.pair11, file = "cmAnteater.pair11.RDS")
-cmAnteater.pair11 <- readRDS("cmAnteater.pair11.RDS")
+saveRDS(object = cmAnteater.pair11, file = "RDS/cmAnteater.pair11.RDS")
+cmAnteater.pair11 <- readRDS("RDS/cmAnteater.pair11.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair11.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair11.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair11)
 title("PAIR 11: Reid/Thomas (Site 2)")
 dev.off()
@@ -1605,13 +1636,52 @@ cdAnteater.pair12 <- as.corrData(test.pair12)
 prtsAnteater.pair12 <- findPrts(cdAnteater.pair12, W=5, IC = 2)
 #Get the MCI estimates and selected model conditional on the data and partition points
 cmAnteater.pair12 <- corrMove(cdAnteater.pair12, prtsAnteater.pair12)
-saveRDS(object = cmAnteater.pair12, file = "cmAnteater.pair12.RDS")
-cmAnteater.pair12 <- readRDS("cmAnteater.pair12.RDS")
+saveRDS(object = cmAnteater.pair12, file = "RDS/cmAnteater.pair12.RDS")
+cmAnteater.pair12 <- readRDS("RDS/cmAnteater.pair12.RDS")
 #3-panel plot of the MCIs over time
-png(file = "corrmove_pair12.png", width = 6.86, height = 6, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair12.png", width = 6.86, height = 6, units = "in", res = 600)
 plot.corrMove(cmAnteater.pair12)
 title("PAIR 12: Maria/Sheron (Site 3)")
 dev.off()
+
+### TEMPERATURE ANALYSIS ####
+#see Dr. Noonan
+
+
+#### MOVEVIS FOR VISUALIZATION OF MOVEMENT DATA #### ----
+# https://movevis.org/
+
+#R package workflow
+data("move_data", package = "moveVis") # move class object
+# if your tracks are present as data.frames, see df2move() for conversion
+
+# align move_data to a uniform time scale
+m <- align_move(move_data, res = 4, unit = "mins")
+
+# create spatial frames with a OpenStreetMap watercolour map
+frames <- frames_spatial(m, path_colours = c("red", "green", "blue"),
+                         map_service = "mapbox", 
+                         map_type = "satellite", 
+                         map_token = "sk.eyJ1Ijoia2F0Y2hoZW4iLCJhIjoiY2xlM25lemwyMDNybDNvbzY4MmEybXl3MSJ9.pEfF_kZ-qZDY-RzV8xh8Kg", 
+                         alpha = 0.5) %>% 
+  add_labels(x = "Longitude", y = "Latitude") %>% # add some customization, such as axis labels
+  add_northarrow() %>% 
+  add_scalebar() %>% 
+  add_timestamps(type = "label") %>% 
+  add_progress()
+
+frames[[100]] # preview one of the frames, e.g. the 100th frame
+
+# animate frames
+animate_frames(frames, out_file = "moveVis.gif")
+
+
+
+
+
+
+
+
 
 
 ## SITE 1: above 1 (further apart)
