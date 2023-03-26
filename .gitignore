@@ -2,6 +2,8 @@
 .Rhistory
 .RData
 .Ruserdata
+gitattributes.txt
+gitignore.txt
 giant anteater project.Rproj
 data/
 Methods reference material/
