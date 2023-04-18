@@ -2,8 +2,13 @@
 # Set working directory
 setwd("C:/Users/achhen/OneDrive - UBC/Github/giant-anteater")
 
-# load RDS files ----
+# Import dataset
+anteater_DATA <- read_csv("data/Anteaters_NoOutliers (original data).csv", col_types = cols(timestamp = "c", class = "c", identity = "c", id = "c", .default = "d"))
 
+# Convert dataset to a telemetry object
+DATA <- as.telemetry("data/Anteaters_NoOutliers (original data).csv")
+
+# load RDS files ----
 #movement models
 FIT_1 <- readRDS("RDS/movement model/FIT_1.RDS")
 FIT_1_male <- readRDS("RDS/movement model/FIT_1_male.RDS")
@@ -36,20 +41,35 @@ DATA_proximity_2 <- readRDS("RDS/proximity/DATA_proximity_2.RDS")
 DATA_proximity <- readRDS("RDS/proximity/DATA_proximity.RDS")
 
 #distance
-distance1 <- readRDS("RDS/distance/distance1.RDS")
-distance2 <- readRDS("RDS/distance/distance2.RDS")
-distance3 <- readRDS("RDS/distance/distance3.RDS")
-distance4 <- readRDS("RDS/distance/distance4.RDS")
-distance5 <- readRDS("RDS/distance/distance5.RDS")
-distance6 <- readRDS("RDS/distance/distance6.RDS")
-distance7 <- readRDS("RDS/distance/distance7.RDS")
-distance8 <- readRDS("RDS/distance/distance8.RDS")
-distance9 <- readRDS("RDS/distance/distance9.RDS")
-distance10 <- readRDS("RDS/distance/distance10.RDS")
-distance11 <- readRDS("RDS/distance/distance11.RDS")
-distance12 <- readRDS("RDS/distance/distance12.RDS")
+distance_pair1 <- readRDS("RDS/distance/distance_pair1.RDS")
+distance_pair2 <- readRDS("RDS/distance/distance_pair2.RDS")
+distance_pair3 <- readRDS("RDS/distance/distance_pair3.RDS")
+distance_pair4 <- readRDS("RDS/distance/distance_pair4.RDS")
+distance_pair5 <- readRDS("RDS/distance/distance_pair5.RDS")
+distance_pair6 <- readRDS("RDS/distance/distance_pair6.RDS")
+distance_pair7 <- readRDS("RDS/distance/distance_pair7.RDS")
+distance_pair8 <- readRDS("RDS/distance/distance_pair8.RDS")
+distance_pair9 <- readRDS("RDS/distance/distance_pair9.RDS")
+distance_pair10 <- readRDS("RDS/distance/distance_pair10.RDS")
+distance_pair11 <- readRDS("RDS/distance/distance_pair11.RDS")
+distance_pair12 <- readRDS("RDS/distance/distance_pair12.RDS")
 
 #correlative movement
+Bumpus <- DATA$Bumpus
+Christoffer <- DATA$Christoffer
+Elaine <- DATA$Elaine
+Kyle <- DATA$Kyle
+Little_rick <- DATA$`Little Rick`
+Makao <- DATA$Makao
+Puji <- DATA$Puji
+Rodolfo <- DATA$Rodolfo
+Annie <- DATA$Annie
+Larry <- DATA$`Larry 267`
+Margaret <- DATA$Margaret
+Reid <- DATA$Reid
+Thomas <- DATA$Thomas
+Maria <- DATA$Maria
+Sheron <- DATA$Sheron
 cmAnteater_pair1 <- readRDS("RDS/cmAnteater_pair1.RDS")
 cmAnteater_pair2 <- readRDS("RDS/cmAnteater_pair2.RDS")
 cmAnteater_pair3 <- readRDS("RDS/cmAnteater_pair3.RDS")
@@ -556,25 +576,8 @@ plot(log(est)~timestamp, data=distance_pair12, type="l",
      main = "Log-scaled Pair 12: Maria/Sheron (Site 3)") # type="l" changes the plot from dots to a line
 dev.off()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ##poster version ----
-png(file = "figures/4 distance/distance_pair1.png", width = 7.16, height = 4.14, units = "in", res = 600)
+png(file = "figures/distance/distance_pair1.png", width = 7.16, height = 4.14, units = "in", res = 600)
 par(mar=c(4.5,5,4,2)) #increasing space of left margin so part of the y-axis title isn't cut off (order: bottom, left, top, and right)
 plot(est~timestamp, 
      data=distance1, 
@@ -587,7 +590,7 @@ plot(est~timestamp,
 ylim = c(0,9000)
 dev.off()
 
-png(file = "figures/4 distance/distance_pair11.png", width = 7.16, height = 4.14, units = "in", res = 600)
+png(file = "figures/distance/distance_pair11.png", width = 7.16, height = 4.14, units = "in", res = 600)
 par(mar=c(4.5,5,4,2)) #increasing space of left margin so part of the y-axis title isn't cut off (order: bottom, left, top, and right)
 plot(est~timestamp, 
      data=distance11, 
@@ -604,12 +607,12 @@ dev.off()
 
 ##poster version ----
 #3-panel plot of the MCIs over time
-png(file = "figures/5 correlative movement/corrmove_pair1.png", width = 7.16, height = 5.38, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair1.png", width = 7.16, height = 5.38, units = "in", res = 600)
 plot.corrMove(cmAnteater_pair1,
               cex.axis = 1.5, #size of axis font (tick values)
               cex.lab = 2) #size of axis label)
 dev.off()
-png(file = "figures/5 correlative movement/corrmove_pair11.png", width = 7.16, height = 5.38, units = "in", res = 600)
+png(file = "figures/correlative movement/corrmove_pair11.png", width = 7.16, height = 5.38, units = "in", res = 600)
 plot.corrMove(cmAnteater_pair11)
 dev.off()
 

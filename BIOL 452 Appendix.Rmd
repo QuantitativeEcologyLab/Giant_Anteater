@@ -21,7 +21,7 @@ library(tidyr)           #data wrangling
 library(lubridate)       #round_date() for corrMove
 #analysis
 library(ctmm)            #continuous-time movement models
-library(lme4) # test to see if differences are significant using glmer(), Generalized Linear Mixed-Effects Models
+library(lme4)            #pairwise sex test to see if differences are significant using glmer()
 devtools::install_github("jmcalabrese/corrMove", force = TRUE)
 library(corrMove)
 ```
