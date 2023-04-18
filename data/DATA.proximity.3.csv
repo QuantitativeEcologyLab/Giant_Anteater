@@ -1,7 +1,0 @@
-"anteater_A","anteater_B","overlap","Sex.A","Age.A","Sex.B","Age.B","sex_comparison","proximity_low","proximity_est","proximity_high"
-"Luigi","Hannah",0.446900628431762,"Male","Adult","Female","Adult","male:female",0.71996751405125,0.984191332275465,1.3242716542419
-"Maria","Hannah",0.035334250237756,"Female","Adult","Female","Adult","female:female",0.796657254672386,0.907485679213131,1.0297279868585
-"Maria","Luigi",0.184319315999872,"Female","Adult","Male","Adult","male:female",0.698186689947965,0.981247827254184,1.35352170150914
-"Sheron","Hannah",0.059561304750112,"Female","Adult","Female","Adult","female:female",0.821675589971161,0.956534833654499,1.1062792646249
-"Sheron","Luigi",0.275378346570412,"Female","Adult","Male","Adult","male:female",0.841719142747093,1.22789221881185,1.73458022788818
-"Sheron","Maria",0.868136064966633,"Female","Adult","Female","Adult","female:female",0.699112975118395,0.819315652326148,0.954520649189972
