@@ -1,7 +1,0 @@
-colour legend
-
-blue = male adult
-green = male subadult
-red = female
-yellow = female (only occurs when displaying two females in one plot)
-purple = male and female
