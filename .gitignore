@@ -1,12 +1,8 @@
 .Rproj.user
-.Rhistory
-.RData
 .Ruserdata
-gitattributes.txt
-gitignore.txt
+.gitattributes.txt
+.gitignore.txt
 giant anteater project.Rproj
 data/
-Methods reference material/
-giantanteater code with full details.R
 site visuals/
-
+Figures/
