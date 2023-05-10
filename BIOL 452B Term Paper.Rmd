@@ -2,10 +2,12 @@
 title: "BIOL 452B Term Paper"
 author: "Kat Chhen"
 date: "2023-04-28"
-output: pdf_document
+output:
+  word_document: default
+  pdf_document: default
 subtitle: "The socio-spatial ecology of giant anteaters in the Brazilian Cerrado"
 header-includes: \usepackage{setspace}\doublespacing
-indent: TRUE
+indent: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -102,7 +104,7 @@ cmAnteater_pair12 <- readRDS("RDS/correlative movement/cmAnteater_pair12.RDS")
 #data preparation
 
 # Import dataset
-ORIGINAL_DATA <- read_csv("data/Anteaters_NoOutliers (original data).csv", col_types = cols(timestamp = "c", class = "c", identity = "c", ID = "c", .default = "d"))
+ORIGINAL_DATA <- read_csv("data/Anteaters_NoOutliers.csv", col_types = cols(timestamp = "c", class = "c", identity = "c", ID = "c", .default = "d"))
 #subset to specific individuals
 ANTEATER <- ORIGINAL_DATA[which(ORIGINAL_DATA$ID %in% c("Alexander", "Annie",
                                                         "Anthony", "Beto",
@@ -119,7 +121,7 @@ ANTEATER <- ORIGINAL_DATA[which(ORIGINAL_DATA$ID %in% c("Alexander", "Annie",
 
 
 # Convert dataset to a telemetry object
-DATA <- as.telemetry("data/Anteaters_NoOutliers (original data).csv")
+DATA <- as.telemetry("data/Anteaters_NoOutliers.csv")
 
 # Import supplementary data containing biological information
 ORIGINAL_META <- read_csv("data/Anteater_Results_Final.csv")
