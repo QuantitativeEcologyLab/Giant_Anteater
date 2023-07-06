@@ -1,0 +1,1323 @@
+---
+title: "giant anteaters"
+output: html_document
+date: "2023-06-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+
+# Set working directory
+knitr::opts_knit$set(root.dir = "C:/Users/achhen/OneDrive - UBC/Github/giant anteater")
+
+```
+
+
+```{r message = FALSE}
+#load packages
+#data, visualization
+library(readr)
+library(ggplot2)
+library(khroma)          #colour blind friendly colour palette
+library(dplyr)           #data wrangling
+library(tidyr)           #data wrangling
+library(tibble)          #data wrangling
+library(lubridate)       #round_date() for corrMove
+#analysis
+#devtools::install_github("ctmm-initiative/ctmm", force = TRUE) #if package needs to be updated
+library(ctmm)            #continuous-time movement models
+library(lme4)            #pairwise sex test to see if differences are significant using glmer()
+library(glmmTMB)         #beta distribution
+#devtools::install_github("jmcalabrese/corrMove", force = TRUE) #if package needs to be installed, there is no CRAN version available
+library(corrMove)        #correlative movement
+```
+
+# Data
+
+
+```{r message = FALSE}
+# Import data
+#import cleaned GPS giant anteater data
+DATA_GPS <- read_csv("data/Anteaters_NoOutliers.csv")
+
+#correct a mismatch entry for 'Larry' to 'Larry 267'
+DATA_GPS$ID[DATA_GPS$ID == "Larry 267"] <- "Larry"
+DATA_GPS$ID[DATA_GPS$ID == "Little Rick"] <- "Little_Rick"
+#subset to 23 range-resident individuals
+DATA_GPS <- DATA_GPS[which(DATA_GPS$ID %in% c("Alexander", "Annie", "Anthony", "Beto", "Bumpus",
+                                              "Cate", "Christoffer","Elaine", "Hannah","Jackson",
+                                              "Jane","Kyle", "Larry", "Little_Rick", "Luigi",
+                                              "Makao", "Margaret", "Maria", "Puji", "Reid", 
+                                              "Rodolfo", "Sheron", "Thomas")),]
+
+# Convert dataset to a telemetry object
+DATA_TELEMETRY <- as.telemetry("data/Anteaters_NoOutliers.csv")
+
+#correct a mismatch entry for 'Larry' to 'Larry 267'
+names(DATA_TELEMETRY)[25] <- "Larry"
+names(DATA_TELEMETRY)[27] <- "Little_Rick"
+
+#subset to 23 range-resident individuals
+DATA_TELEMETRY  <- DATA_TELEMETRY[c("Alexander", "Annie", "Anthony", "Beto", "Bumpus",
+                                    "Cate", "Christoffer","Elaine", "Hannah","Jackson",
+                                    "Jane","Kyle", "Larry", "Little_Rick", "Luigi",
+                                    "Makao", "Margaret", "Maria", "Puji", "Reid", 
+                                    "Rodolfo", "Sheron", "Thomas")]
+
+# Import supplementary data containing biological information
+DATA_META <- read_csv("data/Anteater_Results_Final.csv")
+#subset to 23 range-resident individuals
+DATA_META <- DATA_META[c(1:3,8:10,12,14,17,19,20,22,23,25:29,33:35,37,38),]
+DATA_META$ID[DATA_META$ID == "Little Rick"] <- "Little_Rick"
+DATA_BIO <- DATA_META[,1:3]
+```
+
+# Home-range
+
+```{r eval = FALSE}
+# Home range & home range overlap ----
+#fit movement models
+GUESS <- lapply(DATA_TELEMETRY[1:23], function(b) ctmm.guess(b,interactive=FALSE) )
+FIT <- lapply(1:23, function(i) ctmm.select(DATA_TELEMETRY[[i]],GUESS[[i]]) )
+names(FIT) <- names(DATA_TELEMETRY[1:23])
+overlap(FIT)
+#calculate AKDE overlap, create aligned UDs
+AKDE <- akde(DATA_TELEMETRY[1:23],FIT)
+overlap(AKDE)
+
+#save movement models
+saveRDS(FIT, file = "RDS/FIT.RDS")
+#save AKDE overlap
+saveRDS(AKDE, file = "RDS/AKDE.RDS")
+```
+
+
+## Home range size
+
+```{r include = FALSE}
+## HR size ----
+FIT <- readRDS("RDS/FIT.RDS")
+AKDE <- readRDS("RDS/AKDE.RDS")
+```
+
+
+```{r}
+#calculate home range size for each individual
+
+# Initialize an empty data frame to store the results
+HR_size <- data.frame()
+
+# Loop through each object in the AKDE list
+for (i in 1:length(AKDE)) {
+  # Access the AKDE object and extract the summary
+  summary <- summary(AKDE[[i]])$CI
+  
+  # Bind the summary to the HR_size data frame
+  HR_size <- rbind(HR_size, as.data.frame(summary))
+}
+
+row.names(HR_size) <- NULL
+HR_size <- cbind(HR_size, DATA_META[,c(1:3,5)])
+HR_size$site <- NA
+HR_size$site[HR_size$Road == "MS-040"] <- 1
+HR_size$site[HR_size$Road == "BR_267"] <- 2
+HR_size$Road <- NULL
+HR_size <- relocate(HR_size, c(low, est, high), .after = site)
+names(HR_size)[5] <- "HR_low"
+names(HR_size)[6] <- "HR_est"
+names(HR_size)[7] <- "HR_high"
+
+#calculate mean home range size
+round(mean(HR_size$HR_low), 2)
+round(mean(HR_size$HR_est), 2)
+round(mean(HR_size$HR_high), 2)
+
+#calculate home-range size & compare sex
+AKDE_male <- AKDE[c("Alexander", "Anthony", "Beto","Christoffer","Jackson",
+                    "Kyle", "Larry", "Little_Rick", "Luigi", "Reid", 
+                    "Rodolfo", "Thomas")]
+AKDE_female <- AKDE[c("Annie", "Bumpus", "Cate", "Elaine", "Hannah",
+                      "Jane","Makao", "Margaret", "Maria", "Puji",
+                      "Sheron")]
+
+#calculate mean home-range sizes for male
+meta(AKDE_male)
+
+#calculate mean home-range sizes for male
+meta(AKDE_female)
+
+#test to see significance of sex on home-range
+AKDE_sex_compare <- list(male = AKDE_male,
+                         female = AKDE_female)
+COL_sex <- c("#004488", "#A50026")
+meta(AKDE_sex_compare, col = COL_sex, sort = TRUE)
+
+#mean home range size
+round(mean(HR_size$HR_low), 2) #4.55 km^2
+round(mean(HR_size$HR_est), 2) #5.45 km^2
+round(mean(HR_size$HR_high), 2) #6.56 km^2
+```
+
+## Home-range overlap
+
+```{r eval = FALSE}
+#subset home range overlap based on site location
+AKDE_1 <- AKDE[c("Alexander", "Anthony", "Bumpus", "Cate", "Christoffer",
+                 "Elaine", "Jackson", "Kyle", "Little_Rick", "Makao",
+                 "Puji", "Rodolfo")]
+AKDE_2 <- AKDE[c("Annie", "Beto", "Hannah", "Jane", "Larry",
+                 "Luigi", "Margaret", "Maria", "Reid", "Sheron",
+                 "Thomas")]
+
+#Create a pairwise data frame pairing up every individual for site 1 ...................
+#calculate 95% AKDE overlap for pairwise comparison
+pairwise_1 <- overlap(AKDE_1, level = 0.95)
+
+#extract CI 'est' matrix from array
+pairwise_1_est <- pairwise_1$CI[ , , 2]
+#remove duplicate values of the matrix
+pairwise_1_est[upper.tri(pairwise_1_est, diag = TRUE)] <- NA
+#Create a new data frame based on the overlap values
+pairwise_1_df <- as.data.frame(pairwise_1_est)
+pairwise_1_df$anteater_A <- rownames(pairwise_1_df)
+pairwise_1_df <- pivot_longer(pairwise_1_df, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap_est', values_drop_na = TRUE)
+
+#extract CI 'low' matrix from array
+pairwise_1_low <- pairwise_1$CI[ , , 1]
+#remove duplicate values of the matrix
+pairwise_1_low[upper.tri(pairwise_1_low, diag = TRUE)] <- NA
+#Create a new data frame based on the overlap values
+pairwise_1_low <- as.data.frame(pairwise_1_low)
+pairwise_1_low$anteater_A <- rownames(pairwise_1_low)
+pairwise_1_low <- pivot_longer(pairwise_1_low, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap_low', values_drop_na = TRUE)
+pairwise_1_df <- left_join(pairwise_1_df, pairwise_1_low, by = c("anteater_A", "anteater_B"))
+pairwise_1_df <- relocate(pairwise_1_df, overlap_low, .before = overlap_est)
+
+#extract CI 'high' matrix from array
+pairwise_1_high <- pairwise_1$CI[ , , 3]
+#remove duplicate values of the matrix
+pairwise_1_high[upper.tri(pairwise_1_high, diag = TRUE)] <- NA
+#Create a new data frame based on the overlap values
+pairwise_1_high <- as.data.frame(pairwise_1_high)
+pairwise_1_high$anteater_A <- rownames(pairwise_1_high)
+pairwise_1_high <- pivot_longer(pairwise_1_high, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap_high', values_drop_na = TRUE)
+pairwise_1_df <- left_join(pairwise_1_df, pairwise_1_high, by = c("anteater_A", "anteater_B"))
+
+#add biological data to dataframe
+pairwise_1_df <- left_join(pairwise_1_df, rename(DATA_BIO, anteater_A = ID), by = "anteater_A")
+pairwise_1_df <- left_join(pairwise_1_df, rename(DATA_BIO, anteater_B = ID), by = "anteater_B", suffix = c(".A", ".B"))
+#add column to indicate which sexes that are being compared
+pairwise_1_df <- mutate(pairwise_1_df,
+                        sex_comparison = case_when(paste(Sex.A, Sex.B) == "Male Male" ~ "male-male",
+                                                   paste(Sex.A, Sex.B) == "Female Female" ~ "female-female",
+                                                   paste(Sex.A, Sex.B) == "Male Female" ~ "male-female",
+                                                   paste(Sex.A, Sex.B) == "Female Male" ~ "male-female"))
+#assign site
+pairwise_1_df$site <- 1
+pairwise_1_df <- relocate(pairwise_1_df, c("overlap_low", "overlap_est", "overlap_high"), .after = site)
+
+#Create a pairwise data frame pairing up every individual for site  ...................
+#calculate 95% AKDE overlap for pairwise comparison
+pairwise_2 <- overlap(AKDE_2, level = 0.95)
+
+#extract CI 'est' matrix from array
+pairwise_2_est <- pairwise_2$CI[ , , 2]
+#remove duplicate values of the matrix
+pairwise_2_est[upper.tri(pairwise_2_est, diag = TRUE)] <- NA
+#Create a new data frame based on the overlap values
+pairwise_2_df <- as.data.frame(pairwise_2_est)
+pairwise_2_df$anteater_A <- rownames(pairwise_2_df)
+pairwise_2_df <- pivot_longer(pairwise_2_df, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap_est', values_drop_na = TRUE)
+
+#extract CI 'low' matrix from array
+pairwise_2_low <- pairwise_2$CI[ , , 1]
+#remove duplicate values of the matrix
+pairwise_2_low[upper.tri(pairwise_2_low, diag = TRUE)] <- NA
+#Create a new data frame based on the overlap values
+pairwise_2_low <- as.data.frame(pairwise_2_low)
+pairwise_2_low$anteater_A <- rownames(pairwise_2_low)
+pairwise_2_low <- pivot_longer(pairwise_2_low, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap_low', values_drop_na = TRUE)
+pairwise_2_df <- left_join(pairwise_2_df, pairwise_2_low, by = c("anteater_A", "anteater_B"))
+pairwise_2_df <- relocate(pairwise_2_df, overlap_low, .before = overlap_est)
+
+#extract CI 'high' matrix from array
+pairwise_2_high <- pairwise_2$CI[ , , 3]
+#remove duplicate values of the matrix
+pairwise_2_high[upper.tri(pairwise_2_high, diag = TRUE)] <- NA
+#Create a new data frame based on the overlap values
+pairwise_2_high <- as.data.frame(pairwise_2_high)
+pairwise_2_high$anteater_A <- rownames(pairwise_2_high)
+pairwise_2_high <- pivot_longer(pairwise_2_high, cols = -anteater_A, names_to = 'anteater_B', values_to = 'overlap_high', values_drop_na = TRUE)
+pairwise_2_df <- left_join(pairwise_2_df, pairwise_2_high, by = c("anteater_A", "anteater_B"))
+
+#add biological data to dataframe
+pairwise_2_df <- left_join(pairwise_2_df, rename(DATA_BIO, anteater_A = ID), by = "anteater_A")
+pairwise_2_df <- left_join(pairwise_2_df, rename(DATA_BIO, anteater_B = ID), by = "anteater_B", suffix = c(".A", ".B"))
+#add column to indicate which sexes that are being compared
+pairwise_2_df <- mutate(pairwise_2_df,
+                        sex_comparison = case_when(paste(Sex.A, Sex.B) == "Male Male" ~ "male-male",
+                                                   paste(Sex.A, Sex.B) == "Female Female" ~ "female-female",
+                                                   paste(Sex.A, Sex.B) == "Male Female" ~ "male-female",
+                                                   paste(Sex.A, Sex.B) == "Female Male" ~ "male-female"))
+#assign site
+pairwise_2_df$site <- 2
+pairwise_2_df <- relocate(pairwise_2_df, c("overlap_low", "overlap_est", "overlap_high"), .after = site)
+## HRO pairwise results
+pairwise_df <- rbind(pairwise_1_df, pairwise_2_df)
+
+saveRDS(object = pairwise_1_df, file = "RDS/pairwise_1_df.RDS")
+saveRDS(object = pairwise_2_df, file = "RDS/pairwise_2_df.RDS")
+saveRDS(object = pairwise_df, file = "RDS/pairwise_df.RDS")
+```
+
+```{r}
+pairwise_1_df <- readRDS("RDS/pairwise_1_df.RDS")
+pairwise_2_df <- readRDS("RDS/pairwise_2_df.RDS")
+pairwise_df  <- readRDS("RDS/pairwise_df.RDS")
+
+pairwise_df$pair_ID <- paste(pairwise_df$anteater_A, pairwise_df$anteater_B, sep = "_")
+pairwise_df <- relocate(pairwise_df, pair_ID, .before = anteater_A)
+
+#Identify dyads that do and do not have a home range overlap with each other
+#number of unique pairs that do not have home-range overlap
+pairwise_df[pairwise_df$overlap_est == 0,] #28 dyads
+#number of unique pairs that have home-range overlap
+pairwise_df[pairwise_df$overlap_est != 0,] #93 dyads
+overlap_df <- pairwise_df[pairwise_df$overlap_est != 0,]
+```
+
+
+### Home-range overlap sex analysis !!!!!!!!!!!!!!!!!
+
+```{r}
+##due to the nature of a beta distribution, transformation/squeezing is required, based on the equation https://stats.stackexchange.com/questions/31300/dealing-with-0-1-values-in-a-beta-regression
+min_val <- min(overlap_df$overlap_est)
+max_val <- max(overlap_df$overlap_est)
+squeeze_min <- 0.001
+squeeze_max <- 0.999
+overlap_df$overlap_est_squeezed <- ((overlap_df$overlap_est - min_val) / (max_val - min_val)) * (squeeze_max - squeeze_min) + squeeze_min
+overlap_df <- relocate(overlap_df, overlap_est_squeezed, .after = overlap_high)
+
+#test for significance in sex, compare model with and without sex as a variable
+HRO_test <- glmmTMB(overlap_est_squeezed ~ sex_comparison + (1|site), family = beta_family(link = "logit"), data = overlap_df)
+HRO_test2 <- glmmTMB(overlap_est_squeezed ~ 1 + (1|site), family = beta_family(link = "logit"), data = overlap_df)
+HRO_test_results <- anova(HRO_test, HRO_test2)
+HRO_test_pvalue <- round(HRO_test_results$`Pr(>Chisq)`[2], 2)
+
+#number of dyads with a home range overlap based on the sex comparison categories
+table(overlap_df$sex_comparison)
+```
+
+### Home-range overlap results
+
+```{r}
+# Total home range overlap
+#calculate mean total home range overlap
+round(mean(overlap_df$overlap_low), 2)
+round(mean(overlap_df$overlap_est), 2)
+round(mean(overlap_df$overlap_high), 2)
+#calculate mean home range overlap based on sex comparison categories
+round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
+round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
+round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
+
+# Range of home range overlap
+#calculate total home range overlap range
+round(min(overlap_df$overlap_est), 2)
+round(max(overlap_df$overlap_est), 2)
+#calculate total home range overlap range (min/max) based on male-male category
+round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
+round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
+#calculate total home range overlap range (min/max) based on female-female category
+round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
+round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
+#calculate total home range overlap range (min/max) based on male-female category
+round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
+round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
+```
+
+# Interaction
+
+## Proximity data
+
+```{r eval = FALSE}
+#subset individual movement models based on their site location
+FIT_1 <- FIT[c("Alexander", "Anthony", "Bumpus", "Cate", "Christoffer",
+                 "Elaine", "Jackson", "Kyle", "Little_Rick", "Makao",
+                 "Puji", "Rodolfo")]
+FIT_2 <- FIT[c("Annie", "Beto", "Hannah", "Jane", "Larry",
+                 "Luigi", "Margaret", "Maria", "Reid", "Sheron",
+                 "Thomas")]
+
+#create empty columns for results to be saved to
+pairwise_1_df$proximity_low <- NA
+pairwise_1_df$proximity_est <- NA
+pairwise_1_df$proximity_high <- NA
+#Calculate the proximity statistics
+for(i in 1:nrow(overlap_1)){
+  ANIMAL_A <- as.character(pairwise_1_df[i, 'anteater_A']) # add as.character due to tibble format
+  ANIMAL_B <- as.character(pairwise_1_df[i, 'anteater_B'])
+  TRACKING_DATA.1 <- DATA_TELEMETRY[c(ANIMAL_A, ANIMAL_B)] # extract anteater by name, has extra layers .-. it doesnt work, that is why
+  # line above is using as.character removes all the fluff because you just want the text string
+  MODELS.1 <- list(FIT_1[ANIMAL_A][[1]], FIT_1[ANIMAL_B][[1]])
+  PROXIMITY1 <- tryCatch(
+    {
+      PROXIMITY_1 <- proximity(data = TRACKING_DATA.1, CTMM = MODELS.1, GUESS=ctmm(error=FALSE))},
+    error=function(err){
+      PROXIMITY_1 <- c(NA,NA,NA)
+      return(PROXIMITY_1)
+    }
+  )
+  pairwise_1_df[i, c("proximity_low")] <- PROXIMITY_1[1]
+  pairwise_1_df[i, c("proximity_est")] <- PROXIMITY_1[2]
+  pairwise_1_df[i, c("proximity_high")] <- PROXIMITY_1[3]
+  write.csv(pairwise_1_df, "data/DATA_proximity_1.csv", row.names = FALSE)
+  cat("finished index", i, "\n") # see the loop happening in real time
+}
+
+#create empty columns for results to be saved to
+pairwise_2_df$proximity_low <- NA
+pairwise_2_df$proximity_est <- NA
+pairwise_2_df$proximity_high <- NA
+#Calculate the proximity statistics
+for(i in 1:nrow(pairwise_2_df)){
+  ANIMAL_A <- as.character(pairwise_2_df[i, 'anteater_A']) # add as.character due to tibble format
+  ANIMAL_B <- as.character(pairwise_2_df[i, 'anteater_B'])
+  TRACKING_DATA_2 <- DATA_TELEMETRY[c(ANIMAL_A, ANIMAL_B)] # extract anteater by name, has extra layers .-. it doesnt work, that is why
+  # line above is using as.character removes all the fluff because you just want the text string
+  MODELS_2 <- list(FIT_2[ANIMAL_A][[1]], FIT_2[ANIMAL_B][[1]])
+  PROXIMITY_2 <- tryCatch(
+    {
+      #calculate the proximity statistic
+      PROXIMITY_2 <- proximity(data = TRACKING_DATA_2, CTMM = MODELS_2, GUESS=ctmm(error=FALSE))},
+    error=function(err){
+      PROXIMITY_2 <- c(NA,NA,NA)
+      return(PROXIMITY_2)
+    }
+  )
+  pairwise_2_df[i, c("proximity_low")] <- PROXIMITY_2[1]
+  pairwise_2_df[i, c("proximity_est")] <- PROXIMITY_2[2]
+  pairwise_2_df[i, c("proximity_high")] <- PROXIMITY_2[3]
+  write.csv(pairwise_2_df, "data/DATA_proximity_2.csv", row.names = FALSE)
+  cat("finished index", i, "\n") # see the loop happening in real time
+}
+
+#import proximity data
+proximity_1_df <- read_csv("data/DATA_proximity_1.csv")
+proximity_2_df <- read_csv("data/DATA_proximity_2.csv")
+
+#create proximity dataframe
+proximity_1_df$site <- 1
+proximity_2_df$site <- 2
+proximity_2_df <- relocate(proximity_2_df, site, .before = proximity_low)
+proximity_1_df$anteater_A[proximity_1_df$anteater_A == "Little Rick"] <- "Little_Rick"
+proximity_1_df$anteater_B[proximity_1_df$anteater_B == "Little Rick"] <- "Little_Rick"
+#correct a mismatch entry for 'Larry 267' to 'Larry'
+proximity_2_df$anteater_A[proximity_2_df$anteater_A == "Larry 267"] <- "Larry"
+proximity_2_df$anteater_B[proximity_2_df$anteater_B == "Larry 267"] <- "Larry"
+
+proximity_df <- bind_rows(proximity_1_df, proximity_2_df)
+proximity_df <- proximity_df[,-3]
+
+saveRDS(proximity_1_df, file = "RDS//proximity_1_df.RDS")
+saveRDS(proximity_2_df, file = "RDS/proximity_2_df.RDS")
+saveRDS(proximity_df, file = "RDS/proximity_df.RDS")
+```
+
+```{r}
+#combine proximity ratio data with overlap dataframe
+proximity_1_df <- readRDS("RDS/proximity_1_df.RDS")
+proximity_2_df <- readRDS("RDS/proximity_2_df.RDS")
+proximity_df <- readRDS("RDS/proximity_df.RDS")
+
+#add proximity data to home-range overlap dataframe
+overlap_df <- left_join(overlap_df, proximity_df, by = c("anteater_A", "anteater_B",
+                                                           "Sex.A", "Sex.B",
+                                                           "Age.A", "Age.B",
+                                                           "sex_comparison",
+                                                           "site"))
+```
+
+## Proximity ratio sex analysis
+
+```{r}
+#test for significance in sex, compare model with and without sex as a variable
+proximity_test <- glmer(proximity_est ~ sex_comparison + (1|site), family = Gamma(link = "log"), data = overlap_df)
+proximity_test2 <- glmer(proximity_est ~ 1 + (1|site), family = Gamma(link = "log"), data = overlap_df)
+proximity_test_results <- anova(proximity_test, proximity_test2)
+proximity_test_pvalue <- round(proximity_test_results$`Pr(>Chisq)`[2], 2)
+#p = 0.13
+```
+
+
+
+## Distance
+
+Distances between each individuals
+
+```{r eval = FALSE}
+#Calculate the distance statistics
+overlap_df$distance_low <- NA
+overlap_df$distance_est <- NA
+overlap_df$distance_high <- NA
+
+RES <- list()
+
+for (i in 1:nrow(overlap_df)) {
+  ANIMAL_A <- as.character(overlap_df[i, 'anteater_A']) 
+  ANIMAL_B <- as.character(overlap_df[i, 'anteater_B'])
+  TRACKING_DATA <- DATA_TELEMETRY[c(ANIMAL_A, ANIMAL_B)]
+  MODELS <- list(FIT[[ANIMAL_A]], FIT[[ANIMAL_B]])
+  
+  DISTANCES_RES <- tryCatch({
+    distances_result <- distances(data = TRACKING_DATA, CTMM = MODELS, GUESS = ctmm(error = FALSE))
+    data.frame(pair_ID = paste(ANIMAL_A, ANIMAL_B, sep = "_"),
+               distance_low = distances_result$low, 
+               distance_est = distances_result$est, 
+               distance_high = distances_result$high,
+               t = distances_result$t,
+               timestamp = distances_result$timestamp)
+  }, error = function(err) {
+    data.frame(pair_ID = paste(ANIMAL_A, ANIMAL_B, sep = "_"),
+               distance_low = NA,
+               distance_est = NA,
+               distance_high = NA,
+               t = NA, 
+               timestamp = NA)
+  })
+  
+  RES[[i]] <- DISTANCES_RES
+
+  cat("finished index", i, "\n")
+}
+
+#Turn the list of list into a data frame
+distance_df <- do.call(rbind, RES)
+saveRDS(distance_df, file = "RDS/distance_df.RDS")
+```
+
+```{r}
+distance_df <- readRDS("RDS/distance_df.RDS")
+
+#check for NA values
+any(is.na(distance_df))
+# #locate NA values within the dataframe
+distance_df[!complete.cases(distance_df), ] #3,502,701 observations
+#drop the 3 fixes that had no distance values 
+distance_df <- na.omit(distance_df) #3,502,698 observations
+
+distance_df <- merge(distance_df, overlap_df, by = "pair_ID")
+distance_df <- relocate(distance_df, c(distance_low, distance_est, distance_high,
+                                       t, timestamp), .after = proximity_high)
+
+```
+
+## Encounters
+
+
+## Sensitivity Analysis
+
+```{r}
+#calculate the distance threshold to be used as an encounter event
+
+
+
+
+```
+
+
+
+```{r}
+#calculate the number of encounters based on threshold
+sum(distance_df$distance_est < 15)
+sum(distance_df$distance_est[distance_df$sex_comparison == "male-male" & distance_df$distance_est] < 15)
+sum(distance_df$distance_est[distance_df$sex_comparison == "female-female" & distance_df$distance_est] < 15)
+sum(distance_df$distance_est[distance_df$sex_comparison == "male-female" & distance_df$distance_est] < 15)
+
+#calculate the number of encounters for each unique pair
+overlap_df$encounter_count <- NA
+unique_pairs <- unique(overlap_df$pair_ID)
+for (i in unique_pairs){
+  subset_A <- distance_df[distance_df$pair_ID == i,]
+  
+  # Count the number of times "distance_est" is below 15
+  encounter_count <- sum(subset_A$distance_est < 15)
+  
+  #save results
+  overlap_df[overlap_df$pair_ID == i, "encounter_count"] <- encounter_count
+  
+}
+
+#check for NA values
+any(is.na(overlap_df))
+
+## Encounter sex analysis ----
+#effect of sex and overlap on encounter rates
+encounter_test <- glmer(encounter_count ~ overlap_est + sex_comparison + (1|site), family = poisson(link = "log"), data = overlap_df)
+encounter_test2 <- glmer(encounter_count ~ 1 + (1|site), family = poisson(link = "log"), data = overlap_df)
+encounter_test_results <- anova(encounter_test, encounter_test2)
+encounter_test_pvalue <- round(encounter_test_results$`Pr(>Chisq)`[2], 2)
+encounter_test_pvalue
+
+encounter_test_sex <- glmer(encounter_count ~ sex_comparison + (1|site), family = poisson(link = "log"), data = overlap_df)
+
+#model that does not include 0 encounter counts
+encounter_test_nozero <- glmer(encounter_count ~ overlap_est + sex_comparison + (1|site), family = poisson(link = "log"), data = overlap_df, subset = encounter_count > 0)
+
+# amount of home-range overlap and the number of observed encounters (β = 4.86 ± 0.148, p = 0.00)
+#standard error * 1.96 = CI
+0.07568 * 1.96
+```
+
+# Proximity ratio identified pairs
+
+
+```{r eval = FALSE}
+#calculate proximity ratios
+#identify pairs that did not have a proximity ratio of 1
+proximity_above1 <- overlap_df[overlap_df$proximity_low > 1,]
+proximity_below1 <- overlap_df[overlap_df$proximity_high < 1,]
+#exclude pairs with a HR overlap of 0
+proximity_below1[proximity_below1$overlap_est == 0,]
+proximity_below1 <- proximity_below1[proximity_below1$overlap_est != 0,]
+
+# dataframe of identified proximity pairs
+proximity_identified_pairs_df <- rbind(proximity_above1, proximity_below1)
+proximity_identified_pairs_df$pair_ID_number <- seq(from = 1, to = 12, by = 1)
+proximity_identified_pairs_df <- relocate(proximity_identified_pairs_df, pair_ID_number, .before = anteater_A)
+
+saveRDS(proximity_identified_pairs_df, file = "RDS/proximity_identified_pairs_df.RDS")
+```
+
+
+```{r}
+proximity_identified_pairs_df <- readRDS("RDS/proximity_identified_pairs_df.RDS")
+#Identify pairs that did not have a proximity ratio of 1
+table(proximity_pair_df$sex_comparison)
+
+
+```
+
+
+## Distances of identified pairs
+
+```{r}
+#Calculate the instantaneous Euclidean distance between each proximity ratio pairs
+pair1 <- DATA_TELEMETRY[c("Kyle","Christoffer")]
+FIT_pair1 <- FIT[c("Kyle","Christoffer")]
+distance_pair1 <- distances(pair1, FIT_pair1) # distance measurement and time between the pair
+distance_pair1$pair_ID_number <- 1
+distance_pair1$anteater_A <- "Kyle"
+distance_pair1$anteater_B <- "Christoffer"
+distance_pair1$pair_ID <- paste(distance_pair1$anteater_A, distance_pair1$anteater_B, sep = "_")
+distance_pair1 <- relocate(distance_pair1, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Elaine/Christoffer
+pair2 <- DATA_TELEMETRY[c("Elaine","Christoffer")]
+FIT_pair2 <- FIT[c("Elaine","Christoffer")]
+distance_pair2 <- distances(pair2, FIT_pair2) # distance measurement and time between the pair
+distance_pair2$pair_ID_number <- 2
+distance_pair2$anteater_A <- "Elaine"
+distance_pair2$anteater_B <- "Christoffer"
+distance_pair2$pair_ID <- paste(distance_pair2$anteater_A, distance_pair2$anteater_B, sep = "_")
+distance_pair2 <- relocate(distance_pair2, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Kyle/Bumpus
+pair3 <- DATA_TELEMETRY[c("Kyle","Bumpus")]
+FIT_pair3 <- FIT[c("Kyle","Bumpus")]
+distance_pair3 <- distances(pair3, FIT_pair3) # distance measurement and time between the pair
+distance_pair3$pair_ID_number <- 3
+distance_pair3$anteater_A <- "Kyle"
+distance_pair3$anteater_B <- "Bumpus"
+distance_pair3$pair_ID <- paste(distance_pair3$anteater_A, distance_pair3$anteater_B, sep = "_")
+distance_pair3 <- relocate(distance_pair3, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Little Rick/Elaine
+pair4 <- DATA_TELEMETRY[c("Little_Rick","Elaine")]
+FIT_pair4 <- FIT[c("Little_Rick","Elaine")]
+distance_pair4 <- distances(pair4, FIT_pair4) # distance measurement and time between the pair
+distance_pair4$pair_ID_number <- 4
+distance_pair4$anteater_A <- "Little_Rick"
+distance_pair4$anteater_B <- "Elaine"
+distance_pair4$pair_ID <- paste(distance_pair4$anteater_A, distance_pair4$anteater_B, sep = "_")
+distance_pair4 <- relocate(distance_pair4, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Makao/Bumpus
+pair5 <- DATA_TELEMETRY[c("Makao","Bumpus")]
+FIT_pair5 <- FIT[c("Makao","Bumpus")]
+distance_pair5 <- distances(pair5, FIT_pair5) # distance measurement and time between the pair
+distance_pair5$pair_ID_number <- 5
+distance_pair5$anteater_A <- "Makao"
+distance_pair5$anteater_B <- "Bumpus"
+distance_pair5$pair_ID <- paste(distance_pair5$anteater_A, distance_pair5$anteater_B, sep = "_")
+distance_pair5 <- relocate(distance_pair5, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Puji/Bumpus
+pair6 <- DATA_TELEMETRY[c("Puji","Bumpus")]
+FIT_pair6 <- FIT[c("Puji","Bumpus")]
+distance_pair6 <- distances(pair5, FIT_pair5) # distance measurement and time between the pair
+distance_pair6$pair_ID_number <- 6
+distance_pair6$anteater_A <- "Puji"
+distance_pair6$anteater_B <- "Bumpus"
+distance_pair6$pair_ID <- paste(distance_pair6$anteater_A, distance_pair6$anteater_B, sep = "_")
+distance_pair6 <- relocate(distance_pair6, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Rodolfo/Elaine 
+pair7 <- DATA_TELEMETRY[c("Rodolfo", "Elaine")]
+FIT_pair7 <- FIT[c("Rodolfo", "Elaine")]
+distance_pair7 <- distances(pair7, FIT_pair7) # distance measurement and time between the pair
+distance_pair7$pair_ID_number <- 7
+distance_pair7$anteater_A <- "Rodolfo"
+distance_pair7$anteater_B <- "Elaine"
+distance_pair7$pair_ID <- paste(distance_pair7$anteater_A, distance_pair7$anteater_B, sep = "_")
+distance_pair7 <- relocate(distance_pair7, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Larry/Annie
+pair8 <- DATA_TELEMETRY[c("Larry","Annie")]
+FIT_pair8 <- FIT[c("Larry","Annie")]
+distance_pair8 <- distances(pair8, FIT_pair8) # distance measurement and time between the pair
+distance_pair8$pair_ID_number <- 8
+distance_pair8$anteater_A <- "Larry"
+distance_pair8$anteater_B <- "Annie"
+distance_pair8$pair_ID <- paste(distance_pair8$anteater_A, distance_pair8$anteater_B, sep = "_")
+distance_pair8 <- relocate(distance_pair8, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Reid/Larry
+pair9 <- DATA_TELEMETRY[c("Reid","Larry")]
+FIT_pair9 <- FIT[c("Reid","Larry")]
+distance_pair9 <- distances(pair9, FIT_pair9) # distance measurement and time between the pair
+distance_pair9$pair_ID_number <- 9
+distance_pair9$anteater_A <- "Reid"
+distance_pair9$anteater_B <- "Larry"
+distance_pair9$pair_ID <- paste(distance_pair9$anteater_A, distance_pair9$anteater_B, sep = "_")
+distance_pair9 <- relocate(distance_pair9, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Sheron/Maria
+pair10 <- DATA_TELEMETRY[c("Sheron","Maria")]
+FIT_pair10 <- FIT[c("Sheron","Maria")]
+distance_pair10 <- distances(pair10, FIT_pair10) # distance measurement and time between the pair
+distance_pair10$pair_ID_number <- 10
+distance_pair10$anteater_A <- "Sheron"
+distance_pair10$anteater_B <- "Maria"
+distance_pair10$pair_ID <- paste(distance_pair10$anteater_A, distance_pair10$anteater_B, sep = "_")
+distance_pair10 <- relocate(distance_pair10, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Thomas/Margaret
+pair11 <- DATA_TELEMETRY[c("Thomas","Margaret")]
+FIT_pair11 <- FIT[c("Thomas","Margaret")]
+distance_pair11 <- distances(pair11, FIT_pair11) # distance measurement and time between the pair
+distance_pair11$pair_ID_number <- 11
+distance_pair11$anteater_A <- "Thomas"
+distance_pair11$anteater_B <- "Margaret"
+distance_pair11$pair_ID <- paste(distance_pair11$anteater_A, distance_pair11$anteater_B, sep = "_")
+distance_pair11 <- relocate(distance_pair11, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+# Thomas/Reid
+pair12 <- DATA_TELEMETRY[c("Thomas","Reid")]
+FIT_pair12 <- FIT[c("Thomas","Reid")]
+distance_pair12 <- distances(pair12, FIT_pair12) # distance measurement and time between the pair
+distance_pair12$pair_ID_number <- 12
+distance_pair12$anteater_A <- "Thomas"
+distance_pair12$anteater_B <- "Reid"
+distance_pair12$pair_ID <- paste(distance_pair12$anteater_A, distance_pair12$anteater_B, sep = "_")
+distance_pair12 <- relocate(distance_pair12, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
+
+saveRDS(object = distance_pair1, file = "RDS/distance_pair1.RDS")
+saveRDS(object = distance_pair2, file = "RDS/distance_pair2.RDS")
+saveRDS(object = distance_pair3, file = "RDS/distance_pair3.RDS")
+saveRDS(object = distance_pair4, file = "RDS/distance_pair4.RDS")
+saveRDS(object = distance_pair5, file = "RDS/distance_pair5.RDS")
+saveRDS(object = distance_pair6, file = "RDS/distance_pair6.RDS")
+saveRDS(object = distance_pair7, file = "RDS/distance_pair7.RDS")
+saveRDS(object = distance_pair8, file = "RDS/distance_pair8.RDS")
+saveRDS(object = distance_pair9, file = "RDS/distance_pair9.RDS")
+saveRDS(object = distance_pair10, file = "RDS/distance_pair10.RDS")
+saveRDS(object = distance_pair11, file = "RDS/distance_pair11.RDS")
+saveRDS(object = distance_pair12, file = "RDS/distance_pair12.RDS")
+
+distance_pair_df <- rbind(distance_pair1, distance_pair2)
+distance_pair_df <- rbind(distance_pair_df, distance_pair3)
+distance_pair_df <- rbind(distance_pair_df, distance_pair4)
+distance_pair_df <- rbind(distance_pair_df, distance_pair5)
+distance_pair_df <- rbind(distance_pair_df, distance_pair6)
+distance_pair_df <- rbind(distance_pair_df, distance_pair7)
+distance_pair_df <- rbind(distance_pair_df, distance_pair8)
+distance_pair_df <- rbind(distance_pair_df, distance_pair9)
+distance_pair_df <- rbind(distance_pair_df, distance_pair10)
+distance_pair_df <- rbind(distance_pair_df, distance_pair11)
+distance_pair_df <- rbind(distance_pair_df, distance_pair12)
+
+saveRDS(object = distance_pair_df, file = "RDS/distance_pair_df.RDS")
+```
+
+## Encounters of identified pairs
+
+```{r}
+distance_pair1 <- readRDS("RDS/distance_pair1.RDS")
+distance_pair2 <- readRDS("RDS/distance_pair2.RDS")
+distance_pair3 <- readRDS("RDS/distance_pair3.RDS")
+distance_pair4 <- readRDS("RDS/distance_pair4.RDS")
+distance_pair5 <- readRDS("RDS/distance_pair5.RDS")
+distance_pair6 <- readRDS("RDS/distance_pair6.RDS")
+distance_pair7 <- readRDS("RDS/distance_pair7.RDS")
+distance_pair8 <- readRDS("RDS/distance_pair8.RDS")
+distance_pair9 <- readRDS("RDS/distance_pair9.RDS")
+distance_pair10 <- readRDS("RDS/distance_pair10.RDS")
+distance_pair11 <- readRDS("RDS/distance_pair11.RDS")
+distance_pair12 <- readRDS("RDS/distance_pair12.RDS")
+distance_pair_df <- readRDS("RDS/distance_pair_df.RDS")
+
+proximity_identified_pairs_df$encounter_count <- NA
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "1"] <- sum(distance_pair1$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "2"] <- sum(distance_pair2$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "3"] <- sum(distance_pair3$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "4"] <- sum(distance_pair4$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "5"] <- sum(distance_pair5$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "6"] <- sum(distance_pair6$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "7"] <- sum(distance_pair7$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "8"] <- sum(distance_pair8$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "9"] <- sum(distance_pair9$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "10"] <- sum(distance_pair10$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "11"] <- sum(distance_pair11$est < 15)
+proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "12"] <- sum(distance_pair12$est < 15)
+
+```
+
+## Correlative movement of identified pairs
+
+```{r eval = FALSE}
+# Data preparation for correlative movement analysis ----
+#data carpentry
+Bumpus <- DATA_TELEMETRY$Bumpus
+Christoffer <- DATA_TELEMETRY$Christoffer
+Elaine <- DATA_TELEMETRY$Elaine
+Kyle <- DATA_TELEMETRY$Kyle
+Little_rick <- DATA_TELEMETRY$Little_Rick
+Makao <- DATA_TELEMETRY$Makao
+Puji <- DATA_TELEMETRY$Puji
+Rodolfo <- DATA_TELEMETRY$Rodolfo
+Annie <- DATA_TELEMETRY$Annie
+Larry <- DATA_TELEMETRY$Larry
+Margaret <- DATA_TELEMETRY$Margaret
+Maria <- DATA_TELEMETRY$Maria
+Sheron <- DATA_TELEMETRY$Sheron
+Reid <- DATA_TELEMETRY$Reid
+Thomas <- DATA_TELEMETRY$Thomas
+
+#create a dataframe of an individuals GPS coordinates, format dataset for corrMove analysis
+Bumpus_GPS <- data.frame(timestamp = round_date(Bumpus$timestamp, "20 minutes"),
+                         Bumpus.x = Bumpus$longitude,
+                         Bumpus.y = Bumpus$latitude)
+Christoffer_GPS <- data.frame(timestamp = round_date(Christoffer$timestamp, "20 minutes"),
+                              Christoffer.x = Christoffer$longitude,
+                              Christoffer.y = Christoffer$latitude)
+Elaine_GPS <- data.frame(timestamp = round_date(Elaine$timestamp, "20 minutes"),
+                         Elaine.x = Elaine$longitude,
+                         Elaine.y = Elaine$latitude)
+Kyle_GPS <- data.frame(timestamp = round_date(Kyle$timestamp, "20 minutes"),
+                       Kyle.x = Kyle$longitude,
+                       Kyle.y = Kyle$latitude)
+Little_rick_GPS <- data.frame(timestamp = round_date(Little_rick$timestamp, "20 minutes"),
+                              Little_rick.x = Little_rick$longitude,
+                              Little_rick.y = Little_rick$latitude)
+Makao_GPS <- data.frame(timestamp = round_date(Makao$timestamp, "20 minutes"),
+                        Makao.x = Makao$longitude,
+                        Makao.y = Makao$latitude)
+Puji_GPS <- data.frame(timestamp = round_date(Puji$timestamp, "20 minutes"),
+                       Puji.x = Puji$longitude,
+                       Puji.y = Puji$latitude)
+Rodolfo_GPS <- data.frame(timestamp = round_date(Rodolfo$timestamp, "20 minutes"),
+                          Rodolfo.x = Rodolfo$longitude,
+                          Rodolfo.y = Rodolfo$latitude)
+Annie_GPS <- data.frame(timestamp = round_date(Annie$timestamp, "20 minutes"),
+                        Annie.x = Annie$longitude,
+                        Annie.y = Annie$latitude)
+Larry_GPS <- data.frame(timestamp = round_date(Larry$timestamp, "20 minutes"),
+                        Larry.x = Larry$longitude,
+                        Larry.y = Larry$latitude)
+Margaret_GPS <- data.frame(timestamp = round_date(Margaret$timestamp, "20 minutes"),
+                           Margaret.x = Margaret$longitude,
+                           Margaret.y = Margaret$latitude)
+Maria_GPS <- data.frame(timestamp = round_date(Maria$timestamp, "20 minutes"),
+                        Maria.x = Maria$longitude,
+                        Maria.y = Maria$latitude)
+Sheron_GPS <- data.frame(timestamp = round_date(Sheron$timestamp, "20 minutes"),
+                         Sheron.x = Sheron$longitude,
+                         Sheron.y = Sheron$latitude)
+Reid_GPS <- data.frame(timestamp = round_date(Reid$timestamp, "20 minutes"),
+                       Reid.x = Reid$longitude,
+                       Reid.y = Reid$latitude)
+Thomas_GPS <- data.frame(timestamp = round_date(Thomas$timestamp, "20 minutes"),
+                         Thomas.x = Thomas$longitude,
+                         Thomas.y = Thomas$latitude)
+
+#combine the GPS coordinates of pairs together
+#reorganize dataframe needed for corrMove into format required: timestamp, ID1 x coord, ID2 x coord, ID1 y coord, ID2 y coord
+#remove duplicate timestamps
+pair1_GPS <- merge(Kyle_GPS, Christoffer_GPS)
+pair1_GPS <- pair1_GPS[, c(1,2,4,3,5)]
+pair1_GPS <- pair1_GPS[!duplicated(pair1_GPS$timestamp),]
+
+pair2_GPS <- merge(Elaine_GPS, Christoffer_GPS)
+pair2_GPS <- pair2_GPS[, c(1,2,4,3,5)]
+pair2_GPS <- pair2_GPS[!duplicated(pair2_GPS$timestamp),]
+
+pair3_GPS <- merge(Kyle_GPS, Bumpus_GPS, )
+pair3_GPS <- pair3_GPS[, c(1,2,4,3,5)]
+pair3_GPS <- pair3_GPS[!duplicated(pair3_GPS$timestamp),]
+
+pair4_GPS <- merge(Little_rick_GPS, Elaine_GPS)
+pair4_GPS <- pair4_GPS[, c(1,2,4,3,5)]
+pair4_GPS <- pair4_GPS[!duplicated(pair4_GPS$timestamp),]
+
+pair5_GPS <- merge(Makao_GPS, Bumpus_GPS)
+pair5_GPS <- pair5_GPS[, c(1,2,4,3,5)]
+pair5_GPS <- pair5_GPS[!duplicated(pair5_GPS$timestamp),]
+
+pair6_GPS <- merge(Puji_GPS, Bumpus_GPS)
+pair6_GPS <- pair6_GPS[, c(1,2,4,3,5)]
+pair6_GPS <- pair6_GPS[!duplicated(pair6_GPS$timestamp),]
+
+pair7_GPS <- merge(Rodolfo_GPS, Elaine_GPS)
+pair7_GPS <- pair7_GPS[, c(1,2,4,3,5)]
+pair7_GPS <- pair7_GPS[!duplicated(pair7_GPS$timestamp),]
+
+pair8_GPS <- merge(Larry_GPS, Annie_GPS)
+pair8_GPS <- pair8_GPS[, c(1,2,4,3,5)]
+pair8_GPS <- pair8_GPS[!duplicated(pair8_GPS$timestamp),]
+
+pair9_GPS <- merge(Reid_GPS, Larry_GPS)
+pair9_GPS <- pair9_GPS[, c(1,2,4,3,5)]
+pair9_GPS <- pair9_GPS[!duplicated(pair9_GPS$timestamp),]
+
+pair10_GPS <- merge(Sheron_GPS, Maria_GPS)
+pair10_GPS <- pair10_GPS[, c(1,2,4,3,5)]
+pair10_GPS <- pair10_GPS[!duplicated(pair10_GPS$timestamp),]
+
+pair11_GPS <- merge(Thomas_GPS, Margaret_GPS)
+pair11_GPS <- pair11_GPS[, c(1,2,4,3,5)]
+pair11_GPS <- pair11_GPS[!duplicated(pair11_GPS$timestamp),]
+
+pair12_GPS <- merge(Thomas_GPS, Reid_GPS)
+pair12_GPS <- pair12_GPS[, c(1,2,4,3,5)]
+pair12_GPS <- pair12_GPS[!duplicated(pair12_GPS$timestamp),]
+```
+
+
+```{r}
+#Create corrData object.
+cd_pair1 <- as.corrData(pair1_GPS)
+#Estimate the partition points
+prts_pair1 <- findPrts(cd_pair1, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair1 <- corrMove(cd_pair1, prts_pair1)
+
+#Create corrData object.
+cd_pair2 <- as.corrData(pair2_GPS)
+#Estimate the partition points
+prts_pair2 <- findPrts(cd_pair2, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair2 <- corrMove(cd_pair2, prts_pair2)
+
+#Create corrData object.
+cd_pair3 <- as.corrData(pair3_GPS)
+#Estimate the partition points
+prts_pair3 <- findPrts(cd_pair3, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair3 <- corrMove(cd_pair3, prts_pair3)
+
+#Create corrData object.
+cd_pair4 <- as.corrData(pair4_GPS)
+#Estimate the partition points
+prts_pair4 <- findPrts(cd_pair4, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair4 <- corrMove(cd_pair4, prts_pair4)
+
+#Create corrData object.
+cd_pair5 <- as.corrData(pair5_GPS)
+#Estimate the partition points
+prts_pair5 <- findPrts(cd_pair5, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair5 <- corrMove(cd_pair5, prts_pair5)
+
+#Create corrData object.
+cd_pair6 <- as.corrData(pair6_GPS)
+#Estimate the partition points
+prts_pair6 <- findPrts(cd_pair6, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair6 <- corrMove(cd_pair6, prts_pair6)
+
+#Create corrData object.
+cd_pair7 <- as.corrData(pair7_GPS)
+#Estimate the partition points 
+prts_pair7 <- findPrts(cd_pair7, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair7 <- corrMove(cd_pair7, prts_pair7)
+
+#Create corrData object.
+cd_pair8 <- as.corrData(pair8_GPS)
+#Estimate the partition points
+prts_pair8 <- findPrts(cd_pair8, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair8 <- corrMove(cd_pair8, prts_pair8)
+
+#Create corrData object.
+cd_pair9 <- as.corrData(pair9_GPS)
+#Estimate the partition points
+prts_pair9 <- findPrts(cd_pair9, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair9 <- corrMove(cd_pair9, prts_pair9)
+
+#Create corrData object.
+cd_pair10 <- as.corrData(pair10_GPS)
+#Estimate the partition points
+prts_pair10 <- findPrts(cd_pair10, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair10 <- corrMove(cd_pair10, prts_pair10)
+
+#Create corrData object.
+cd_pair11 <- as.corrData(pair11_GPS)
+#Estimate the partition points
+prts_pair11 <- findPrts(cd_pair11, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair11 <- corrMove(cd_pair11, prts_pair11)
+
+#Create corrData object.
+cd_pair12 <- as.corrData(pair12_GPS)
+#Estimate the partition points
+prts_pair12 <- findPrts(cd_pair12, W=5, IC = 2)
+#Get the MCI estimates and selected model conditional on the data and partition points
+cm_pair12 <- corrMove(cd_pair12, prts_pair12)
+
+saveRDS(cm_pair1, file = "RDS/cmAnteater_pair1.RDS")
+saveRDS(cm_pair2, file = "RDS/cmAnteater_pair2.RDS")
+saveRDS(cm_pair3, file = "RDS/cmAnteater_pair3.RDS")
+saveRDS(cm_pair4, file = "RDS/cmAnteater_pair4.RDS")
+saveRDS(cm_pair5, file = "RDS/cmAnteater_pair5.RDS")
+saveRDS(cm_pair6, file = "RDS/cmAnteater_pair6.RDS")
+saveRDS(cm_pair7, file = "RDS/cmAnteater_pair7.RDS")
+saveRDS(cm_pair8, file = "RDS/cmAnteater_pair8.RDS")
+saveRDS(cm_pair9, file = "RDS/cmAnteater_pair9.RDS")
+saveRDS(cm_pair10, file = "RDS/cmAnteater_pair10.RDS")
+saveRDS(cm_pair11, file = "RDS/cmAnteater_pair11.RDS")
+saveRDS(cm_pair12, file = "RDS/cmAnteater_pair12.RDS")
+```
+
+### Correlative movement results of identified pairs
+```{r}
+cm_pair1 <- readRDS("RDS/cmAnteater_pair1.RDS")
+cm_pair2 <- readRDS("RDS/cmAnteater_pair2.RDS")
+cm_pair3 <- readRDS("RDS/cmAnteater_pair3.RDS")
+cm_pair4 <- readRDS("RDS/cmAnteater_pair4.RDS")
+cm_pair5 <- readRDS("RDS/cmAnteater_pair5.RDS")
+cm_pair6 <- readRDS("RDS/cmAnteater_pair6.RDS")
+cm_pair7 <- readRDS("RDS/cmAnteater_pair7.RDS")
+cm_pair8 <- readRDS("RDS/cmAnteater_pair8.RDS")
+cm_pair9 <- readRDS("RDS/cmAnteater_pair9.RDS")
+cm_pair10 <- readRDS("RDS/cmAnteater_pair10.RDS")
+cm_pair11 <- readRDS("RDS/cmAnteater_pair11.RDS")
+cm_pair12 <- readRDS("RDS/cmAnteater_pair12.RDS")
+
+#build a dataframe for correlative movement results
+CM_results <- proximity_pair_df[,c(1:10)]
+
+#calculate the mean total correlative movement among the 12 dyads
+CM_results$mean_etaTot.CI.Low <- NA
+CM_results$mean_etaTot.MLE <- NA
+CM_results$mean_etaTot.CI.Upp <- NA
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 1] <- mean(cm_pair1$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 1] <- mean(cm_pair1$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 1] <- mean(cm_pair1$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 2] <- mean(cm_pair2$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 2] <- mean(cm_pair2$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 2] <- mean(cm_pair2$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 3] <- mean(cm_pair3$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 3] <- mean(cm_pair3$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 3] <- mean(cm_pair3$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 4] <- mean(cm_pair4$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 4] <- mean(cm_pair4$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 4] <- mean(cm_pair4$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 5] <- mean(cm_pair5$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 5] <- mean(cm_pair5$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 5] <- mean(cm_pair5$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 6] <- mean(cm_pair6$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 6] <- mean(cm_pair6$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 6] <- mean(cm_pair6$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 7] <- mean(cm_pair7$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 7] <- mean(cm_pair7$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 7] <- mean(cm_pair7$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 8] <- mean(cm_pair8$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 8] <- mean(cm_pair8$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 8] <- mean(cm_pair8$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 9] <- mean(cm_pair9$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 9] <- mean(cm_pair9$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 9] <- mean(cm_pair9$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 10] <- mean(cm_pair10$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 10] <- mean(cm_pair10$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 10] <- mean(cm_pair10$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 11] <- mean(cm_pair11$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 11] <- mean(cm_pair11$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 11] <- mean(cm_pair11$etaTot.CI.Upp)
+
+CM_results$mean_etaTot.CI.Low[CM_results$pair_ID_number == 12] <- mean(cm_pair12$etaTot.CI.Low)
+CM_results$mean_etaTot.MLE[CM_results$pair_ID_number == 12] <- mean(cm_pair12$etaTot.MLE)
+CM_results$mean_etaTot.CI.Upp[CM_results$pair_ID_number == 12] <- mean(cm_pair12$etaTot.CI.Upp)
+
+#calculate mean total drift and mean total diffusion correlative movement for the 12 pairs
+CM_results$mean_etaDif.MLE <- NA
+CM_results$mean_etaDft.MLE <- NA
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 1] <- mean(cm_pair1$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 1] <- mean(cm_pair1$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 2] <- mean(cm_pair2$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 2] <- mean(cm_pair2$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 3] <- mean(cm_pair3$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 3] <- mean(cm_pair3$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 4] <- mean(cm_pair4$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 4] <- mean(cm_pair4$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 5] <- mean(cm_pair5$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 5] <- mean(cm_pair5$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 6] <- mean(cm_pair6$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 6] <- mean(cm_pair6$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 7] <- mean(cm_pair7$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 7] <- mean(cm_pair7$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 8] <- mean(cm_pair8$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 8] <- mean(cm_pair8$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 9] <- mean(cm_pair9$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 9] <- mean(cm_pair9$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 10] <- mean(cm_pair10$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 10] <- mean(cm_pair10$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 11] <- mean(cm_pair11$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 11] <- mean(cm_pair11$etaDft.MLE)
+CM_results$mean_etaDif.MLE[CM_results$pair_ID_number == 12] <- mean(cm_pair12$etaDif.MLE)
+CM_results$mean_etaDft.MLE[CM_results$pair_ID_number == 12] <- mean(cm_pair12$etaDft.MLE)
+
+```
+
+
+```{r}
+#calculate mean total correlative movement, drift, diffusion across all 12 pairs
+#create a dataframe to store the results
+CM_summary <- data.frame(matrix(ncol = 1, nrow = 5))
+colnames(CM_summary)[1] <- "total"
+rownames(CM_summary)[1] <- "mean_etaTot.CI.Low"
+rownames(CM_summary)[2] <- "mean_etaTot.MLE"
+rownames(CM_summary)[3] <- "mean_etaTot.CI.Upp"
+rownames(CM_summary)[4] <- "mean_etaDif.MLE"
+rownames(CM_summary)[5] <- "mean_etaDft.MLE"
+CM_summary$total[1] <- round(mean(CM_results$mean_etaTot.CI.Low), 2)
+CM_summary$total[2] <- round(mean(CM_results$mean_etaTot.MLE), 2)
+CM_summary$total[3] <- round(mean(CM_results$mean_etaTot.CI.Upp), 2)
+CM_summary$total[4] <- round(mean(CM_results$mean_etaDif.MLE), 2)
+CM_summary$total[5] <- round(mean(CM_results$mean_etaDft.MLE), 2)
+```
+
+
+
+# Figures
+
+## study site
+
+```{r}
+#Brazil with meso regions outlined
+BR_meso_region <- read_meso_region(code_meso = "all", year = 2017, simplified = TRUE, showProgress = TRUE)
+
+#state of Mato Grosso du Sul
+MS_state_micro <- read_micro_region(code_micro= "MS", year = 2017, simplified = FALSE, showProgress = TRUE)
+
+# Remove plot axis
+no_axis <- theme(axis.title=element_blank(),
+                 axis.text=element_blank(),
+                 axis.ticks=element_blank())
+
+plot_BR <-
+  ggplot() +
+  geom_sf(data=BR_meso_region, fill="white", color="black", size=.15, show.legend = FALSE) +
+  labs(subtitle="Brazil", size=8) +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.position="none") +
+  no_axis
+ggsave(plot = last_plot(), filename = "figures/BR_meso_region.png", device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
+
+plot_MS <-
+  ggplot() +
+  geom_sf(data=MS_state_micro, fill="white", color="black", size=.15, show.legend = FALSE) +
+  labs(subtitle="Mato Grosso du Sul", size=8) +
+  theme_minimal() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.position="none") +
+  no_axis
+ggsave(plot = last_plot(), filename = "figures/MS_state_micro.png", device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
+
+plot_BR_MS <- grid.arrange(plot_BR, plot_MS, 
+                           ncol=2, widths = c(6,5.2))
+# Save the figure
+ggsave(plot_BR_MS,
+       width = 10, height = 5, units = "in",
+       dpi = 600,
+       bg = "white",
+       file="figures/plot_BR_MS.png")
+```
+
+## Home range
+### home range size
+
+```{r}
+mean_HR_est <- round(mean(HR_size$HR_est), 2)
+#plot_HR_size <- 
+  ggplot() +
+  geom_vline(data = HR_size, aes(xintercept = mean_HR_est),
+             linetype = "dotdash") +
+  geom_linerange(data = HR_size, 
+                 aes(xmin = HR_low, xmax = HR_high, y = ID, color = Sex),
+                 linewidth = 3) + 
+  labs(x = bquote("Home range area" ~ (km^2)),
+       y = "") +
+  ggtitle("A)") +
+  scale_color_manual(values = c('#004488', '#A50026'), breaks = c('Male', 'Female')) +
+  geom_point(data = HR_size,
+             aes(x = HR_est, y = ID, fill = "white"), color = "white",
+             size = 2) +
+  geom_point(data = HR_size, 
+             aes(x = HR_est, y = ID, color = Sex),
+             size = 1) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.position="none") #removes legend
+ggsave(last_plot(), filename = "figures/HR_size.png", device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 4, units = "in", dpi = 600)
+```
+
+### home range overlap
+
+```{r}
+COL_1 <- c("#004488", "#004488", "#A50026", "#A50026", "#004488", "#A50026", "#004488", "#004488", "#004488", "#A50026", "#A50026", "#004488") 
+png(file = "figures/AKDE_1.png", width = 6.86, height = 6, units = "in", res = 600)
+plot_AKDE_1 <- 
+  plot(AKDE_1, col.DF = COL_1, col.level = COL_1, col.grid = NA, level = NA)
+title("B)", adj = 0)
+dev.off()
+
+COL_2 <- c("#A50026", "#004488", "#A50026", "#A50026", "#004488", "#004488", "#A50026", "#A50026", "#004488", "#A50026", "#004488") 
+png(file = "figures/HRO_AKDE_2.png", width = 6.86, height = 6, units = "in", res = 600)
+plot_AKDE_2 <- 
+  plot(AKDE_2, col.DF = COL_2, col.level = COL_2, col.grid = NA, level = NA) 
+title("C)", adj = 0)
+dev.off()
+
+png(file = "figures/HRO_AKDE.png", width = 12, height = 6, units = "in", res = 600)
+par(mfrow=c(1,2))
+plot(AKDE_1, col.DF = COL_1, col.level = COL_1, col.grid = NA, level = NA)
+title("B)", adj = 0)
+plot(AKDE_2, col.DF = COL_2, col.level = COL_2, col.grid = NA, level = NA)
+title("C)", adj = 0)
+dev.off()
+par(mfrow=c(1,1))
+```
+
+
+### home range sex comparison
+
+```{r}
+#plot_HRO_sex_comparison <-
+  ggplot(data = pairwise_df, 
+         mapping = aes(x = sex_comparison, y = overlap_est, fill = sex_comparison)) + 
+  geom_boxplot() +
+  ylab("Home range overlap") +
+  xlab("Sex") +
+  ggtitle("D)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(), 
+        legend.position="none") +
+  scale_fill_manual(values = c("#A50026", "#9970AB", "#004488"),
+                    labels = c("Female - Female", "Male - Female", "Male - Male"),
+                    name = "") +
+  scale_y_continuous(limits = c(0,1))
+ggsave(plot = last_plot(), filename = "figures/HRO_sex_comparison.png", device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 3, units = "in", dpi = 600)
+```
+
+### multi-panel home range overlap
+
+```{r}
+## Plot multi-panel ----
+library(cowplot)
+plot_HR <- grid.arrange(plot_HR_size,
+                        plot_grid(plot_AKDE_1, plot_AKDE_2, ncol = 2),
+                        plot_HRO_sex_comparison,
+                        nrow = 3)
+ggsave(plot = last_plot(), filename = "figures/HR_HRO_sex.png", device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 12, units = "in", dpi = 600)
+```
+
+## Interaction
+
+### Encounters
+
+```{r}
+#plot_encounters <-
+  ggplot(data = pairwise_df,
+         aes(y = encounter_count, x = overlap_est)) +
+  geom_point(data = pairwise_df, 
+             aes(y = encounter_count, x = overlap_est, col = sex_comparison),
+             size = 1.5) + 
+  geom_smooth(method="lm", formula = y ~ x, se=F, col = "black") +
+  scale_y_log10(expand = c(0,0.1), limits = c(0.1,2000)) +
+  scale_x_log10(expand = c(0,0.1)) +
+  scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
+  scale_color_manual(values = c("#A50026", "#9970AB", "#004488"),
+                     labels = c("Female - Female", "Male - Female", "Male - Male"),
+                     name = "") +
+  xlab("Home-range overlap") +
+  ylab("Encounters count") +
+  ggtitle("B)") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.y = element_text(size=8, family = "sans", face = "bold"),
+        axis.title.x = element_text(size=10, family = "sans", face = "bold"),
+        axis.text.y = element_text(size=10, family = "sans"),
+        axis.text.x  = element_text(size=8, family = "sans"),
+        legend.text = element_text(size=6, family = "sans", face = "bold"),
+        plot.title = element_text(hjust = -0.05, size = 12, family = "sans", face = "bold"),
+        legend.position = c(0.1, 0.85),
+        legend.key.height = unit(0.3, "cm"),
+        legend.key=element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        legend.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
+ggsave(plot = last_plot(), width = 6.86,height = 6, units = "in", dpi = 600, bg = "transparent",
+       file="figures/encounters.png")
+```
+
+
+## Proximity ratio pairs
+### Proximity ratio
+
+
+
+
+
+
+
+
+
+
+

@@ -4,5 +4,7 @@
 .gitignore.txt
 giant anteater project.Rproj
 data/
-site visuals/
 figures/
+report/
+OTHER/
+conference poster/
