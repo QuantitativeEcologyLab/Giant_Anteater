@@ -135,73 +135,59 @@ round(mean(HR_size$HR_high), 2) #6.56 km^2
 ## Home range overlap ----
 #............................................................
 
-pairwise_1_df <- readRDS("RDS/pairwise_1_df.RDS")
-pairwise_2_df <- readRDS("RDS/pairwise_2_df.RDS")
-pairwise_df  <- readRDS("RDS/pairwise_df.RDS")
+overlap_1_df <- readRDS("RDS/overlap_1_df.RDS")
+overlap_2_df <- readRDS("RDS/overlap_2_df.RDS")
+overlap_df  <- readRDS("RDS/overlap_df.RDS")
 
-pairwise_df$pair_ID <- paste(pairwise_df$anteater_A, pairwise_df$anteater_B, sep = "_")
-pairwise_df <- relocate(pairwise_df, pair_ID, .before = anteater_A)
-
-#Identify dyads that do and do not have a home range overlap with each other
-#number of unique pairs that do not have home-range overlap
-pairwise_df[pairwise_df$overlap_est == 0,] #28 dyads
-#number of unique pairs that have home-range overlap
-pairwise_df[pairwise_df$overlap_est != 0,] #93 dyads
-overlap_df <- pairwise_df[pairwise_df$overlap_est != 0,]
-
-#............................................................
-### Home-range overlap sex analysis ----
-#............................................................
-
-#Does sex influence having a home range overlap? Looked at all the individuals with/without HRO
-##due to the nature of a beta distribution, transformation/squeezing is required, based on the equation https://stats.stackexchange.com/questions/31300/dealing-with-0-1-values-in-a-beta-regression
-min_val <- min(pairwise_df$overlap_est)
-max_val <- max(pairwise_df$overlap_est)
-squeeze_min <- 0.001
-squeeze_max <- 0.999
-pairwise_df$overlap_est_squeezed <- ((pairwise_df$overlap_est - min_val) / (max_val - min_val)) * (squeeze_max - squeeze_min) + squeeze_min
-pairwise_df <- relocate(pairwise_df, overlap_est_squeezed, .after = overlap_high)
-
-#test for significance in sex, compare model with and without sex as a variable
-HRO_test <- glmmTMB(overlap_est_squeezed ~ sex_comparison + (1|site), family = beta_family(link = "logit"), data = pairwise_df)
-HRO_test2 <- glmmTMB(overlap_est_squeezed ~ 1 + (1|site), family = beta_family(link = "logit"), data = pairwise_df)
-HRO_test_results <- anova(HRO_test, HRO_test2)
-HRO_test_pvalue <- round(HRO_test_results$`Pr(>Chisq)`[2], 2)
-
-#number of pairwise sex types
-table(overlap_df$sex_comparison)
-16+49+28 #93 dyads with overlaps
-
-table(pairwise_df$sex_comparison)
-25+65+31 #121 dyads with/without overlaps
+overlap_df$pair_ID <- paste(overlap_df$anteater_A, overlap_df$anteater_B, sep = "_")
+overlap_df <- relocate(overlap_df, pair_ID, .before = anteater_A)
 
 #............................................................
 ### Home range overlap results ----
 #............................................................
 
 # Total home range overlap
-#calculate mean total home range overlap
-round(mean(overlap_df$overlap_low), 2)
+#calculate mean total home range overlap & range
 round(mean(overlap_df$overlap_est), 2)
-round(mean(overlap_df$overlap_high), 2)
-#calculate mean home range overlap based on sex comparison categories
-round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
-round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
-round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
-
-# Range of home range overlap
-#calculate total home range overlap range
 round(min(overlap_df$overlap_est), 2)
 round(max(overlap_df$overlap_est), 2)
-#calculate total home range overlap range (min/max) based on male-male category
+
+#number of home range overlap sex types
+table(overlap_df$sex_comparison)
+16+49+28 #93 dyads with overlaps
+
+# Home range overlap based on sex comparison categories
+#calculate mean home range overlap & range based on sex comparison categories
+round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
 round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
 round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
-#calculate total home range overlap range (min/max) based on female-female category
+
+round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
 round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
 round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
-#calculate total home range overlap range (min/max) based on male-female category
+
+round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
 round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
 round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
+
+
+#............................................................
+### Home-range overlap sex analysis ----
+#............................................................
+
+##due to the nature of a beta distribution, transformation/squeezing is required, based on the equation https://stats.stackexchange.com/questions/31300/dealing-with-0-1-values-in-a-beta-regression
+min_val <- min(overlap_df$overlap_est)
+max_val <- max(overlap_df$overlap_est)
+squeeze_min <- 0.001
+squeeze_max <- 0.999
+overlap_df$overlap_est_squeezed <- ((overlap_df$overlap_est - min_val) / (max_val - min_val)) * (squeeze_max - squeeze_min) + squeeze_min
+overlap_df <- relocate(overlap_df, overlap_est_squeezed, .after = overlap_high)
+
+#test for significance in sex, compare model with and without sex as a variable
+HRO_test <- glmmTMB(overlap_est_squeezed ~ sex_comparison + (1|site), family = beta_family(link = "logit"), data = overlap_df)
+HRO_test2 <- glmmTMB(overlap_est_squeezed ~ 1 + (1|site), family = beta_family(link = "logit"), data = overlap_df)
+HRO_test_results <- anova(HRO_test, HRO_test2)
+HRO_test_pvalue <- round(HRO_test_results$`Pr(>Chisq)`[2], 2)
 
 #............................................................
 # Interactions ----
@@ -231,7 +217,7 @@ proximity_test_pvalue <- round(proximity_test_results$`Pr(>Chisq)`[2], 2)
 ## Distances ----
 #............................................................
 
-distance_df <- readRDS("RDS/DATA_DISTANCE.RDS")
+distance_df <- readRDS("RDS/distance_df.RDS")
 
 #check for NA values
 any(is.na(distance_df))
@@ -241,7 +227,7 @@ distance_df[!complete.cases(distance_df), ] #3,502,701 observations
 distance_df <- na.omit(distance_df) #3,502,698 observations
 
 #add supplementary info to distance data from the home range overlap dataframe
-distance_df <- merge(DATA_DISTANCE, overlap_df, by = "pair_ID")
+distance_df <- merge(distance_df, overlap_df, by = "pair_ID")
 distance_df <- relocate(distance_df, c(distance_low, distance_est, distance_high,
                                        t, timestamp), .after = proximity_high)
 
@@ -353,12 +339,10 @@ cm_pair11 <- readRDS("RDS/cmAnteater_pair11.RDS")
 cm_pair12 <- readRDS("RDS/cmAnteater_pair12.RDS")
 
 # Case study of Pair 11 ----
-
-## Pair 11 summary ----
 #home-range size
-round(pairwise_df$overlap_low[pairwise_df$pair_ID == 11], 2)
-round(pairwise_df$overlap_est[pairwise_df$pair_ID == 11], 2)
-round(pairwise_df$overlap_high[pairwise_df$pair_ID == 11], 2)
+round(overlap_df$overlap_low[overlap_df$pair_ID == 11], 2)
+round(overlap_df$overlap_est[overlap_df$pair_ID == 11], 2)
+round(overlap_df$overlap_high[overlap_df$pair_ID == 11], 2)
 
 #proximity ratio
 round(proximity_identified_pairs_df$proximity_low[proximity_identified_pairs_df$pair_ID == 11], 2)
@@ -424,7 +408,7 @@ ggsave(plot_BR_MS,
 
 ## Plot HR size ----
 mean_HR_est <- round(mean(HR_size$HR_est), 2)
-#plot_HR_size <- 
+plot_HR_size <- 
   ggplot() +
   geom_vline(data = HR_size, aes(xintercept = mean_HR_est),
              linetype = "dotdash") +
@@ -443,37 +427,44 @@ mean_HR_est <- round(mean(HR_size$HR_est), 2)
              size = 1) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        legend.position="none") #removes legend
-ggsave(last_plot(), filename = "figures/HR_size.png", device = NULL,
+        legend.position="none")
+plot_HR_size
+ggsave(plot_HR_size, filename = "figures/HR_size.png", device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 4, units = "in", dpi = 600)
 
 ## Plot HR overlap ----
+AKDE_1 <- AKDE[c("Alexander", "Anthony", "Bumpus", "Cate", "Christoffer",
+                 "Elaine", "Jackson", "Kyle", "Little_Rick", "Makao",
+                 "Puji", "Rodolfo")]
+AKDE_2 <- AKDE[c("Annie", "Beto", "Hannah", "Jane", "Larry",
+                 "Luigi", "Margaret", "Maria", "Reid", "Sheron",
+                 "Thomas")]
+
 COL_1 <- c("#004488", "#004488", "#A50026", "#A50026", "#004488", "#A50026", "#004488", "#004488", "#004488", "#A50026", "#A50026", "#004488") 
-png(file = "figures/AKDE_1.png", width = 6.86, height = 6, units = "in", res = 600)
-plot_AKDE_1 <- 
+png(file = "figures/HRO_site1.png", width = 6.86, height = 6, units = "in", res = 600)
+plot_HRO_site1 <- 
   plot(AKDE_1, col.DF = COL_1, col.level = COL_1, col.grid = NA, level = NA)
 title("B)", adj = 0)
 dev.off()
 
 COL_2 <- c("#A50026", "#004488", "#A50026", "#A50026", "#004488", "#004488", "#A50026", "#A50026", "#004488", "#A50026", "#004488") 
-png(file = "figures/HRO_AKDE_2.png", width = 6.86, height = 6, units = "in", res = 600)
-plot_AKDE_2 <- 
+png(file = "figures/HRO_site2.png", width = 6.86, height = 6, units = "in", res = 600)
+plot_HRO_site2 <- 
   plot(AKDE_2, col.DF = COL_2, col.level = COL_2, col.grid = NA, level = NA) 
 title("C)", adj = 0)
 dev.off()
 
-png(file = "figures/HRO_AKDE.png", width = 12, height = 6, units = "in", res = 600)
+png(file = "figures/HR_overlap.png", width = 12, height = 6, units = "in", res = 600)
 par(mfrow=c(1,2))
 plot(AKDE_1, col.DF = COL_1, col.level = COL_1, col.grid = NA, level = NA)
 title("B)", adj = 0)
 plot(AKDE_2, col.DF = COL_2, col.level = COL_2, col.grid = NA, level = NA)
 title("C)", adj = 0)
 dev.off()
-par(mfrow=c(1,1))
 
 ## Plot HRO sex comparison ----
-#plot_HRO_sex_comparison <-
-  ggplot(data = pairwise_df, 
+plot_HRO_sex_analysis <-
+  ggplot(data = overlap_df, 
          mapping = aes(x = sex_comparison, y = overlap_est, fill = sex_comparison)) + 
   geom_boxplot() +
   ylab("Home range overlap") +
@@ -487,28 +478,31 @@ par(mfrow=c(1,1))
                     labels = c("Female - Female", "Male - Female", "Male - Male"),
                     name = "") +
   scale_y_continuous(limits = c(0,1))
-ggsave(plot = last_plot(), filename = "figures/HRO_sex_comparison.png", device = NULL,
+plot_HRO_sex_analysis
+ggsave(plot_HRO_sex_analysis, filename = "figures/HRO_sex_analysis.png", device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 3, units = "in", dpi = 600)
 
 ## Plot multi-panel ----
 library(cowplot)
-plot_HR <- grid.arrange(plot_HR_size,
-                        plot_grid(plot_AKDE_1, plot_AKDE_2, ncol = 2),
-                        plot_HRO_sex_comparison,
+
+figure1_HR <- grid.arrange(plot_HR_size,
+                        plot_grid(plot_HRO_site1, plot_HRO_site2, ncol = 2),
+                        plot_HRO_sex_analysis,
                         nrow = 3)
-ggsave(plot = last_plot(), filename = "figures/HR_HRO_sex.png", device = NULL,
+
+ggsave(figure1_HR, filename = "figures/figure1_HR.png", device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 12, units = "in", dpi = 600)
 
 ## Plot Proximity ratio  ----
-#plot_proximity_ratio <- 
+plot_proximity_ratio <- 
   ggplot() +
-  geom_hline(data = pairwise_df, 
+  geom_hline(data = overlap_df, 
              aes(y = proximity_est, x = overlap_est, col = sex_comparison),
              yintercept = 1, col = "grey70", linetype = "dashed") +
-  geom_point(data = pairwise_df, 
+  geom_point(data = overlap_df, 
              aes(y = proximity_est, x = overlap_est, col = sex_comparison),
              size = 1.5, alpha = 0.3) + #alpha = colour intensity
-  geom_segment(data = pairwise_df, 
+  geom_segment(data = overlap_df, 
                aes(x = overlap_est, xend = overlap_est, y = proximity_low, yend = proximity_high, col = sex_comparison), 
                linewidth = 0.3, alpha = 0.3) +
   geom_point(data = proximity_pair_df, 
@@ -541,14 +535,15 @@ ggsave(plot = last_plot(), filename = "figures/HR_HRO_sex.png", device = NULL,
         legend.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = NA),
         plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
-ggsave(plot = last_plot(), width = 6.23,height = 4, units = "in", dpi = 600, bg = "transparent",
+plot_proximity_ratio
+ggsave(plot_proximity_ratio, width = 6.23,height = 4, units = "in", dpi = 600, bg = "transparent",
        file="figures/proximity_ratio.png")
 
 ## Plot encounters ----
 #plot_encounters <-
-  ggplot(data = pairwise_df,
+  ggplot(data = overlap_df,
          aes(y = encounter_count, x = overlap_est)) +
-  geom_point(data = pairwise_df, 
+  geom_point(data = overlap_df, 
              aes(y = encounter_count, x = overlap_est, col = sex_comparison),
              size = 1.5) + 
   geom_smooth(method="lm", formula = y ~ x, se=F, col = "black") +
@@ -580,11 +575,11 @@ ggsave(plot = last_plot(), width = 6.23,height = 4, units = "in", dpi = 600, bg 
 ggsave(plot = last_plot(), width = 6.86,height = 6, units = "in", dpi = 600, bg = "transparent",
        file="figures/encounters.png")
 
-pairwise_df2 <- pairwise_df[pairwise_df$encounter_count != 0,] #messed up entries with NA values
+overlap_df2 <- overlap_df[overlap_df$encounter_count != 0,] #messed up entries with NA values
 #plot_encounters_nozeros <-
-  ggplot(data = pairwise_df2,
+  ggplot(data = overlap_df2,
          aes(y = encounter_count, x = overlap_est)) +
-  geom_point(data = pairwise_df2, 
+  geom_point(data = overlap_df2, 
              aes(y = encounter_count, x = overlap_est, col = sex_comparison),
              size = 1.5) + 
   geom_smooth(method="lm", formula = y ~ x, se=F, col = "black") +
