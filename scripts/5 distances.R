@@ -81,7 +81,6 @@ overlap_df <- left_join(overlap_df, proximity_df, by = c("anteater_A", "anteater
                                                          "sex_comparison",
                                                          "site"))
 
-
 #Calculate the distance statistics
 overlap_df$distance_low <- NA
 overlap_df$distance_est <- NA
@@ -236,30 +235,14 @@ distance_pair12$anteater_B <- "Reid"
 distance_pair12$pair_ID <- paste(distance_pair12$anteater_A, distance_pair12$anteater_B, sep = "_")
 distance_pair12 <- relocate(distance_pair12, c(pair_ID_number, pair_ID, anteater_A, anteater_B), .before = low)
 
-saveRDS(object = distance_pair1, file = "RDS/distance_pair1.RDS")
-saveRDS(object = distance_pair2, file = "RDS/distance_pair2.RDS")
-saveRDS(object = distance_pair3, file = "RDS/distance_pair3.RDS")
-saveRDS(object = distance_pair4, file = "RDS/distance_pair4.RDS")
-saveRDS(object = distance_pair5, file = "RDS/distance_pair5.RDS")
-saveRDS(object = distance_pair6, file = "RDS/distance_pair6.RDS")
-saveRDS(object = distance_pair7, file = "RDS/distance_pair7.RDS")
-saveRDS(object = distance_pair8, file = "RDS/distance_pair8.RDS")
-saveRDS(object = distance_pair9, file = "RDS/distance_pair9.RDS")
-saveRDS(object = distance_pair10, file = "RDS/distance_pair10.RDS")
-saveRDS(object = distance_pair11, file = "RDS/distance_pair11.RDS")
-saveRDS(object = distance_pair12, file = "RDS/distance_pair12.RDS")
-
 #combine into a dataframe
-distance_pair_df <- rbind(distance_pair1, distance_pair2)
-distance_pair_df <- rbind(distance_pair_df, distance_pair3)
-distance_pair_df <- rbind(distance_pair_df, distance_pair4)
-distance_pair_df <- rbind(distance_pair_df, distance_pair5)
-distance_pair_df <- rbind(distance_pair_df, distance_pair6)
-distance_pair_df <- rbind(distance_pair_df, distance_pair7)
-distance_pair_df <- rbind(distance_pair_df, distance_pair8)
-distance_pair_df <- rbind(distance_pair_df, distance_pair9)
-distance_pair_df <- rbind(distance_pair_df, distance_pair10)
-distance_pair_df <- rbind(distance_pair_df, distance_pair11)
-distance_pair_df <- rbind(distance_pair_df, distance_pair12)
+distance_pair_df <- rbind(distance_pair1, distance_pair2, distance_pair3, distance_pair4,
+                          distance_pair5, distance_pair6, distance_pair7, distance_pair8,
+                          distance_pair9, distance_pair10, distance_pair11, distance_pair12)
 
 saveRDS(object = distance_pair_df, file = "RDS/distance_pair_df.RDS")
+
+
+
+
+
