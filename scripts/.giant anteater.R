@@ -13,24 +13,25 @@ library(tibble)          #data wrangling
 library(lubridate)       #round_date() for corrMove
 library(geobr)           #shape files for Brazil
 library(gridExtra)       #arrangement of plots for multi-panel figures
+library(scales)          #scaling axis in plots
 #analysis
 library(devtools)
-devtools::install_github("ctmm-initiative/ctmm", force = TRUE) #if package needs to be updated
+#devtools::install_github("ctmm-initiative/ctmm", force = TRUE) #if package needs to be updated
 #devtools::install_github("jmcalabrese/corrMove", force = TRUE) #if installing for the first time
 library(ctmm)            #continuous-time movement models
 library(lme4)            #pairwise sex test to see if differences are significant using glmer()
 library(glmmTMB)         #beta distribution
+library(mgcv)            #gam() for encounters
 library(corrMove)        #correlative movement
-
-# Set working directory
-setwd("C:/Users/achhen/OneDrive - UBC/Github/giant anteater")
 
 #............................................................
 # Data ----
 #............................................................
 
-# Import data
-#import cleaned GPS giant anteater data
+# Set working directory
+setwd("C:/Users/achhen/OneDrive - UBC/Github/giant anteater")
+
+#import data, cleaned GPS giant anteater data
 DATA_GPS <- read_csv("data/Anteaters_NoOutliers.csv")
 
 #correct a mismatch entry for 'Larry' to 'Larry 267'
@@ -101,10 +102,6 @@ names(HR_size)[7] <- "HR_high"
 #............................................................
 ## Home range size results ----
 #............................................................
-#calculate mean home range size
-round(mean(HR_size$HR_low), 2)
-round(mean(HR_size$HR_est), 2)
-round(mean(HR_size$HR_high), 2)
 
 #calculate home-range size & compare sex
 AKDE_male <- AKDE[c("Alexander", "Anthony", "Beto","Christoffer","Jackson",
@@ -117,7 +114,7 @@ AKDE_female <- AKDE[c("Annie", "Bumpus", "Cate", "Elaine", "Hannah",
 #calculate mean home-range sizes for male
 meta(AKDE_male)
 
-#calculate mean home-range sizes for male
+#calculate mean home-range sizes for female
 meta(AKDE_female)
 
 #test to see significance of sex on home-range
@@ -126,50 +123,18 @@ AKDE_sex_compare <- list(male = AKDE_male,
 COL_sex <- c("#004488", "#A50026")
 meta(AKDE_sex_compare, col = COL_sex, sort = TRUE)
 
-#mean home range size
-round(mean(HR_size$HR_low), 2) #4.55 km^2
-round(mean(HR_size$HR_est), 2) #5.45 km^2
-round(mean(HR_size$HR_high), 2) #6.56 km^2
 
 #............................................................
-## Home range overlap ----
+## Home range overlap results ----
 #............................................................
 
-overlap_1_df <- readRDS("RDS/overlap_1_df.RDS")
-overlap_2_df <- readRDS("RDS/overlap_2_df.RDS")
-overlap_df  <- readRDS("RDS/overlap_df.RDS")
+overlap_df <- readRDS("RDS/overlap_df.RDS")
 
-overlap_df$pair_ID <- paste(overlap_df$anteater_A, overlap_df$anteater_B, sep = "_")
-overlap_df <- relocate(overlap_df, pair_ID, .before = anteater_A)
-
-#............................................................
-### Home range overlap results ----
-#............................................................
-
-# Total home range overlap
-#calculate mean total home range overlap & range
+# Total home range overlap & range
+#calculate mean total home range overlap 
 round(mean(overlap_df$overlap_est), 2)
 round(min(overlap_df$overlap_est), 2)
 round(max(overlap_df$overlap_est), 2)
-
-#number of home range overlap sex types
-table(overlap_df$sex_comparison)
-16+49+28 #93 dyads with overlaps
-
-# Home range overlap based on sex comparison categories
-#calculate mean home range overlap & range based on sex comparison categories
-round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
-round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
-round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
-
-round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
-round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
-round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
-
-round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
-round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
-round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "male-female"]), 2)
-
 
 #............................................................
 ### Home-range overlap sex analysis ----
@@ -189,29 +154,54 @@ HRO_test2 <- glmmTMB(overlap_est_squeezed ~ 1 + (1|site), family = beta_family(l
 HRO_test_results <- anova(HRO_test, HRO_test2)
 HRO_test_pvalue <- round(HRO_test_results$`Pr(>Chisq)`[2], 2)
 
+#number of home range overlap in each sex comparison category
+table(overlap_df$sex_comparison)
+
+# Home range overlap based on sex comparison categories
+#calculate mean home range overlap & range based on sex comparison categories
+round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
+round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
+round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "male-male"]), 2)
+
+round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
+round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
+round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "female-female"]), 2)
+
+round(mean(overlap_df$overlap_est[overlap_df$sex_comparison == "female-male"]), 2)
+round(min(overlap_df$overlap_est[overlap_df$sex_comparison == "female-male"]), 2)
+round(max(overlap_df$overlap_est[overlap_df$sex_comparison == "female-male"]), 2)
+
 #............................................................
 # Interactions ----
 #............................................................
 
-## Proximity ratio data ----
-#add proximity ratio data to home-range overlap dataframe
-proximity_1_df <- readRDS("RDS/proximity_1_df.RDS")
-proximity_2_df <- readRDS("RDS/proximity_2_df.RDS")
+## Proximity ratio ----
 proximity_df <- readRDS("RDS/proximity_df.RDS")
+proximity_identified_pairs_df <- readRDS("RDS/proximity_identified_pairs_df.RDS")
 
+#add proximity ratio data to home-range overlap dataframe
 overlap_df <- left_join(overlap_df, proximity_df, by = c("anteater_A", "anteater_B",
                                                          "Sex.A", "Sex.B",
                                                          "Age.A", "Age.B",
                                                          "sex_comparison",
                                                          "site"))
 
+#Identify pairs that did not have a proximity ratio of 1 based on sex comparison category
+table(proximity_identified_pairs_df$sex_comparison)
+
 ### Proximity ratio sex analysis ----
-#test for significance in sex, compare model with and without sex as a variable
+#test for significance in sex, compare model with and without sex as a variable across all 121 dyads
 proximity_test <- glmer(proximity_est ~ sex_comparison + (1|site), family = Gamma(link = "log"), data = overlap_df)
 proximity_test2 <- glmer(proximity_est ~ 1 + (1|site), family = Gamma(link = "log"), data = overlap_df)
 proximity_test_results <- anova(proximity_test, proximity_test2)
 proximity_test_pvalue <- round(proximity_test_results$`Pr(>Chisq)`[2], 2)
 #p = 0.13
+
+#PROX AND OVERLAP
+proximity_test <- glmer(proximity_est ~ overlap_est + (1|site), family = Gamma(link = "log"), data = overlap_df)
+proximity_test2 <- glmer(proximity_est ~ 1 + (1|site), family = Gamma(link = "log"), data = overlap_df)
+proximity_test_results <- anova(proximity_test, proximity_test2)
+proximity_test_results
 
 #............................................................
 ## Distances ----
@@ -219,8 +209,6 @@ proximity_test_pvalue <- round(proximity_test_results$`Pr(>Chisq)`[2], 2)
 
 distance_df <- readRDS("RDS/distance_df.RDS")
 
-#check for NA values
-any(is.na(distance_df))
 # #locate NA values within the dataframe
 distance_df[!complete.cases(distance_df), ] #3,502,701 observations
 #drop the 3 fixes that had no distance values 
@@ -244,16 +232,10 @@ distance_df <- relocate(distance_df, c(distance_low, distance_est, distance_high
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~END
 
-#calculate the number of encounters based on threshold
-sum(distance_df$distance_est < 15)
-sum(distance_df$distance_est[distance_df$sex_comparison == "male-male" & distance_df$distance_est] < 15)
-sum(distance_df$distance_est[distance_df$sex_comparison == "female-female" & distance_df$distance_est] < 15)
-sum(distance_df$distance_est[distance_df$sex_comparison == "male-female" & distance_df$distance_est] < 15)
-
 #calculate total encounters of all individuals based on sex comparison type
 overlap_df$encounter_count <- NA
-unique_pairs <- unique(overlap_df$pair_ID)
-for (i in unique_pairs){
+identified_pairs <- unique(overlap_df$pair_ID)
+for (i in identified_pairs){
   subset_A <- distance_df[distance_df$pair_ID == i,]
   
   # Count the number of times "distance_est" is below 15
@@ -264,518 +246,118 @@ for (i in unique_pairs){
   
 }
 
-#check for NA values
-any(is.na(overlap_df))
+#number of pairs that had 0 encounters
+overlap_df[overlap_df$encounter_count == 0,] #78
+#number of pairs that had at least 1 encounter
+overlap_df[overlap_df$encounter_count != 0,] #43
 
-## Encounter sex analysis ----
-#effect of sex and overlap on encounter rates
-encounter_test <- glmer(encounter_count ~ overlap_est + sex_comparison + (1|site), family = poisson(link = "log"), data = overlap_df)
-encounter_test2 <- glmer(encounter_count ~ 1 + (1|site), family = poisson(link = "log"), data = overlap_df)
+#calculate the number of encounters based on threshold
+sum(overlap_df$encounter_count)
+sum(overlap_df$encounter_count[overlap_df$sex_comparison == "male-male"])
+sum(overlap_df$encounter_count[overlap_df$sex_comparison == "female-female"])
+sum(overlap_df$encounter_count[overlap_df$sex_comparison == "female-male"])
+
+#............................................................
+### Encounter sex analysis ----
+#............................................................
+
+#effect of sex and overlap on encounter rates (model that does not include 0 encounter counts)
+encounter_test <- glmer(encounter_count ~ overlap_est + sex_comparison + (1|site), family = poisson(link = "log"), data = overlap_df, subset = encounter_count > 0)
+encounter_test2 <- glmer(encounter_count ~ 1 + (1|site), family = poisson(link = "log"), data = overlap_df, subset = encounter_count > 0)
 encounter_test_results <- anova(encounter_test, encounter_test2)
 encounter_test_pvalue <- round(encounter_test_results$`Pr(>Chisq)`[2], 2)
 encounter_test_pvalue
-
-encounter_test_sex <- glmer(encounter_count ~ sex_comparison + (1|site), family = poisson(link = "log"), data = overlap_df)
-
-#model that does not include 0 encounter counts
-encounter_test_nozero <- glmer(encounter_count ~ overlap_est + sex_comparison + (1|site), family = poisson(link = "log"), data = overlap_df, subset = encounter_count > 0)
+summary(encounter_test)
 
 # amount of home-range overlap and the number of observed encounters (β = 4.86 ± 0.148, p = 0.00)
-#standard error * 1.96 = CI
-0.07568 * 1.96
+summary(encounter_test)
 
 #............................................................
-## Proximity ratio identified pairs ----
+### Encounters of identified pairs ----
 #............................................................
 
-proximity_identified_pairs_df <- readRDS("RDS/proximity_identified_pairs_df.RDS")
-#Identify pairs that did not have a proximity ratio of 1 based on sex comparison category
-table(proximity_identified_pairs_df$sex_comparison)
-
-### Distances of identified pairs ----
-#Calculate the instantaneous Euclidean distance between the individuals in the dyad using telemetry data
-distance_pair1 <- readRDS("RDS/distance_pair1.RDS")
-distance_pair2 <- readRDS("RDS/distance_pair2.RDS")
-distance_pair3 <- readRDS("RDS/distance_pair3.RDS")
-distance_pair4 <- readRDS("RDS/distance_pair4.RDS")
-distance_pair5 <- readRDS("RDS/distance_pair5.RDS")
-distance_pair6 <- readRDS("RDS/distance_pair6.RDS")
-distance_pair7 <- readRDS("RDS/distance_pair7.RDS")
-distance_pair8 <- readRDS("RDS/distance_pair8.RDS")
-distance_pair9 <- readRDS("RDS/distance_pair9.RDS")
-distance_pair10 <- readRDS("RDS/distance_pair10.RDS")
-distance_pair11 <- readRDS("RDS/distance_pair11.RDS")
-distance_pair12 <- readRDS("RDS/distance_pair12.RDS")
 distance_pair_df <- readRDS("RDS/distance_pair_df.RDS")
 
-### Encounters of identified pairs ----
-#calculate the number of encounters based on a distance threshold of 15meters (threshold obtained from the sensitivity analysis)
+#calculate the number of encounters based on a instantaneous Euclidean distance between the individuals with a threshold of 15meters using telemetry data (threshold obtained from the sensitivity analysis)
 proximity_identified_pairs_df$encounter_count <- NA
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "1"] <- sum(distance_pair1$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "2"] <- sum(distance_pair2$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "3"] <- sum(distance_pair3$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "4"] <- sum(distance_pair4$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "5"] <- sum(distance_pair5$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "6"] <- sum(distance_pair6$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "7"] <- sum(distance_pair7$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "8"] <- sum(distance_pair8$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "9"] <- sum(distance_pair9$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "10"] <- sum(distance_pair10$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "11"] <- sum(distance_pair11$est < 15)
-proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == "12"] <- sum(distance_pair12$est < 15)
 
-# Correlative Movement ----
-cm_pair1 <- readRDS("RDS/cmAnteater_pair1.RDS")
-cm_pair2 <- readRDS("RDS/cmAnteater_pair2.RDS")
-cm_pair3 <- readRDS("RDS/cmAnteater_pair3.RDS")
-cm_pair4 <- readRDS("RDS/cmAnteater_pair4.RDS")
-cm_pair5 <- readRDS("RDS/cmAnteater_pair5.RDS")
-cm_pair6 <- readRDS("RDS/cmAnteater_pair6.RDS")
-cm_pair7 <- readRDS("RDS/cmAnteater_pair7.RDS")
-cm_pair8 <- readRDS("RDS/cmAnteater_pair8.RDS")
-cm_pair9 <- readRDS("RDS/cmAnteater_pair9.RDS")
-cm_pair10 <- readRDS("RDS/cmAnteater_pair10.RDS")
-cm_pair11 <- readRDS("RDS/cmAnteater_pair11.RDS")
-cm_pair12 <- readRDS("RDS/cmAnteater_pair12.RDS")
+for (i in 1:12) {
+  # Calculate the encounter_count for the current pair
+  encounter_count <- sum(distance_pair_df$pair_ID_number == i & distance_pair_df$est < 15)
+  
+  # Assign the calculated encounter_count to the corresponding rows in proximity_identified_pairs_df
+  proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$pair_ID_number == i] <- encounter_count
+}
 
-# Case study of Pair 11 ----
-#home-range size
-round(overlap_df$overlap_low[overlap_df$pair_ID == 11], 2)
-round(overlap_df$overlap_est[overlap_df$pair_ID == 11], 2)
-round(overlap_df$overlap_high[overlap_df$pair_ID == 11], 2)
+sum(proximity_identified_pairs_df$encounter_count)
+sum(proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$sex_comparison == "male-male"])
+sum(proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$sex_comparison == "female-female"])
+sum(proximity_identified_pairs_df$encounter_count[proximity_identified_pairs_df$sex_comparison == "female-male"])
 
-#proximity ratio
-round(proximity_identified_pairs_df$proximity_low[proximity_identified_pairs_df$pair_ID == 11], 2)
-round(proximity_identified_pairs_df$proximity_est[proximity_identified_pairs_df$pair_ID == 11], 2)
-round(proximity_identified_pairs_df$proximity_high[proximity_identified_pairs_df$pair_ID == 11], 2)
+#............................................................
+## Correlative movement of identified pairs----
+#............................................................
+cm_pair1 <- readRDS("RDS/cm_pair1.RDS")
+cm_pair2 <- readRDS("RDS/cm_pair2.RDS")
+cm_pair3 <- readRDS("RDS/cm_pair3.RDS")
+cm_pair4 <- readRDS("RDS/cm_pair4.RDS")
+cm_pair5 <- readRDS("RDS/cm_pair5.RDS")
+cm_pair6 <- readRDS("RDS/cm_pair6.RDS")
+cm_pair7 <- readRDS("RDS/cm_pair7.RDS")
+cm_pair8 <- readRDS("RDS/cm_pair8.RDS")
+cm_pair9 <- readRDS("RDS/cm_pair9.RDS")
+cm_pair10 <- readRDS("RDS/cm_pair10.RDS")
+cm_pair11 <- readRDS("RDS/cm_pair11.RDS")
+cm_pair12 <- readRDS("RDS/cm_pair12.RDS")
 
-#distance measurement
-round(mean(distance_pair11$low), 2)
-round(mean(distance_pair11$est), 2)
-round(mean(distance_pair11$high), 2)
+#calculate mean amount of correlative movement for each identified pair
+# initialize columns
+proximity_identified_pairs_df$mean_etaTot.CI.Low <- NA
+proximity_identified_pairs_df$mean_etaTot.MLE <- NA
+proximity_identified_pairs_df$mean_etaTot.CI.Upp <- NA
 
-#mean correlative movement
-round(mean(cm_pair11$etaTot.CI.Low), 2)
-round(mean(cm_pair11$etaTot.MLE), 2)
-round(mean(cm_pair11$etaTot.CI.Upp), 2)
+# iterate over pair_ID_number values
+for (i in 1:12) {
+  # get the corresponding cm_pair
+  cm_pair <- get(paste0("cm_pair", i))
+  
+  # calculate means
+  mean_etaTot_CI_Low <- mean(cm_pair$etaTot.CI.Low)
+  mean_etaTot_MLE <- mean(cm_pair$etaTot.MLE)
+  mean_etaTot_CI_Upp <- mean(cm_pair$etaTot.CI.Upp)
+  
+  # update proximity_identified_pairs_df with mean values
+  proximity_identified_pairs_df$mean_etaTot.CI.Low[proximity_identified_pairs_df$pair_ID_number == i] <- mean_etaTot_CI_Low
+  proximity_identified_pairs_df$mean_etaTot.MLE[proximity_identified_pairs_df$pair_ID_number == i] <- mean_etaTot_MLE
+  proximity_identified_pairs_df$mean_etaTot.CI.Upp[proximity_identified_pairs_df$pair_ID_number == i] <- mean_etaTot_CI_Upp
+}
 
-# Plot ----
-## Plot study site ----
+#mean amount of total correlation in all identified pairs movement
+round(mean(proximity_identified_pairs_df$mean_etaTot.CI.Low[-1]), 2)
+round(mean(proximity_identified_pairs_df$mean_etaTot.MLE[-1]), 2)
+round(mean(proximity_identified_pairs_df$mean_etaTot.CI.Upp[-1]), 2)
 
-#Brazil with meso regions outlined
-BR_meso_region <- read_meso_region(code_meso = "all", year = 2017, simplified = TRUE, showProgress = TRUE)
+#calculate mean total drift and mean total diffusion correlative movement for the 12 pairs
+# initialize columns
+proximity_identified_pairs_df$mean_etaDif.MLE <- NA
+proximity_identified_pairs_df$mean_etaDft.MLE <- NA
 
-#state of Mato Grosso du Sul
-MS_state_micro <- read_micro_region(code_micro= "MS", year = 2017, simplified = FALSE, showProgress = TRUE)
-
-# Remove plot axis
-no_axis <- theme(axis.title=element_blank(),
-                 axis.text=element_blank(),
-                 axis.ticks=element_blank())
-
-plot_BR <-
-  ggplot() +
-  geom_sf(data=BR_meso_region, fill="white", color="black", size=.15, show.legend = FALSE) +
-  labs(subtitle="Brazil", size=8) +
-  theme_minimal() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        legend.position="none") +
-  no_axis
-ggsave(plot = last_plot(), filename = "figures/BR_meso_region.png", device = NULL,
-       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
-
-plot_MS <-
-  ggplot() +
-  geom_sf(data=MS_state_micro, fill="white", color="black", size=.15, show.legend = FALSE) +
-  labs(subtitle="Mato Grosso du Sul", size=8) +
-  theme_minimal() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        legend.position="none") +
-  no_axis
-ggsave(plot = last_plot(), filename = "figures/MS_state_micro.png", device = NULL,
-       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
-
-plot_BR_MS <- grid.arrange(plot_BR, plot_MS, 
-                           ncol=2, widths = c(6,5.2))
-# Save the figure
-ggsave(plot_BR_MS,
-       width = 10, height = 5, units = "in",
-       dpi = 600,
-       bg = "white",
-       file="figures/plot_BR_MS.png")
-
-## Plot HR size ----
-mean_HR_est <- round(mean(HR_size$HR_est), 2)
-plot_HR_size <- 
-  ggplot() +
-  geom_vline(data = HR_size, aes(xintercept = mean_HR_est),
-             linetype = "dotdash") +
-  geom_linerange(data = HR_size, 
-                 aes(xmin = HR_low, xmax = HR_high, y = ID, color = Sex),
-                 linewidth = 3) + 
-  labs(x = bquote("Home range area" ~ (km^2)),
-       y = "") +
-  ggtitle("A)") +
-  scale_color_manual(values = c('#004488', '#A50026'), breaks = c('Male', 'Female')) +
-  geom_point(data = HR_size,
-             aes(x = HR_est, y = ID, fill = "white"), color = "white",
-             size = 2) +
-  geom_point(data = HR_size, 
-             aes(x = HR_est, y = ID, color = Sex),
-             size = 1) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        legend.position="none")
-plot_HR_size
-ggsave(plot_HR_size, filename = "figures/HR_size.png", device = NULL,
-       path = NULL, scale = 1, width = 6.86, height = 4, units = "in", dpi = 600)
-
-## Plot HR overlap ----
-AKDE_1 <- AKDE[c("Alexander", "Anthony", "Bumpus", "Cate", "Christoffer",
-                 "Elaine", "Jackson", "Kyle", "Little_Rick", "Makao",
-                 "Puji", "Rodolfo")]
-AKDE_2 <- AKDE[c("Annie", "Beto", "Hannah", "Jane", "Larry",
-                 "Luigi", "Margaret", "Maria", "Reid", "Sheron",
-                 "Thomas")]
-
-COL_1 <- c("#004488", "#004488", "#A50026", "#A50026", "#004488", "#A50026", "#004488", "#004488", "#004488", "#A50026", "#A50026", "#004488") 
-png(file = "figures/HRO_site1.png", width = 6.86, height = 6, units = "in", res = 600)
-plot_HRO_site1 <- 
-  plot(AKDE_1, col.DF = COL_1, col.level = COL_1, col.grid = NA, level = NA)
-title("B)", adj = 0)
-dev.off()
-
-COL_2 <- c("#A50026", "#004488", "#A50026", "#A50026", "#004488", "#004488", "#A50026", "#A50026", "#004488", "#A50026", "#004488") 
-png(file = "figures/HRO_site2.png", width = 6.86, height = 6, units = "in", res = 600)
-plot_HRO_site2 <- 
-  plot(AKDE_2, col.DF = COL_2, col.level = COL_2, col.grid = NA, level = NA) 
-title("C)", adj = 0)
-dev.off()
-
-png(file = "figures/HR_overlap.png", width = 12, height = 6, units = "in", res = 600)
-par(mfrow=c(1,2))
-plot(AKDE_1, col.DF = COL_1, col.level = COL_1, col.grid = NA, level = NA)
-title("B)", adj = 0)
-plot(AKDE_2, col.DF = COL_2, col.level = COL_2, col.grid = NA, level = NA)
-title("C)", adj = 0)
-dev.off()
-
-## Plot HRO sex comparison ----
-plot_HRO_sex_analysis <-
-  ggplot(data = overlap_df, 
-         mapping = aes(x = sex_comparison, y = overlap_est, fill = sex_comparison)) + 
-  geom_boxplot() +
-  ylab("Home range overlap") +
-  xlab("Sex") +
-  ggtitle("D)") +
-  theme_bw() +
-  theme(panel.grid.major = element_blank(), 
-        panel.grid.minor = element_blank(), 
-        legend.position="none") +
-  scale_fill_manual(values = c("#A50026", "#9970AB", "#004488"),
-                    labels = c("Female - Female", "Male - Female", "Male - Male"),
-                    name = "") +
-  scale_y_continuous(limits = c(0,1))
-plot_HRO_sex_analysis
-ggsave(plot_HRO_sex_analysis, filename = "figures/HRO_sex_analysis.png", device = NULL,
-       path = NULL, scale = 1, width = 6.86, height = 3, units = "in", dpi = 600)
-
-## Plot multi-panel ----
-library(cowplot)
-
-figure1_HR <- grid.arrange(plot_HR_size,
-                        plot_grid(plot_HRO_site1, plot_HRO_site2, ncol = 2),
-                        plot_HRO_sex_analysis,
-                        nrow = 3)
-
-ggsave(figure1_HR, filename = "figures/figure1_HR.png", device = NULL,
-       path = NULL, scale = 1, width = 6.86, height = 12, units = "in", dpi = 600)
-
-## Plot Proximity ratio  ----
-plot_proximity_ratio <- 
-  ggplot() +
-  geom_hline(data = overlap_df, 
-             aes(y = proximity_est, x = overlap_est, col = sex_comparison),
-             yintercept = 1, col = "grey70", linetype = "dashed") +
-  geom_point(data = overlap_df, 
-             aes(y = proximity_est, x = overlap_est, col = sex_comparison),
-             size = 1.5, alpha = 0.3) + #alpha = colour intensity
-  geom_segment(data = overlap_df, 
-               aes(x = overlap_est, xend = overlap_est, y = proximity_low, yend = proximity_high, col = sex_comparison), 
-               linewidth = 0.3, alpha = 0.3) +
-  geom_point(data = proximity_pair_df, 
-             aes(y = proximity_est, x = overlap_est, col = sex_comparison),
-             size = 1.5) +
-  geom_segment(data = proximity_pair_df,
-               aes(x = overlap_est, xend = overlap_est, y = proximity_low, yend = proximity_high, col = sex_comparison), 
-               linewidth = 0.3) +
-  scale_y_log10(expand = c(0,0.1)) +
-  scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
-  scale_color_manual(values = c("#A50026", "#9970AB", "#004488"),
-                     labels = c("Female - Female", "Male - Female", "Male - Male"),
-                     name = "") +
-  ylab("Proximity ratio") +
-  xlab("Home-range overlap") +
-  ggtitle("A)") +
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.title.y = element_text(size=10, family = "sans", face = "bold"),
-        axis.title.x = element_text(size=10, family = "sans", face = "bold"),
-        axis.text.y = element_text(size=8, family = "sans"),
-        axis.text.x  = element_text(size=8, family = "sans"),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
-        plot.title = element_text(hjust = -0.05, size = 12, family = "sans", face = "bold"),
-        legend.position = c(0.85, 0.2),
-        legend.key.height = unit(0.3, "cm"),
-        legend.key=element_blank(),
-        panel.background = element_rect(fill = "transparent"),
-        legend.background = element_rect(fill = "transparent"),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
-plot_proximity_ratio
-ggsave(plot_proximity_ratio, width = 6.23,height = 4, units = "in", dpi = 600, bg = "transparent",
-       file="figures/proximity_ratio.png")
-
-## Plot encounters ----
-#plot_encounters <-
-  ggplot(data = overlap_df,
-         aes(y = encounter_count, x = overlap_est)) +
-  geom_point(data = overlap_df, 
-             aes(y = encounter_count, x = overlap_est, col = sex_comparison),
-             size = 1.5) + 
-  geom_smooth(method="lm", formula = y ~ x, se=F, col = "black") +
-  scale_y_log10(expand = c(0,0.1), limits = c(0.1,2000)) +
-  scale_x_log10(expand = c(0,0.1)) +
-  scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
-  scale_color_manual(values = c("#A50026", "#9970AB", "#004488"),
-                     labels = c("Female - Female", "Male - Female", "Male - Male"),
-                     name = "") +
-  xlab("Home-range overlap") +
-  ylab("Encounters count") +
-  ggtitle("B)") +
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.title.y = element_text(size=8, family = "sans", face = "bold"),
-        axis.title.x = element_text(size=10, family = "sans", face = "bold"),
-        axis.text.y = element_text(size=10, family = "sans"),
-        axis.text.x  = element_text(size=8, family = "sans"),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
-        plot.title = element_text(hjust = -0.05, size = 12, family = "sans", face = "bold"),
-        legend.position = c(0.1, 0.85),
-        legend.key.height = unit(0.3, "cm"),
-        legend.key=element_blank(),
-        panel.background = element_rect(fill = "transparent"),
-        legend.background = element_rect(fill = "transparent"),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
-ggsave(plot = last_plot(), width = 6.86,height = 6, units = "in", dpi = 600, bg = "transparent",
-       file="figures/encounters.png")
-
-overlap_df2 <- overlap_df[overlap_df$encounter_count != 0,] #messed up entries with NA values
-#plot_encounters_nozeros <-
-  ggplot(data = overlap_df2,
-         aes(y = encounter_count, x = overlap_est)) +
-  geom_point(data = overlap_df2, 
-             aes(y = encounter_count, x = overlap_est, col = sex_comparison),
-             size = 1.5) + 
-  geom_smooth(method="lm", formula = y ~ x, se=F, col = "black") +
-  scale_y_log10(expand = c(0,0.1), limits = c(0.1,2000)) +
-  scale_x_log10(expand = c(0,0.1)) +
-  scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
-  scale_color_manual(values = c("#A50026", "#9970AB", "#004488"),
-                     labels = c("Female - Female", "Male - Female", "Male - Male"),
-                     name = "") +
-  xlab("Home-range overlap") +
-  ylab("Encounters count") +
-  ggtitle("B)") +
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.title.y = element_text(size=8, family = "sans", face = "bold"),
-        axis.title.x = element_text(size=10, family = "sans", face = "bold"),
-        axis.text.y = element_text(size=10, family = "sans"),
-        axis.text.x  = element_text(size=8, family = "sans"),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
-        plot.title = element_text(hjust = -0.05, size = 12, family = "sans", face = "bold"),
-        legend.position = c(0.1, 0.85),
-        legend.key.height = unit(0.3, "cm"),
-        legend.key=element_blank(),
-        panel.background = element_rect(fill = "transparent"),
-        legend.background = element_rect(fill = "transparent"),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
-ggsave(plot = last_plot(), width = 6.86,height = 6, units = "in", dpi = 600, bg = "transparent",
-       file="figures/encounters_nozeros.png")
-
-## Multi-panel
-FIG_proximityratio_encounters <- grid.arrange(plot_proximity_ratio,
-                                              plot_encounters, 
-                                              nrow = 2)
-ggsave(FIG_proximityratio_encounters, filename = "figures/proximityratio_encounters.png", 
-       device = NULL, path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
-
-FIG_proximityratio_encounters2 <- grid.arrange(plot_proximity_ratio,
-                                              plot_encounters_nozeros, 
-                                              nrow = 2)
-ggsave(FIG_proximityratio_encounters2, filename = "figures/proximityratio_encounters2.png", 
-       device = NULL, path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
-
-## Plot encounter residuals ----
-# FIT_ENC <- lm(log10(encounter_count+0.1) ~ log10(overlap_est), data = proximity_pair_df)
-# resids <- residuals(FIT_ENC)
-# png(file = "figures/encounter_residuals_sex.png", width = 6.86, height = 6, units = "in", res = 600)
-# boxplot(resids ~ proximity_pair_df$sex_comparison,
-#         xlab = "Encounter Residuals",
-#         ylab = "sex")
-# dev.off()
-
-## Plot encounters of 12 dyads ----
-#plot_encounters_pair <-
-ggplot(data = proximity_pair_df,
-       aes(y = encounter_count, x = overlap_est)) +
-  geom_point(data = proximity_pair_df, 
-             aes(y = encounter_count, x = overlap_est, col = sex_comparison),
-             size = 1.5) + 
-  geom_smooth(method="lm", formula = y ~ x, se=F, col = "black") +
-  scale_y_log10(expand = c(0,0.1), limits = c(0.1,2000)) +
-  scale_x_log10(expand = c(0,0.1)) +
-  scale_x_continuous(limits = c(0,1), expand = c(0,0.02)) +
-  scale_color_manual(values = c("#A50026", "#9970AB", "#004488"),
-                     labels = c("Female - Female", "Male - Female", "Male - Male"),
-                     name = "") +
-  xlab("Home-range overlap") +
-  ylab("Encounters count of 12 dyads") +
-  ggtitle("B)") +
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.title.y = element_text(size=8, family = "sans", face = "bold"),
-        axis.title.x = element_text(size=10, family = "sans", face = "bold"),
-        axis.text.y = element_text(size=10, family = "sans"),
-        axis.text.x  = element_text(size=8, family = "sans"),
-        legend.text = element_text(size=6, family = "sans", face = "bold"),
-        plot.title = element_text(hjust = -0.05, size = 12, family = "sans", face = "bold"),
-        legend.position = c(0.1, 0.85),
-        legend.key.height = unit(0.3, "cm"),
-        legend.key=element_blank(),
-        panel.background = element_rect(fill = "transparent"),
-        legend.background = element_rect(fill = "transparent"),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
-ggsave(plot = last_plot(), width = 6.86,height = 6, units = "in", dpi = 600, bg = "transparent",
-       file="figures/PAIR_encounters.png")
+# iterate over pair_ID_number values
+for (i in 1:12) {
+  # get the corresponding cm_pair
+  cm_pair <- get(paste0("cm_pair", i))
+  
+  # calculate means
+  mean_etaDif_MLE <- mean(cm_pair$etaDif.MLE)
+  mean_etaDft_MLE <- mean(cm_pair$etaDft.MLE)
+  
+  # update proximity_identified_pairs_df with mean values
+  proximity_identified_pairs_df$mean_etaDif.MLE[proximity_identified_pairs_df$pair_ID_number == i] <- mean_etaDif_MLE
+  proximity_identified_pairs_df$mean_etaDft.MLE[proximity_identified_pairs_df$pair_ID_number == i] <- mean_etaDft_MLE
+}
 
 
 
-## Plot correlative movement of the 12 dyads ----
-## Plot CM ----
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair1.png", width = 6.86, height = 6.86, units = "in", res = 600)
-plot.corrMove(cm_pair1)
-title("Pair 1: Kyle/Christoffer")
-dev.off()
 
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair2.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair2)
-title("PAIR 2: Elaine/Christoffer")
-dev.off()
 
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair3.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair3)
-title("PAIR 3: Bumpus/Kyle")
-dev.off()
 
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair4.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair4)
-title("PAIR 4: Little Rick/Elaine")
-dev.off()
-
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair5.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair5)
-title("PAIR 5: Makao/Bumpus")
-dev.off()
-
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair6.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair6)
-title("PAIR 6: Puji/Bumpus")
-dev.off()
-
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair8.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair8)
-title("PAIR 8: Larry/Annie")
-dev.off()
-
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair9.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair9)
-title("PAIR 9: Reid/Larry")
-dev.off()
-
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair10.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair10)
-title("PAIR 10: Sheron/Maria")
-dev.off()
-
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair11.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair11)
-title("PAIR 11: Thomas/Margaret")
-dev.off()
-
-#3-panel plot of the MCIs over time
-png(file = "figures/correlative_movement/corrmove_pair12.png", width = 6.86, height = 6, units = "in", res = 600)
-plot.corrMove(cm_pair12)
-title("PAIR 12: Thomas/Reid")
-dev.off()
-
-## Plot Pair 11 ----
-AKDE_pair11 <- AKDE[c("Thomas", "Margaret")]
-COL_pair11 <- c("#004488", "#A50026")
-
-### home-range overlap with GPS points  ----
-png(file = "figures/HRO_pair11.png", width = 6.86, height = 6, units = "in", res = 600)
-plot(AKDE_pair11, col.DF = COL_pair11, col.level = COL_pair11, col.grid = NA, level = NA,
-     main = "Thomas and Margaret")
-title("A)", adj = 0)
-plot(list(Thomas, Margaret), error = FALSE, #arguments need to be before colour or won't work
-     col = c("#004488", "#A50026"),
-     add = TRUE) #to overlay the previous plot
-dev.off()
-
-### distances ----
-png(file = "figures/distance_pair11.png", width = 6.86, height = 4, units = "in", res = 600)
-plot_distances_pair11 <- plot(est~timestamp, 
-                              data=distance_pair11, 
-                              type="l", # type="l" changes the plot from dots to a line
-                              xlab = "",
-                              ylab = "distance (m)")
-# cex.axis = 1.5, #size of axis font (tick values)
-# cex.lab = 2, #size of axis label
-# font.lab = 2) #bold axis labels
-ylim = c(0,9000)
-title("B)", adj = 0)
-dev.off()
-
-### correlative movement
-png(file = "figures/corrmove_pair11.png", width = 6.86, height = 6, units = "in", res = 600)
-plot_cm_pair11 <-
-  plot.corrMove(cm_pair11,
-                cex.axis = 1.5, #size of axis font (tick values)
-                cex.lab = 2) #size of axis label))
-title("C)", adj = 0)
-dev.off()
-
-plot_pair11 <- grid.arrange(plot_distances_pair11, 
-                            plot_cm_pair11,
-                            ncol=1)
