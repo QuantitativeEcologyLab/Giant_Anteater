@@ -37,7 +37,7 @@ figure2a_HR_size <-
         panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = NA))
 figure2a_HR_size
-ggsave(figure2a_HR_size, filename = "figures/figure2a_HR_size.png", device = NULL,
+ggsave(figure2a_HR_size, filename = "figures/individual figures/figure2a_HR_size.png", device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 4, units = "in", dpi = 600)
 
 #..................................................
@@ -47,7 +47,7 @@ ggsave(figure2a_HR_size, filename = "figures/figure2a_HR_size.png", device = NUL
 figure2b_overlap_sex <-
   ggplot(data = overlap_df, 
          mapping = aes(x = sex_comparison, y = overlap_est, fill = sex_comparison)) + 
-  geom_boxplot(alpha = 0.5, size = 0.3) +
+  geom_boxplot(alpha = 0.5, size = 0.3, outlier.size = 0.3) +
   ylab("Home range overlap") +
   xlab("Sex") +
   ggtitle("B") +
@@ -69,7 +69,7 @@ figure2b_overlap_sex <-
   scale_x_discrete(breaks = c("female-female","female-male","male-male"),
                    labels = c("Female - Female", "Female - Male", "Male - Male"))
 figure2b_overlap_sex
-ggsave(figure2b_overlap_sex, filename = "figures/figure2b_overlap_sex.png", device = NULL,
+ggsave(figure2b_overlap_sex, filename = "figures/individual figures/figure2b_overlap_sex.png", device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 3, units = "in", dpi = 600)
 
 
@@ -82,7 +82,7 @@ figure2_left <- grid.arrange(figure2a_HR_size,
                              figure2b_overlap_sex,
                              nrow = 2, heights = c(0.65, 0.35))
 
-ggsave(figure2_left, filename = "figures/figure2_left.png", device = NULL,
+ggsave(figure2_left, filename = "figures/individual figures/figure2_left.png", device = NULL,
        path = NULL, scale = 1, width = 4, height = 6, units = "in", dpi = 600)
 
 
@@ -99,7 +99,7 @@ AKDE_2 <- AKDE[c("Annie", "Beto", "Hannah", "Jane", "Larry",
                  "Thomas")]
 COL_2 <- c("#A50026", "#004488", "#A50026", "#A50026", "#004488", "#004488", "#A50026", "#A50026", "#004488", "#A50026", "#004488") 
 
-png(file = "figures/figure2_right_overlap.png", width = 2.86, height = 6, units = "in", res = 600)
+png(file = "figures/individual figures/figure2_right_overlap.png", width = 2.86, height = 6, units = "in", res = 600)
 par(mfrow=c(2,1))
 par(mgp = c(2, 0.5, 0))                           #Adjust the third element (margin for axis title spacing)
 par(mar = c(3, 3, 1.25, 0.25))                        #margin defaults (order: bottom, left, top, and right)
