@@ -3,6 +3,7 @@
 #............................................................
 # Load packages ----
 #............................................................
+
 #data, visualization
 library(readr)
 library(ggplot2)
@@ -29,7 +30,7 @@ library(corrMove)        #correlative movement
 #............................................................
 
 # Set working directory
-setwd("C:/Users/achhen/OneDrive - UBC/Github/giant anteater")
+setwd("C:/Users/Kat/Documents/GitHub/giant anteater")
 
 #import data, cleaned GPS giant anteater data
 DATA_GPS <- read_csv("data/Anteaters_NoOutliers.csv")
@@ -123,7 +124,6 @@ AKDE_sex_compare <- list(male = AKDE_male,
 COL_sex <- c("#004488", "#A50026")
 meta(AKDE_sex_compare, col = COL_sex, sort = TRUE)
 
-
 #............................................................
 ## Home range overlap results ----
 #............................................................
@@ -194,14 +194,14 @@ table(proximity_identified_pairs_df$sex_comparison)
 proximity_test <- glmer(proximity_est ~ sex_comparison + (1|site), family = Gamma(link = "log"), data = overlap_df)
 proximity_test2 <- glmer(proximity_est ~ 1 + (1|site), family = Gamma(link = "log"), data = overlap_df)
 proximity_test_results <- anova(proximity_test, proximity_test2)
-proximity_test_pvalue <- round(proximity_test_results$`Pr(>Chisq)`[2], 2)
-#p = 0.13
+proximity_test_pvalue <- round(proximity_test_results$`Pr(>Chisq)`[2], 2) #p = 0.13
 
-#PROX AND OVERLAP
-proximity_test <- glmer(proximity_est ~ overlap_est + (1|site), family = Gamma(link = "log"), data = overlap_df)
-proximity_test2 <- glmer(proximity_est ~ 1 + (1|site), family = Gamma(link = "log"), data = overlap_df)
-proximity_test_results <- anova(proximity_test, proximity_test2)
-proximity_test_results
+### Proximity and overlap analysis ----
+prox_overlap_test <- glmer(proximity_est ~ overlap_est + (1|site), family = Gamma(link = "log"), data = overlap_df)
+prox_overlap_test2 <- glmer(proximity_est ~ 1 + (1|site), family = Gamma(link = "log"), data = overlap_df)
+prox_overlap_test_results <- anova(prox_overlap_test, prox_overlap_test2)
+prox_overlap_test_pvalue <- round(prox_overlap_test_results$`Pr(>Chisq)`[2], 2) #p = 0.03
+
 
 #............................................................
 ## Distances ----
@@ -223,18 +223,75 @@ distance_df <- relocate(distance_df, c(distance_low, distance_est, distance_high
 ## Encounters ----
 #............................................................
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~NEED TO DO
 ### Sensitivity Analysis ----
+# Calculate the distance threshold to be used as an encounter event
 
-#calculate the distance threshold to be used as an encounter event
+#set encounter radius
+#larger the radius = more encounters can occur within that radius due to more individuals that can be within the radius (measurements are in meters)
+enc_radius <- 0:1000
+enc_count <- vector("numeric", length(enc_radius))
+
+#calculate the number of encounters occurring within each radius size
+for(i in 1:length(enc_radius)){
+  enc_count[i] <- sum(distance_df$distance_est < enc_radius[i])
+}
+
+#to be ggplottified
+plot(x = enc_radius, y = enc_count, type = "l")
 
 
+#sensitivity analysis on male - female encounter significance
+encounter_radius_pvalue <- vector("numeric", length(enc_radius))
+identified_pairs <- unique(overlap_df$pair_ID)
+
+START <- Sys.time()
+
+#Loop over encounter radii
+for(i in 1:length(enc_radius)){
+  
+  res <- list()
+  
+  for (j in identified_pairs){
+    subset_A <- distance_df[distance_df$pair_ID == j,]
+    
+    # Count the number of times "distance_est" is below some threshold distance i 
+    encounter_count <- sum(subset_A$distance_est < enc_radius[i])
+    
+    #save results
+    res[[j]] <- data.frame(encounter_count = encounter_count,
+                           overlap_est = subset_A$overlap_est[1],
+                           sex_comparison = subset_A$sex_comparison[1],
+                           site = subset_A$site[1])
+    
+  }
+  
+  res <- do.call(rbind, res)
+  encounter_radius_test <- try(glmer(encounter_count ~ overlap_est + sex_comparison + (1|site),
+                              family = poisson(link = "log"), data = res, subset = res > 0))
+  encounter_radius_test2 <- try(glmer(encounter_count ~ 1 + (1|site), family = poisson(link = "log"), data = res, subset = res > 0))
+  encounter_radius_test_results <- try(anova(encounter_radius_test, encounter_radius_test2))
+  p_val <- try(encounter_radius_test_results$`Pr(>Chisq)`[2])
+  encounter_radius_pvalue[i] <- ifelse(class(p_val) == "try-error", NA, p_val)
+  
+  cat("finished index", i, "\n")
+}
+
+#Turn the list of list into a data frame
+encounter_radius_pvalue <- do.call(rbind, as.list(encounter_radius_pvalue))
+saveRDS(encounter_radius_pvalue, file = "RDS/encounter_radius_pvalue.RDS")
+
+END <- Sys.time()
+
+
+plot(x = enc_radius[1:10], y = encounter_test_pvalue[1:10], type = "l")
+abline(0.05, 0)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~END
 
 #calculate total encounters of all individuals based on sex comparison type
 overlap_df$encounter_count <- NA
 identified_pairs <- unique(overlap_df$pair_ID)
+
 for (i in identified_pairs){
   subset_A <- distance_df[distance_df$pair_ID == i,]
   
@@ -357,7 +414,62 @@ for (i in 1:12) {
 }
 
 
+#............................................................
+# Case study of Pair 11 ----
+#............................................................
+
+#Margaret and Thomas
+
+#home-range size
+AKDE_thomas <- AKDE["Thomas"]
+AKDE_margaret <- AKDE["Margaret"]
+
+#calculate mean home-range sizes for Thomas
+meta(AKDE_thomas)
+
+#calculate mean home-range sizes for Margaret
+meta(AKDE_margaret)
+
+#Home range overlap 
+round(proximity_identified_pairs_df[11,]$overlap_low, 2)
+round(proximity_identified_pairs_df[11,]$overlap_est, 2)
+round(proximity_identified_pairs_df[11,]$overlap_high, 2)
+
+#proximity ratio
+round(proximity_identified_pairs_df$proximity_low[proximity_identified_pairs_df$pair_ID_number == 11], 2)
+round(proximity_identified_pairs_df$proximity_est[proximity_identified_pairs_df$pair_ID_number == 11], 2)
+round(proximity_identified_pairs_df$proximity_high[proximity_identified_pairs_df$pair_ID_number == 11], 2)
+
+#distances are in meters, convert to km
+round(mean(distance_pair_df$est[distance_pair_df$pair_ID_number == 11])/1000, 2)
+round(min(distance_pair_df$est[distance_pair_df$pair_ID_number == 11])/1000, 2)
+round(max(distance_pair_df$est[distance_pair_df$pair_ID_number == 11])/1000, 2)
+
+#mean 95% CI correlative movement
+round(mean(cm_pair11$etaTot.CI.Low), 2)
+round(mean(cm_pair11$etaTot.MLE), 2)
+round(mean(cm_pair11$etaTot.CI.Upp), 2)
+
+distance_pair11 <- distance_pair_df[distance_pair_df$pair_ID_number == 11,]
+
+distance_pair11$month <- format(distance_pair11$timestamp, "%m")
+
+oct <- distance_pair11[distance_pair11$month == 10,]
+oct <- oct[oct$est < 15,]
+nov <- distance_pair11[distance_pair11$month == 11,]
+nov <- nov[nov$est < 15,]
+
+highencs <- rbind(oct, nov)
+
+ggplot() +
+  geom_line(data = highencs,
+            aes(y = est, x = timestamp, 
+            ), size = 0.15) +
+  xlab("") +
+  ylab("Distance (m)")
 
 
-
+test <- distance_pair11[distance_pair11$est < 15,]
+oct$year <- format(oct$timestamp, "%y")
+oct$day <- format(oct$timestamp, "%d")
 
