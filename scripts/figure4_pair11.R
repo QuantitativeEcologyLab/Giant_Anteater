@@ -37,6 +37,8 @@ dev.off()
 # Distance ----
 #............................................................
 
+distance_pair11 <- distance_pair_df[distance_pair_df$pair_ID_number == 11,]
+
 figure4b_pair11_distance <- 
   ggplot() +
   geom_line(data = distance_pair11,
