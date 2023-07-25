@@ -52,7 +52,7 @@ plot_BR <-
   no_axis
 plot_BR
 
-ggsave(plot = last_plot(), filename = "figures/BR_meso_region.png", device = NULL,
+ggsave(plot = last_plot(), filename = "figures/map/BR_meso_region.png", device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 plot_MS <-
@@ -66,7 +66,7 @@ plot_MS <-
   no_axis
 plot_MS
 
-ggsave(plot = last_plot(), filename = "figures/MS_state_micro.png", device = NULL,
+ggsave(plot = last_plot(), filename = "figures/map/MS_state_micro.png", device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 plot_BR_MS <- grid.arrange(plot_BR, plot_MS, 
