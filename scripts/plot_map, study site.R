@@ -23,6 +23,9 @@ library(lme4)            #pairwise sex test to see if differences are significan
 library(glmmTMB)         #beta distribution
 library(corrMove)        #correlative movement
 
+# Set working directory
+setwd("C:/Users/achhen/Documents/GitHub/Giant_Anteater")
+
 #............................................................
 # Map of Brazil ----
 #............................................................
@@ -47,6 +50,8 @@ plot_BR <-
         panel.grid.minor = element_blank(),
         legend.position="none") +
   no_axis
+plot_BR
+
 ggsave(plot = last_plot(), filename = "figures/BR_meso_region.png", device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
@@ -59,6 +64,8 @@ plot_MS <-
         panel.grid.minor = element_blank(),
         legend.position="none") +
   no_axis
+plot_MS
+
 ggsave(plot = last_plot(), filename = "figures/MS_state_micro.png", device = NULL,
        path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
@@ -71,3 +78,9 @@ ggsave(plot_BR_MS,
        bg = "white",
        file="figures/plot_BR_MS.png")
 
+
+#MAPBIOMAS
+library(sf)
+map_states <- read_sf("data/map/dashboard_states-static-layer.shp")
+
+plot(map_states)
