@@ -76,7 +76,7 @@ ggsave(plot_BR_MS,
        width = 10, height = 5, units = "in",
        dpi = 600,
        bg = "white",
-       file="figures/plot_BR_MS.png")
+       file="figures/map/plot_BR_MS.png")
 
 
 #MAPBIOMAS
