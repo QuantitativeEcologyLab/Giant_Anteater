@@ -239,7 +239,7 @@ for(i in 1:length(enc_radius)){
   
   res <- do.call(rbind, res)
   encounter_radius_test <- try(glmer(encounter_count ~ overlap_est + sex_comparison + (1|site),
-                              family = poisson(link = "log"), data = res, subset = res > 0))
+                                     family = poisson(link = "log"), data = res, subset = res > 0))
   encounter_radius_test2 <- try(glmer(encounter_count ~ 1 + (1|site), family = poisson(link = "log"), data = res, subset = res > 0))
   encounter_radius_test_results <- try(anova(encounter_radius_test, encounter_radius_test2))
   p_val <- try(encounter_radius_test_results$`Pr(>Chisq)`[2])
@@ -248,15 +248,21 @@ for(i in 1:length(enc_radius)){
   cat("finished index", i, "\n")
 }
 
-#Turn the list of list into a data frame
-encounter_radius_pvalue <- do.call(rbind, as.list(encounter_radius_pvalue))
-saveRDS(encounter_radius_pvalue, file = "RDS/encounter_radius_pvalue.RDS")
+encounter_radius_df <- data.frame(x = enc_radius,
+                                  y = encounter_radius_pvalue)
+saveRDS(encounter_radius_df, file = "RDS/encounter_radius_df.RDS")
+
+encounter_radius_df <- readRDS("RDS/encounter_radius_pvalue.RDS")
 
 END <- Sys.time()
 
-
-plot(x = enc_radius[1:10], y = encounter_test_pvalue[1:10], type = "l")
+plot(y ~ x,
+     data = encounter_radius_df,
+     type = "l",
+     xlab = "Encounter radius (m)",
+     ylab = "p-value")
 abline(0.05, 0)
+
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~END
 
