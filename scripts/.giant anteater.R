@@ -15,6 +15,7 @@ library(lubridate)       #round_date() for corrMove
 library(geobr)           #shape files for Brazil
 library(gridExtra)       #arrangement of plots for multi-panel figures
 library(scales)          #scaling axis in plots
+library(sf)
 #analysis
 library(devtools)
 #devtools::install_github("ctmm-initiative/ctmm", force = TRUE) #if package needs to be updated
@@ -451,3 +452,97 @@ test <- distance_pair11[distance_pair11$est < 15,]
 oct$year <- format(oct$timestamp, "%y")
 oct$day <- format(oct$timestamp, "%d")
 
+
+
+
+#............................................................
+# Map ----
+#............................................................
+
+# Assuming your data is in WGS 84 coordinate reference system (EPSG:4326)
+gps_sf <- st_as_sf(DATA_GPS, coords = c("GPS.Longitude", "GPS.Latitude"), crs = 4326)
+
+# find the range of the GPS coordinates
+ctmm::extent(DATA_TELEMETRY)
+
+DATA_GPS$site <- NA
+
+DATA_GPS$site[DATA_GPS$ID %in% c("Alexander", "Anthony", "Bumpus", "Cate", "Christoffer",
+                                 "Elaine", "Jackson", "Kyle", "Little_Rick", "Makao",
+                                 "Puji", "Rodolfo")] <- 1
+DATA_GPS$site[DATA_GPS$ID %in% c("Annie", "Beto", "Hannah", "Jane", "Larry",
+                                 "Luigi", "Margaret", "Maria", "Reid", "Sheron",
+                                 "Thomas")] <- 2
+
+GPS_site1 <- DATA_GPS[DATA_GPS$site == 1,]
+GPS_site1 <- left_join(GPS_site1, DATA_BIO, by = "ID")
+gps_sf1 <- st_as_sf(GPS_site1, coords = c("GPS.Longitude", "GPS.Latitude"), crs = 4326)
+
+#............................................................
+# Raster data
+#............................................................
+
+library(terra)
+
+brazil_coverage <- raster("map/brasil_coverage_2017.TIF")
+pasture <- raster("map/pasture.TIF")
+native_forest <- terra::rast("map/native_forest.TIF")
+planted_forest <- terra::rast("map/planted_forest.TIF")
+
+#import raster data
+#downloaded from Mapbiomas, https://storage.googleapis.com/mapbiomas-public/brasil/collection-71/lclu/coverage/brasil_coverage_2017.tif
+brazil_coverage <- raster("map/brasil_coverage_2017.TIF")
+#convert raster data into a spatial object
+brazil_coverage_sp <- as(brazil_coverage, "SpatialPixelsDataFrame")
+#convert spatial object into a dataframe
+brazil_coverage_df <- as.data.frame(brazil_coverage_sp)
+
+ggplot() +  
+  geom_tile(data=brazil_coverage_df, aes(x=x, y=y, fill=brazil_coverage), alpha=0.8) +
+  coord_sf(xlim = c(-53.6, -53.9),
+           ylim = c(-21, -21.25))
+  
+#import raster data
+native_forest <- terra::rast("map/native_forest.TIF")
+# #convert raster data into a spatial object
+# native_forest_sp <- as(native_forest, "SpatialPixelsDataFrame")
+# #convert spatial object into a dataframe
+# native_forest_df <- as.data.frame(native_forest_sp)
+
+#import raster data
+planted_forest <- terra::rast("map/planted_forest.TIF")
+# #convert raster data into a spatial object
+# planted_forest_sp <- as(planted_forest, "SpatialPixelsDataFrame")
+# #convert spatial object into a dataframe
+# planted_forest_df <- as.data.frame(planted_forest_sp)
+
+#import raster data
+pasture <- rast("map/pasture.TIF")
+# #convert raster data into a spatial object
+# pasture_sp <- as(pasture, "SpatialPixelsDataFrame")
+# #convert spatial object into a dataframe
+# pasture_df <- as.data.frame(pasture_sp)
+
+ggplot() +
+  geom_spatraster(data = native_forest, aes(fill = native_forest)) +
+  geom_spatraster(data = planted_forest, aes(fill = planted_forest), alpha = 0.5) +
+  geom_sf(data = gps_sf1, aes(color = Sex),
+          size = 1) 
+
+# spatial points -> ext -> crop
+ EXT <- ext(spatial points object from gps locations)
+ crop(native_forest_sp, EXT)
+
+#site 1
+ggplot() +
+  geom_spatraster(data = native_forest, aes(fill = native_forest), maxcell = 1000) +
+  geom_spatraster(data = planted_forest, aes(fill = planted_forest), alpha = 0.5, maxcell = 1000) +
+  #geom_tile(data=pasture_df, aes(x=x, y=y, fill=pasture), alpha=0.8) +
+  # geom_sf(data = gps_sf1, aes(color = Sex),
+  #         size = 1) +
+  scale_color_manual(values = c('#004488', '#A50026'), breaks = c('Male', 'Female')) +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_sf(xlim = c(-53.6, -53.9),
+           ylim = c(-21, -21.25))
