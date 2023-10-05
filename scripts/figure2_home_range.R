@@ -87,32 +87,43 @@ ggsave(figure2_left, filename = "figures/individual figures/figure2_left.png", d
 
 
 #..................................................
-# Home range overlap: Figure 2 C,D ----
+# Figure 2 C,D: Home range overlap ----
 #..................................................
 
-AKDE_1 <- AKDE[c("Alexander", "Anthony", "Bumpus", "Cate", "Christoffer",
-                 "Elaine", "Jackson", "Kyle", "Little_Rick", "Makao",
-                 "Puji", "Rodolfo")]
-COL_1 <- c("#004488", "#004488", "#A50026", "#A50026", "#004488", "#A50026", "#004488", "#004488", "#004488", "#A50026", "#A50026", "#004488")
-AKDE_2 <- AKDE[c("Annie", "Beto", "Hannah", "Jane", "Larry",
-                 "Luigi", "Margaret", "Maria", "Reid", "Sheron",
-                 "Thomas")]
-COL_2 <- c("#A50026", "#004488", "#A50026", "#A50026", "#004488", "#004488", "#A50026", "#A50026", "#004488", "#A50026", "#004488") 
+names(AKDE_1)
+#"Alexander", "Anthony", "Bumpus", "Cate", "Christoffer",
+#"Elaine", "Jackson", "Kyle", "Little_Rick", "Makao",
+#"Puji", "Rodolfo"
+
+#assign colours based on sex of individual at site 1
+COL_1 <- c("#004488", "#004488", "#A50026", "#A50026", "#004488", 
+           "#A50026", "#004488", "#004488", "#004488", "#A50026", 
+           "#A50026", "#004488")
+
+names(AKDE_2)
+#"Annie", "Beto", "Hannah", "Jane", "Larry",
+#"Luigi", "Margaret", "Maria", "Reid", "Sheron",
+#"Thomas"
+
+#assign colours based on sex of individual at site 2
+COL_2 <- c("#A50026", "#004488", "#A50026", "#A50026", "#004488", 
+           "#004488", "#A50026", "#A50026", "#004488", "#A50026", 
+           "#004488") 
 
 png(file = "figures/individual figures/figure2_right_overlap.png", width = 2.86, height = 6, units = "in", res = 600)
 par(mfrow=c(2,1))
-par(mgp = c(2, 0.5, 0))                           #Adjust the third element (margin for axis title spacing)
-par(mar = c(3, 3, 1.25, 0.25))                        #margin defaults (order: bottom, left, top, and right)
+par(mgp = c(2, 0.5, 0))             #Adjust the third element (margin for axis title spacing)
+par(mar = c(3, 3, 1.25, 0.25))      #margin defaults (order: bottom, left, top, and right)
 plot(AKDE_1, 
      col.DF = COL_1, 
      col.level = COL_1, 
      col.grid = NA, 
      level = NA,
      lwd.level = 1,            #line thickness
-     #font=2,                      #bold axis text
-     cex.lab = 1,                 #size of axis title
-     cex.axis = 0.8,                #size of axis text font
-     font.lab = 2)                #bold axis labels
+     #font=2,                  #bold axis text
+     cex.lab = 1,              #size of axis title
+     cex.axis = 0.8,           #size of axis text font
+     font.lab = 2)             #bold axis labels
 title("C", adj = 0)
 plot(AKDE_2, 
      col.DF = COL_2, 
@@ -120,9 +131,13 @@ plot(AKDE_2,
      col.grid = NA, 
      level = NA,
      lwd.level = 1,            #line thickness
-     #font=2,                      #bold axis text
-     cex.lab = 1,                 #size of axis title
-     cex.axis = 0.8,                #size of axis text font
-     font.lab = 2)                #bold axis labels
+     #font=2,                  #bold axis text
+     cex.lab = 1,              #size of axis title
+     cex.axis = 0.8,           #size of axis text font
+     font.lab = 2)             #bold axis labels
 title("D", adj = 0)
 dev.off()
+
+#multi-panel
+#manually combine the two plots due to the nature of base r plot and ggplot
+#plot saved as "figures/figure2.png"
