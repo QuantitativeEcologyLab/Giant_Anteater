@@ -54,6 +54,8 @@ ggsave(figure3a_proximity_ratio,
 # Figure 3B: Encounters ----
 #..................................................
 
+#Run estimating encounters prior to plotting
+
 #do not include 0 encounters
 proximity_df2 <- proximity_df[proximity_df$encounter_count != 0,]
 
@@ -106,6 +108,58 @@ encounter_df <- distance_df[which(distance_df$encounter == 1),]
 encounter_df$doy <- yday(encounter_df$timestamp) #day of the year
 encs <- aggregate(encounter ~ sex_comparison + doy + pair_ID, data = encounter_df, FUN = "sum")
 encs <- merge(encs, overlap_df[,c("pair_ID","sex_comparison", "site")])
+
+#.....
+
+figure3c_encounters_overtime <-
+  ggplot(data = encs,
+         aes(y = encounter, x = doy, col = sex_comparison)) +
+  geom_bar(stat = "identity", position = "stack") + 
+  # geom_smooth(method="gam", formula = y ~ s(x, bs = "cc", k = 8),
+  #             method.args =list(family = poisson), se=F) +
+  scale_x_continuous(limits = c(-2,370), expand = c(0,1)) +
+  scale_y_continuous(limits = c(0,110), expand = c(0,1)) +
+  scale_color_manual(values = c("#A50026", "#9970AB", "#004488"),
+                     labels = c("Female - Female", "Female - Male", "Male - Male"),
+                     name = "") +
+  xlab("Day of year") +
+  ylab("Encounter count") +
+  ggtitle("C") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.title = element_text( size = 14, family = "sans", face = "bold"),
+        axis.title.y = element_text(size=10, family = "sans", face = "bold"),
+        axis.title.x = element_text(size=10, family = "sans", face = "bold"),
+        axis.text.y = element_text(size=8, family = "sans"),
+        axis.text.x  = element_text(size=8, family = "sans"),
+        legend.position="none",
+        # legend.text = element_text(size=6, family = "sans", face = "bold"),
+        # legend.position = c(0.84, 0.2), #horizontal, vertical
+        # legend.key.height = unit(0.3, "cm"),
+        # legend.key=element_blank(),
+        panel.background = element_rect(fill = "transparent"),
+        legend.background = element_rect(fill = "transparent"),
+        plot.background = element_rect(fill = "transparent", color = NA),
+        plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
+figure3c_encounters_overtime
+ggsave(figure3c_encounters_overtime, width = 6.86, height = 3, units = "in", dpi = 600, bg = "transparent",
+       file="figures/individual figures/figure3c_encounters_overtime.png")
+
+#..................................................
+# multi-panel v2 ----
+#..................................................
+
+figure3_top <- grid.arrange(figure3a_proximity_ratio,
+                            figure3b_encounters,
+                            ncol = 2)
+
+figure3_v2 <- grid.arrange(figure3_top,
+                        fig3c_2,
+                        nrow = 2,
+                        heights = c(0.35, 0.35))
+ggsave(figure3_v2, filename = "figures/figure3_v2.png", device = NULL,
+       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # # OLD FIGURE
@@ -170,57 +224,26 @@ encs <- merge(encs, overlap_df[,c("pair_ID","sex_comparison", "site")])
 #         ylab = "sex")
 # dev.off()
 
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#alternative figure3c plot
+# #plot encounters overtime
 
-figure3c_encounters_overtime <-
-  ggplot(data = encs,
-         aes(y = encounter, x = doy, col = sex_comparison)) +
-  geom_bar(stat = "identity", position = "stack") + 
-  # geom_smooth(method="gam", formula = y ~ s(x, bs = "cc", k = 8),
-  #             method.args =list(family = poisson), se=F) +
-  scale_x_continuous(limits = c(-2,370), expand = c(0,1)) +
-  scale_y_continuous(limits = c(0,110), expand = c(0,1)) +
-  scale_color_manual(values = c("#A50026", "#9970AB", "#004488"),
-                     labels = c("Female - Female", "Female - Male", "Male - Male"),
-                     name = "") +
-  xlab("Day of year") +
-  ylab("Encounter count") +
-  ggtitle("C") +
-  theme_bw() +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        plot.title = element_text( size = 14, family = "sans", face = "bold"),
-        axis.title.y = element_text(size=10, family = "sans", face = "bold"),
-        axis.title.x = element_text(size=10, family = "sans", face = "bold"),
-        axis.text.y = element_text(size=8, family = "sans"),
-        axis.text.x  = element_text(size=8, family = "sans"),
-        legend.position="none",
-        # legend.text = element_text(size=6, family = "sans", face = "bold"),
-        # legend.position = c(0.84, 0.2), #horizontal, vertical
-        # legend.key.height = unit(0.3, "cm"),
-        # legend.key=element_blank(),
-        panel.background = element_rect(fill = "transparent"),
-        legend.background = element_rect(fill = "transparent"),
-        plot.background = element_rect(fill = "transparent", color = NA),
-        plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
-figure3c_encounters_overtime
-ggsave(figure3c_encounters_overtime, width = 6.86, height = 3, units = "in", dpi = 600, bg = "transparent",
-       file="figures/individual figures/figure3c_encounters_overtime.png")
-
-#..................................................
-# multi-panel v2 ----
-#..................................................
-
-figure3_top <- grid.arrange(figure3a_proximity_ratio,
-                            figure3b_encounters,
-                            ncol = 2)
-
-figure3_v2 <- grid.arrange(figure3_top,
-                        fig3c_2,
-                        nrow = 2,
-                        heights = c(0.35, 0.35))
-ggsave(figure3_v2, filename = "figures/figure3_v2.png", device = NULL,
-       path = NULL, scale = 1, width = 6.86, height = 6, units = "in", dpi = 600)
+# distance_df$encounter <- ifelse(distance_df$distance_est > 15, 0,1)
+# 
+# encs<- distance_df[which(distance_df$encounter == 1),]
+# encs$toy <- yday(encs$timestamp)
+# encs$year <- format(encs$timestamp, "%y")
+# test <- aggregate(encounter ~ sex_comparison + toy + year + pair_ID, data = encs, FUN = "sum")
+# 
+# ggplot(data = test, aes(y = encounter, x = toy, col = sex_comparison)) +
+#   
+#   geom_point() +
+#   geom_smooth(aes(linetype = "gam"), fill = "transparent",
+#               method = "gam", formula = y ~ s(x, bs = "cc", k = 8),
+#               method.args = list(family = poisson)) +
+#   scale_y_log10(breaks = c(0.1,1,10,100,1000,10000),
+#                 labels = c(0.1,1,10,100,1000,10000))
+# 
+# test$sex_comparison <- as.factor(test$sex_comparison)
+# fit <- gam(encounter ~ s(toy, bs = "cc", k = 6) + sex_comparison, family = poisson, data = test)  #add random effect on sex -> refer to parks
+# summary(fit)
