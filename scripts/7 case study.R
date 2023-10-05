@@ -1,22 +1,29 @@
 
 # Case study 
-#Margaret and Thomas
+# Margaret and Thomas
 
 #............................................................
-#subset AKDE for each individual
+# Home range overlap ----
+#............................................................
+
+#home range size
 AKDE_thomas <- AKDE["Thomas"]
 AKDE_margaret <- AKDE["Margaret"]
 
-#calculate mean home range sizes for Thomas
+#calculate mean home-range sizes for Thomas
 meta(AKDE_thomas)
 
-#calculate mean home range sizes for Margaret
+#calculate mean home-range sizes for Margaret
 meta(AKDE_margaret)
 
-#calculate home range overlap
+#home range overlap
 round(proximity_identified_pairs_df[11,]$overlap_low, 2)
 round(proximity_identified_pairs_df[11,]$overlap_est, 2)
 round(proximity_identified_pairs_df[11,]$overlap_high, 2)
+
+#............................................................
+# Proximity, encounters, correlated movement
+#............................................................
 
 #calculate proximity ratio
 round(proximity_identified_pairs_df$proximity_low[proximity_identified_pairs_df$pair_ID_number == 11], 2)
