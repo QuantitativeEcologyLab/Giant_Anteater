@@ -1,29 +1,30 @@
-#............................................................
-# Correlative Movement
-#............................................................
 
+
+# Correlative movement
+
+#............................................................
 # Exploring deviations in proximity ratios
+#............................................................
 
 #identify pairs that did not have a proximity ratio of 1
 proximity_above1 <- proximity_df[proximity_df$proximity_low > 1,]
 proximity_below1 <- proximity_df[proximity_df$proximity_high < 1,]
 
-#exclude pairs with a home range overlap of 0
+#exclude pairs with a HR overlap of 0
 proximity_below1[proximity_below1$overlap_est == 0,]
 proximity_below1 <- proximity_below1[proximity_below1$overlap_est != 0,]
 
 #create a dataframe of the deviated pairs
 proximity_identified_pairs_df <- rbind(proximity_above1, proximity_below1)
 proximity_identified_pairs_df$pair_ID_number <- seq(from = 1, to = 12, by = 1)
-proximity_identified_pairs_df <- relocate(proximity_identified_pairs_df, pair_ID_number,
-                                          .before = anteater_A)
+proximity_identified_pairs_df <- relocate(proximity_identified_pairs_df, pair_ID_number, .before = anteater_A)
 
 #correct the sex_comparison output to female-male
-proximity_identified_pairs_df <- mutate(proximity_identified_pairs_df, sex_comparison = 
-                                          case_when(paste(Sex.A, Sex.B) == "Male Male" ~ "male-male",
-                                                    paste(Sex.A, Sex.B) == "Female Female" ~ "female-female",
-                                                    paste(Sex.A, Sex.B) == "Male Female" ~ "female-male",
-                                                    paste(Sex.A, Sex.B) == "Female Male" ~ "female-male"))
+proximity_identified_pairs_df <- mutate(proximity_identified_pairs_df,
+                                        sex_comparison = case_when(paste(Sex.A, Sex.B) == "Male Male" ~ "male-male",
+                                                                   paste(Sex.A, Sex.B) == "Female Female" ~ "female-female",
+                                                                   paste(Sex.A, Sex.B) == "Male Female" ~ "female-male",
+                                                                   paste(Sex.A, Sex.B) == "Female Male" ~ "female-male"))
 
 #clean up environment
 rm(proximity_above1, proximity_below1)
@@ -33,32 +34,27 @@ saveRDS(proximity_identified_pairs_df, file = "rds/proximity_identified_pairs_df
 
 #............................................................
 # Deviated pairs results ----
+#............................................................
 
-#number of pairs with a deviated proximity ratio based on sex comparison
+#number of pairs with a deviated proximity ratio based on sex comparison (ie. a proximity ratio value not equal to 1)
 table(proximity_identified_pairs_df$sex_comparison)
 
+# Proximity ratio sex analysis for identified pairs
 #test for significance in sex, compare model with and without sex as a variable
-proximity_test_pairs <- glmer(proximity_est ~ sex_comparison + (1|site), 
-                              family = Gamma(link = "log"), 
-                              data = proximity_identified_pairs_df)
-proximity_test2_pairs <- glmer(proximity_est ~ 1 + (1|site), 
-                               family = Gamma(link = "log"), 
-                               data = proximity_identified_pairs_df)
+proximity_test_pairs <- glmer(proximity_est ~ sex_comparison + (1|site), family = Gamma(link = "log"), data = proximity_identified_pairs_df)
+proximity_test2_pairs <- glmer(proximity_est ~ 1 + (1|site), family = Gamma(link = "log"), data = proximity_identified_pairs_df)
 proximity_test_results_pairs <- anova(proximity_test_pairs, proximity_test2_pairs)
-proximity_test_pvalue_pairs <- round(proximity_test_results_pairs$`Pr(>Chisq)`[2], 2)
+proximity_test_pvalue_pairs <- round(proximity_test_results_pairs$`Pr(>Chisq)`[2], 2) #0.16
 
-#test for significance in home range overlap, compare model with and without overlap as a variable
-prox_overlap_test_pairs <- glmer(proximity_est ~ overlap_est + (1|site), 
-                                 family = Gamma(link = "log"), 
-                                 data = proximity_identified_pairs_df)
-prox_overlap_test2_pairs <- glmer(proximity_est ~ 1 + (1|site), 
-                                  family = Gamma(link = "log"), 
-                                  data = proximity_identified_pairs_df)
+# Proximity and overlap analysis for identified pairs
+prox_overlap_test_pairs <- glmer(proximity_est ~ overlap_est + (1|site), family = Gamma(link = "log"), data = proximity_identified_pairs_df)
+prox_overlap_test2_pairs <- glmer(proximity_est ~ 1 + (1|site), family = Gamma(link = "log"), data = proximity_identified_pairs_df)
 prox_overlap_test_results_pairs <- anova(prox_overlap_test_pairs, prox_overlap_test2_pairs)
-prox_overlap_test_pvalue_pairs <- round(prox_overlap_test_results_pairs$`Pr(>Chisq)`[2], 2)
+prox_overlap_test_pvalue_pairs <- round(prox_overlap_test_results_pairs$`Pr(>Chisq)`[2], 2) #0.65
 
 #............................................................
-# Estimating distances of the deviated pairs
+# Estimating distances of the deviated pairs ----
+#............................................................
 
 #subset telemetry data and fitted model for each pair
 pair1 <- DATA_TELEMETRY[c("Kyle","Christoffer")]
@@ -198,6 +194,7 @@ rm(distance_pair1, distance_pair2, distance_pair3, distance_pair4, distance_pair
 saveRDS(object = distance_pairs_df, file = "data/rds/distance_pairs_df.rds")
 
 #............................................................
+
 #subset telemetry data for each individual with a deviated proximity ratio
 Bumpus <- DATA_TELEMETRY$Bumpus
 Christoffer <- DATA_TELEMETRY$Christoffer
@@ -312,7 +309,8 @@ cd_pair12 <- cd_pair12[, c(1,2,4,3,5)]
 cd_pair12 <- cd_pair12[!duplicated(cd_pair12$timestamp),]
 
 #............................................................
-# Estimating correlative movement ----
+# Estimating correlated movement ----
+#............................................................
 
 #Estimate the partition points
 prts_pair1 <- findPrts(cd_pair1, W=5, IC = 2)
@@ -365,10 +363,9 @@ saveRDS(cm_pair10, file = "RDS/cm_pair10.RDS")
 saveRDS(cm_pair11, file = "RDS/cm_pair11.RDS")
 saveRDS(cm_pair12, file = "RDS/cm_pair12.RDS")
 
-
-
 #............................................................
 # Correlative movement results ----
+#............................................................
 
 #create a new dataframe for correlative movement data
 corrmove_df <- proximity_identified_pairs_df
