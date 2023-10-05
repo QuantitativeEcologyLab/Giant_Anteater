@@ -35,6 +35,8 @@ round(mean(distance_pairs_df$est[distance_pairs_df$pair_ID_number == 11])/1000, 
 round(min(distance_pairs_df$est[distance_pairs_df$pair_ID_number == 11])/1000, 2)
 round(max(distance_pairs_df$est[distance_pairs_df$pair_ID_number == 11])/1000, 2)
 
+#.....
+
 #investigate when encounter events occurred
 
 #subset distance data
@@ -76,3 +78,16 @@ round(mean(cm_pair11$etaTot.CI.Low), 2)
 round(mean(cm_pair11$etaTot.MLE), 2)
 round(mean(cm_pair11$etaTot.CI.Upp), 2)
 
+#.....
+
+#Investigate December 2018 encounters for Arnaud. 
+#Margaret was seen with a pup 13,14,15/05/2019
+
+#subset December data with a threshold of 15m to take a closer look
+dec <- distance_pair11[distance_pair11$month == 12,]
+dec <- dec[dec$est < 15,]
+dec$month <- format(dec$timestamp, "%b")
+dec$date <- format(dec$timestamp, "%b %d")
+
+#when did the encounter events occur in December?
+table(dec$day)
