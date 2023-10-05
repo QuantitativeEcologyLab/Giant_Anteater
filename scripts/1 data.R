@@ -40,7 +40,15 @@ bio_df
 #convert dataset to a telemetry object
 DATA_TELEMETRY <- as.telemetry(GPS_df)
 
+#summary of the dataset
+summary(DATA_TELEMETRY)
+
+#visualisation of the data
+plot(DATA_TELEMETRY)
+
 #save GPS dataframe
 saveRDS(GPS_df, file = "data/rds/GPS_df.rds")
+#save biological information dataframe
 saveRDS(bio_df, file = "data/rds/bio_df.rds")
+#save telemetry data
 saveRDS(DATA_TELEMETRY, file = "data/rds/DATA_TELEMETRY.rds")
