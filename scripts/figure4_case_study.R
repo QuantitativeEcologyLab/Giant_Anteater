@@ -10,7 +10,9 @@ Thomas <- DATA_TELEMETRY$Thomas
 # Home range overlap ----
 #............................................................
 
+#subset home range overlap data
 AKDE_pair11 <- AKDE[c("Thomas", "Margaret")]
+#assign colours
 COL_pair11 <- c("#004488", "#A50026")
 
 ### home-range overlap with GPS points  ----
@@ -66,6 +68,11 @@ ggsave(figure4b_pair11_distance, width = 6.86, height = 3, units = "in", dpi = 6
 # Correlative movement (total correlative) ----
 #............................................................
 
+# png(file = "figures/corrmove_pair11.png", width = 6.86, height = 6, units = "in", res = 600)
+# plot_cm_pair11 <- 
+#   plot.corrMove(cm_pair11)
+# dev.off()
+
 #manual plotting, not using plot.corrMove()
 
 figure4c_pair11_cm <-
@@ -96,43 +103,19 @@ figure4c_pair11_cm <-
         plot.background = element_rect(fill = "transparent", color = NA),
         plot.margin = unit(c(0.1,0.1,0.05,0.2), "cm")) + #top, right, bot, left
   guides(colour = guide_legend(override.aes = list(size=3))) # change the size of the symbols in the legend
-figure4c_pair11_cm
+
 ggsave(figure4c_pair11_cm, width = 6.86, height = 3, units = "in", dpi = 600, bg = "transparent",
        file="figures/individual figures/figure4c_pair11_cm.png")
-
-# png(file = "figures/corrmove_pair11.png", width = 6.86, height = 6, units = "in", res = 600)
-# plot_cm_pair11 <- 
-#   plot.corrMove(cm_pair11)
-# dev.off()
 
 figure4_right <- grid.arrange(figure4b_pair11_distance, 
                               figure4c_pair11_cm,
                               ncol=1)
+
 ggsave(figure4_right, filename = "figures/individual figures/figure4_right.png", device = NULL,
        path = NULL, scale = 1, width = 4, height = 4, units = "in", dpi = 600)
 
+#multi-panel
+#manually combine the two plots due to the nature of base r plot and ggplot
+#plot saved as "figures/figure4.png"
 
-# 
-# #............................................................
-# # Encounters over time ----
-# #............................................................
-# 
-# distance_df$encounter <- ifelse(distance_df$distance_est > 15, 0,1)
-# 
-# encs<- distance_df[which(distance_df$encounter == 1),]
-# encs$toy <- yday(encs$timestamp)
-# encs$year <- format(encs$timestamp, "%y")
-# test <- aggregate(encounter ~ sex_comparison + toy + year + pair_ID, data = encs, FUN = "sum")
-# 
-# ggplot(data = test, aes(y = encounter, x = toy, col = sex_comparison)) +
-#   
-#   geom_point() +
-#   geom_smooth(aes(linetype = "gam"), fill = "transparent",
-#               method = "gam", formula = y ~ s(x, bs = "cc", k = 8),
-#               method.args = list(family = poisson)) +
-#   scale_y_log10(breaks = c(0.1,1,10,100,1000,10000),
-#                 labels = c(0.1,1,10,100,1000,10000))
-# 
-# test$sex_comparison <- as.factor(test$sex_comparison)
-# fit <- gam(encounter ~ s(toy, bs = "cc", k = 6) + sex_comparison, family = poisson, data = test)  #add random effect on sex -> refer to parks
-# summary(fit)
+
