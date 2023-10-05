@@ -48,6 +48,7 @@ DATA_DISTANCE <- do.call(rbind, RES)
 saveRDS(DATA_DISTANCE, file = "data/rds/DATA_DISTANCE.rds")
 
 #............................................................
+
 #import the distance data
 DATA_DISTANCE <- readRDS("data/rds/DATA_DISTANCE.rds")
 
@@ -69,6 +70,7 @@ saveRDS(distance_df, file = "data/rds/distance_df.rds")
 #............................................................
 
 #set encounter radius
+#larger the radius = more encounters can occur within that radius due to more individuals that can be within the radius (measurements are in meters)
 enc_radius <- 0:1000
 enc_count <- vector("numeric", length(enc_radius))
 
@@ -77,13 +79,16 @@ for(i in 1:length(enc_radius)){
   enc_count[i] <- sum(distance_df$distance_est < enc_radius[i])
 }
 
-#sensitivity analysis on female-male encounter significance
+#visualization
+plot(x = enc_radius, y = enc_count, type = "l")
 
-#create empty columns for the results to be saved to
+#.....
+
+#sensitivity analysis on female-male encounter significance
 encounter_radius_pvalue <- vector("numeric", length(enc_radius))
 pair_ID <- unique(overlap_df$pair_ID)
 
-#loop over encounter radii
+#Loop over encounter radii
 for(i in 1:length(enc_radius)){
   
   res <- list()
@@ -91,7 +96,7 @@ for(i in 1:length(enc_radius)){
   for (j in pair_ID){
     subset_A <- distance_df[distance_df$pair_ID == j,]
     
-    #count the number of times "distance_est" is below some threshold distance i 
+    # Count the number of times "distance_est" is below some threshold distance i 
     encounter_count <- sum(subset_A$distance_est < enc_radius[i])
     
     #save results
@@ -103,38 +108,43 @@ for(i in 1:length(enc_radius)){
   }
   
   res <- do.call(rbind, res)
-  encounter_radius_test <- try(glmer(encounter_count ~ 
-                                       overlap_est + sex_comparison + (1|site), 
-                                     family = poisson(link = "log"), 
-                                     data = res, subset = res > 0))
-  encounter_radius_test2 <- try(glmer(encounter_count ~ 1 + (1|site), 
-                                      family = poisson(link = "log"), 
-                                      data = res, subset = res > 0))
+  encounter_radius_test <- try(glmer(encounter_count ~ overlap_est + sex_comparison + (1|site),
+                                     family = poisson(link = "log"), data = res, subset = res > 0))
+  encounter_radius_test2 <- try(glmer(encounter_count ~ 1 + (1|site), family = poisson(link = "log"), data = res, subset = res > 0))
   encounter_radius_test_results <- try(anova(encounter_radius_test, encounter_radius_test2))
   p_val <- try(encounter_radius_test_results$`Pr(>Chisq)`[2])
   encounter_radius_pvalue[i] <- ifelse(class(p_val) == "try-error", NA, p_val)
   
-  #track progress
   cat("finished index", i, "\n")
 }
 
-#create an encounter radius dataframe
 encounter_radius_df <- data.frame(x = enc_radius,
                                   y = encounter_radius_pvalue)
+
+#save dataframe
+saveRDS(encounter_radius_df, file = "RDS/encounter_radius_df.RDS")
+
+#visualization
+plot(y ~ x,
+     data = encounter_radius_df,
+     type = "l",
+     xlab = "Encounter radius (m)",
+     ylab = "p-value")
+abline(0.05, 0)
+
 
 #............................................................
 # Estimating encounters ----
 #............................................................
 
-#create an empty column for the results to be saved to
+#calculate total encounters of all individuals based on sex comparison type
 proximity_df$encounter_count <- NA
 pair_ID <- unique(proximity_df$pair_ID)
 
-#calculate total encounters of all individuals based on sex comparison type
 for (i in pair_ID){
   subset_A <- distance_df[distance_df$pair_ID == i,]
   
-  #count the number of times distance is below 15
+  # Count the number of times "distance_est" is below 15
   encounter_count <- sum(subset_A$distance_est < 15)
   
   #save results
@@ -143,11 +153,11 @@ for (i in pair_ID){
 }
 
 #number of pairs that had 0 encounters
-proximity_df[proximity_df$encounter_count == 0,]
+proximity_df[proximity_df$encounter_count == 0,] #78
 #number of pairs that had at least 1 encounter
-proximity_df[proximity_df$encounter_count != 0,]
+proximity_df[proximity_df$encounter_count != 0,] #43
 
-#calculate the number of encounters based on threshold of 15m
+#calculate the number of encounters based on threshold
 sum(proximity_df$encounter_count)
 sum(proximity_df$encounter_count[proximity_df$sex_comparison == "male-male"])
 sum(proximity_df$encounter_count[proximity_df$sex_comparison == "female-female"])
@@ -155,17 +165,14 @@ sum(proximity_df$encounter_count[proximity_df$sex_comparison == "female-male"])
 
 #............................................................
 # Encounter results ----
+#............................................................
 
-#effect of sex and overlap on encounter rates and does not include 0 encounter counts
-encounter_test <- glmer(encounter_count ~ overlap_est + sex_comparison + (1|site), 
-                        family = poisson(link = "log"), 
-                        data = proximity_df, subset = encounter_count > 0)
-encounter_test2 <- glmer(encounter_count ~ 1 + (1|site), 
-                         family = poisson(link = "log"), 
-                         data = proximity_df, subset = encounter_count > 0)
+#effect of sex and overlap on encounter rates (model that does not include 0 encounter counts)
+encounter_test <- glmer(encounter_count ~ overlap_est + sex_comparison + (1|site), family = poisson(link = "log"), data = proximity_df, subset = encounter_count > 0)
+encounter_test2 <- glmer(encounter_count ~ 1 + (1|site), family = poisson(link = "log"), data = proximity_df, subset = encounter_count > 0)
 encounter_test_results <- anova(encounter_test, encounter_test2)
 encounter_test_pvalue <- round(encounter_test_results$`Pr(>Chisq)`[2], 2)
 
-#amount of home range overlap and the number of observed encounters
+# amount of home-range overlap and the number of observed encounters (beta (B) = 4.86 ± 0.148, p = 0.00)
 summary(encounter_test)
 
