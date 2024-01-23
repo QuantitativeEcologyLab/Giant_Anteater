@@ -4,8 +4,6 @@
 # Data ----
 #............................................................
 
-getwd()
-
 #import data, cleaned giant anteater GPS tracking data, containing no outliers
 DATA_GPS <- read_csv("data/Anteaters_NoOutliers.csv")
 

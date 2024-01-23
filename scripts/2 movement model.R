@@ -13,7 +13,7 @@ overlap(FIT)
 summary(FIT)
 
 #save movement models
-saveRDS(FIT, file = "rds/FIT.rds")
-
+save(FIT, file = "data/anteater_fit.rda")
+load("data/anteater_fit.rda")
 
 

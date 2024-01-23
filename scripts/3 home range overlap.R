@@ -11,7 +11,10 @@ AKDE <- akde(DATA_TELEMETRY[1:23],FIT)
 overlap(AKDE)
 
 #save AKDE home range estimations
-saveRDS(AKDE, file = "rds/AKDE.rds")
+# saveRDS(AKDE, file = "data/AKDE.rds")
+# AKDE <- readRDS("data/AKDE.rds")
+save(AKDE, file = "data/anteater_akdes.rda")
+load("data/anteater_akdes.rda")
 
 #............................................................
 # Home range results ----
@@ -143,6 +146,9 @@ overlap_1_df <- mutate(overlap_1_df,
 #assign site
 overlap_1_df$site <- 1
 overlap_1_df <- relocate(overlap_1_df, c("overlap_low", "overlap_est", "overlap_high"), .after = site)
+
+
+
 
 #extract CI 'est' matrix from array
 overlap_2_est <- overlap_2$CI[ , , 2]
