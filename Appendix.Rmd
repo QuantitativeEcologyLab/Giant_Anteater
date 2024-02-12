@@ -1,11 +1,13 @@
 ---
-title: "**Appendix**"
+title: '**Appendix**'
 author: "Aimee Chhen, Alessandra Bertassoni, Arnaud LJ Desbiez, Michael J Noonan"
 date: "This document was created on `r format(Sys.Date(), '%B %d, %Y')`."
-output: 
-  html_document:
-    toc: TRUE
-    #toc_float: TRUE
+output:
+  word_document:
+    toc: true
+  # html_document:
+  #   toc: true
+  #   toc_float: true
 ---
 
 ```{r setup, include=FALSE}
@@ -60,13 +62,13 @@ library(corrMove)
 
 ```{r load-files, echo=FALSE}
 #load data
-GPS_df <- readRDS("data/rds/GPS_df.rds")
-bio_df <- readRDS("data/rds/bio_df.rds")
-DATA_TELEMETRY <- readRDS("data/rds/DATA_TELEMETRY.rds")
+GPS_df <- readRDS("data/GPS_df.rds")
+bio_df <- readRDS("data/bio_df.rds")
+DATA_TELEMETRY <- readRDS("data/DATA_TELEMETRY.rds")
 #load movement models
-FIT <- readRDS("rds/FIT.rds")
+load("data/anteater_fit.rda")
 #load home range estimates
-AKDE <- readRDS("rds/AKDE.rds")
+load("data/anteater_AKDE.rda")
 AKDE_1 <- readRDS("rds/AKDE_1.rds")
 AKDE_2 <- readRDS("rds/AKDE_2.rds")
 AKDE_male <- readRDS("rds/AKDE_male.rds")
@@ -80,12 +82,12 @@ overlap_df <- readRDS("rds/overlap_df.rds")
 #load proximity data
 proximity_df <- readRDS("rds/proximity_df.rds")
 #load distance data
-distance_df <- readRDS("data/rds/distance_df.rds")
+distance_df <- readRDS("data/distance_df.rds")
 #load encounter data
 encounter_radius_df <- readRDS("rds/encounter_radius_df.rds")
 #load pair data
 proximity_identified_pairs_df <- readRDS("RDS/proximity_identified_pairs_df.rds")
-distance_pairs_df <- readRDS("data/rds/distance_pairs_df.RDS")
+distance_pairs_df <- readRDS("data/distance_pairs_df.RDS")
 #load correlated movement data
 cm_pair1 <- readRDS("RDS/cm_pair1.RDS")
 cm_pair2 <- readRDS("RDS/cm_pair2.RDS")
@@ -151,11 +153,11 @@ plot(DATA_TELEMETRY)
 
 ```{r eval = FALSE, echo=FALSE}
 #save GPS dataframe
-saveRDS(GPS_df, file = "data/rds/GPS_df.rds")
+saveRDS(GPS_df, file = "data/GPS_df.rds")
 #save biological information dataframe
-saveRDS(bio_df, file = "data/rds/bio_df.rds")
+saveRDS(bio_df, file = "data/bio_df.rds")
 #save telemetry data
-saveRDS(DATA_TELEMETRY, file = "data/rds/DATA_TELEMETRY.rds")
+saveRDS(DATA_TELEMETRY, file = "data/DATA_TELEMETRY.rds")
 ```
 
 <hr style="border: 1px solid black;">
@@ -179,7 +181,7 @@ summary(FIT)
 
 ```{r eval = FALSE, echo=FALSE}
 #save movement model
-saveRDS(FIT, file = "rds/FIT.rds")
+save(FIT, file = "data/FIT.rda")
 ```
 
 <hr style="border: 1px solid black;">
@@ -199,12 +201,14 @@ overlap(AKDE)
 
 ```{r eval=FALSE, echo=FALSE}
 #save AKDE home range estimations
-saveRDS(AKDE, file = "rds/AKDE.rds")
+save(AKDE, file = "data/anteater_AKDE.rda")
 ```
 
 ## Home range results
 
 ```{r hr-size}
+meta(AKDE)
+
 #create a dataframe to store home range area statistics from the AKDE
 HR_size <- data.frame()
 
@@ -225,7 +229,7 @@ HR_size <- relocate(HR_size, c(low, est, high), .after = Site)
 names(HR_size)[6] <- "HR_low"
 names(HR_size)[7] <- "HR_est"
 names(HR_size)[8] <- "HR_high"
-
+HR_size
 ```
 
 ```{r eval=FALSE, echo=FALSE}
@@ -463,7 +467,9 @@ HRO_test <- glmmTMB(overlap_est_squeezed ~ sex_comparison + (1|site),
 HRO_test2 <- glmmTMB(overlap_est_squeezed ~ 1 + (1|site), 
                      family = beta_family(link = "logit"), data = overlap_df)
 HRO_test_results <- anova(HRO_test, HRO_test2)
+HRO_test_results
 HRO_test_pvalue <- round(HRO_test_results$`Pr(>Chisq)`[2], 2)
+HRO_test_pvalue
 ```
 
 Home range overlap results based on sex comparisons (i.e.. male-male, female-female, and female-male).
@@ -629,7 +635,9 @@ proximity_test <- glmer(proximity_est ~ sex_comparison + (1|site),
 proximity_test2 <- glmer(proximity_est ~ 1 + (1|site), 
                          family = Gamma(link = "log"), data = proximity_df)
 proximity_test_results <- anova(proximity_test, proximity_test2)
+proximity_test_results
 proximity_test_pvalue <- round(proximity_test_results$`Pr(>Chisq)`[2], 2)
+proximity_test_pvalue
 
 #test for significance in home range overlap, compare model with and without overlap as a variable
 prox_overlap_test <- glmer(proximity_est ~ overlap_est + (1|site), 
@@ -637,7 +645,9 @@ prox_overlap_test <- glmer(proximity_est ~ overlap_est + (1|site),
 prox_overlap_test2 <- glmer(proximity_est ~ 1 + (1|site), 
                             family = Gamma(link = "log"), data = proximity_df)
 prox_overlap_test_results <- anova(prox_overlap_test, prox_overlap_test2)
+prox_overlap_test_results
 prox_overlap_test_pvalue <- round(prox_overlap_test_results$`Pr(>Chisq)`[2], 2)
+prox_overlap_test_pvalue
 ```
 
 ---
@@ -885,7 +895,9 @@ encounter_test2 <- glmer(encounter_count ~ 1 + (1|site),
                          family = poisson(link = "log"), 
                          data = proximity_df, subset = encounter_count > 0)
 encounter_test_results <- anova(encounter_test, encounter_test2)
+encounter_test_results
 encounter_test_pvalue <- round(encounter_test_results$`Pr(>Chisq)`[2], 2)
+encounter_test_pvalue
 
 #amount of home range overlap and the number of observed encounters
 summary(encounter_test)
@@ -945,7 +957,9 @@ proximity_test2_pairs <- glmer(proximity_est ~ 1 + (1|site),
                                family = Gamma(link = "log"), 
                                data = proximity_identified_pairs_df)
 proximity_test_results_pairs <- anova(proximity_test_pairs, proximity_test2_pairs)
+proximity_test_results_pairs
 proximity_test_pvalue_pairs <- round(proximity_test_results_pairs$`Pr(>Chisq)`[2], 2)
+proximity_test_pvalue_pairs
 
 #test for significance in home range overlap, compare model with and without overlap as a variable
 prox_overlap_test_pairs <- glmer(proximity_est ~ overlap_est + (1|site), 
@@ -955,7 +969,9 @@ prox_overlap_test2_pairs <- glmer(proximity_est ~ 1 + (1|site),
                                   family = Gamma(link = "log"), 
                                   data = proximity_identified_pairs_df)
 prox_overlap_test_results_pairs <- anova(prox_overlap_test_pairs, prox_overlap_test2_pairs)
+prox_overlap_test_results_pairs
 prox_overlap_test_pvalue_pairs <- round(prox_overlap_test_results_pairs$`Pr(>Chisq)`[2], 2)
+prox_overlap_test_pvalue_pairs
 ```
 
 ## Estimating distances in the deviated pairs
@@ -1331,6 +1347,7 @@ for (i in 1:12) {
   corrmove_df$mean_etaDif.MLE[corrmove_df$pair_ID_number == i] <- mean_etaDif_MLE
   corrmove_df$mean_etaDft.MLE[corrmove_df$pair_ID_number == i] <- mean_etaDft_MLE
 }
+corrmove_df
 
 #mean total drift and mean total diffusion correlated movement
 round(mean(corrmove_df$mean_etaDif.MLE[-1]), 2)
