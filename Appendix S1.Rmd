@@ -1892,14 +1892,18 @@ encs <- merge(encs, proximity_df[,c("pair_ID","sex_comparison", "site")])
 
 figure3c_encounters_overtime <-
   ggplot(data = encs,
-         aes(y = encounter, x = doy, col = sex_comparison)) +
-  geom_bar(stat = "identity", position = "stack") + 
-  scale_x_continuous(limits = c(-2,370), expand = c(0,1)) +
+         aes(y = encounter, x = doy)) +
+  geom_bar(stat = "identity", position = "stack", aes(fill = sex_comparison)) + 
+  # geom_smooth(method="gam", formula = y ~ s(x, bs = "cc", k = 8),
+  #             method.args =list(family = poisson), se=F) +
+  scale_x_continuous(limits = c(-2, 370), expand = c(0, 1),
+                     breaks = seq(0, 365, by = 30),
+                     labels = c(month.abb, month.abb[1])) +  # Use month abbreviations
   scale_y_continuous(limits = c(0,110), expand = c(0,1)) +
-  scale_color_manual(values = c("#A50026", "#9970AB", "#004488"),
-                     labels = c("Female - Female", "Female - Male", "Male - Male"),
-                     name = "") +
-  xlab("Day of year") +
+  scale_fill_manual(values = c("#A50026", "#9970AB", "#004488"),
+                    labels = c("Female - Female", "Female - Male", "Male - Male"),
+                    name = "") +
+  xlab("Month") +
   ylab("Encounter count") +
   ggtitle("C") +
   theme_bw() +
@@ -1911,16 +1915,19 @@ figure3c_encounters_overtime <-
         axis.text.y = element_text(size=8, family = "sans"),
         axis.text.x  = element_text(size=8, family = "sans"),
         legend.position="none",
-        panel.background = element_rect(fill = "transparent"),
+        # legend.text = element_text(size=6, family = "sans", face = "bold"),
+        # legend.position = c(0.84, 0.2), #horizontal, vertical
+        # legend.key.height = unit(0.3, "cm"),
+        legend.key = element_rect(fill = "transparent"),
         legend.background = element_rect(fill = "transparent"),
+        panel.background = element_rect(fill = "transparent"),
         plot.background = element_rect(fill = "transparent", color = NA),
         plot.margin = unit(c(0.2,0.1,0.2,0.2), "cm"))
 ```
 
 ```{r eval=FALSE, echo=FALSE}
-ggsave(figure3c_encounters_overtime,
-       file="figures/individual figures/figure3c_encounters_overtime.png",
-       width = 6.86, height = 3, units = "in", dpi = 600, bg = "transparent")
+ggsave(figure3c_encounters_overtime, width = 6.86, height = 3, units = "in", dpi = 600, bg = "transparent",
+       file="figures/individual figures/figure3c_encounters_overtime.png")
 ```
 
 ```{r eval=FALSE}
