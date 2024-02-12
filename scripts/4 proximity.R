@@ -17,25 +17,42 @@ overlap_1_df$proximity_low <- NA
 overlap_1_df$proximity_est <- NA
 overlap_1_df$proximity_high <- NA
 
+# this will take a while, days to loop, if R crashes, change the # for the loop number it was on. syntax: for(i in #:nrow(pairwise.df)) 
+
 #Calculate the proximity statistics
 for(i in 1:nrow(overlap_1)){
+  
+  # Extract animal indices from columns 'anteater_A' and 'anteater_B'
   ANIMAL_A <- as.character(overlap_1_df[i, 'anteater_A']) # add as.character due to tibble format
   ANIMAL_B <- as.character(overlap_1_df[i, 'anteater_B'])
   
+  # Extract tracking data for the pair of animals
   TRACKING_DATA.1 <- DATA_TELEMETRY[c(ANIMAL_A, ANIMAL_B)] # extract anteater by name, has extra layers .-. it doesnt work, that is why
   
-  # line above is using as.character removes all the fluff because you just want the text string
-  MODELS.1 <- list(FIT_1[ANIMAL_A][[1]], FIT_1[ANIMAL_B][[1]])
+  # Extract models for the pair of animals
+  MODELS.1 <- list(FIT_1[ANIMAL_A][[1]], FIT_1[ANIMAL_B][[1]])   # line above is using as.character removes all the fluff because you just want the text string
   
+  # Use tryCatch to handle potential errors during the calculation of the proximity statistic
   PROXIMITY1 <- tryCatch(
     {
+      # Attempt to calculate the proximity statistic using the proximity function
       PROXIMITY_1 <- proximity(data = TRACKING_DATA.1, CTMM = MODELS.1, GUESS=ctmm(error=FALSE))},
+    
+    # If an error occurs during the try block, execute the error block
     error=function(err){
+      
+      # Print an error message indicating that an error occurred (added this line, issues running this code post pre-print version)
+      cat("Error occurred at index", i, ": ", conditionMessage(err), "\n")
+      
+      # If an error occurs, set the proximity values to NA
       PROXIMITY_1 <- c(NA,NA,NA)
+      
+      # Return the NA values
       return(PROXIMITY_1)
     }
   )
   
+  # Assign the proximity values to the corresponding columns 
   overlap_1_df[i, c("proximity_low")] <- PROXIMITY_1[1]
   overlap_1_df[i, c("proximity_est")] <- PROXIMITY_1[2]
   overlap_1_df[i, c("proximity_high")] <- PROXIMITY_1[3]
