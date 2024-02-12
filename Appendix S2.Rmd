@@ -216,7 +216,8 @@ rm(matrix_layer1, matrix_layer2, matrix_level,
    overlap_col_name1, overlap_col_name2,
    overlap_result1, overlap_result2)
 
-saveRDS(overlap_data, file = "data/home_range/overlap_data_adults.rds")
+overlap_data$site <- overlap_data$Site.A
+#saveRDS(overlap_data, file = "data/home_range/overlap_data_adults.rds")
 ```
 
 ```{r}
@@ -336,7 +337,7 @@ distance_data <- relocate(distance_data, c(distance_low, distance_est, distance_
                                        t, timestamp), .after = proximity_high)
 
 #save the distance dataframe
-saveRDS(distance_data, file = "data/proximity/distance_data_adults.rds")
+#saveRDS(distance_data, file = "data/proximity/distance_data_adults.rds")
 ```
 
 
