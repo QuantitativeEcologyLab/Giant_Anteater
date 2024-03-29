@@ -60,55 +60,47 @@ library(corrMove)
 
 ```{r load-files, echo=FALSE}
 #load data
-GPS_df <- readRDS("data/GPS_df.rds")
-bio_df <- readRDS("data/bio_df.rds")
-DATA_TELEMETRY <- readRDS("data/DATA_TELEMETRY.rds")
-#load movement models
+load("data/anteater/anteater_data.rda")
+load("data/anteater/bio_data.rda")
+load("data/anteater/telemetry_data.rda")
+#movement models and home range estimate
 load("data/anteater_fit.rda")
-#load home range estimates
-load("data/anteater_AKDE.rda")
-AKDE_1 <- readRDS("rds/AKDE_1.rds")
-AKDE_2 <- readRDS("rds/AKDE_2.rds")
-AKDE_male <- readRDS("rds/AKDE_male.rds")
-AKDE_female <- readRDS("rds/AKDE_female.rds")
-#load home range size
-HR_size <- readRDS("rds/HR_size.rds")
-dat.hr <- readRDS("data/home_range/dat_hr.rds")
-#load overlap estimates
-overlap_1_df <- readRDS("rds/overlap_1_df.rds")
-overlap_2_df <- readRDS("rds/overlap_2_df.rds")
-overlap_df <- readRDS("rds/overlap_df.rds")
-#load proximity data
-proximity_df <- readRDS("rds/proximity_df.rds")
-#load distance data
-distance_df <- readRDS("data/distance_df.rds")
-#load encounter data
-encounter_radius_df <- readRDS("rds/encounter_radius_df.rds")
-#load pair data
-proximity_identified_pairs_df <- readRDS("RDS/proximity_identified_pairs_df.rds")
-distance_pairs_df <- readRDS("data/distance_pairs_df.RDS")
+load("data/anteater_akdes.rda")
+#home range
+load("data/home_range/HR_size.rda")
+load("data/home_range/AKDE_1.rda")
+load("data/home_range/AKDE_2.rda")
+load("data/home_range/overlap_1_df.rda")
+load("data/home_range/overlap_2_df.rda")
+load("data/home_range/overlap_df.rda")
+#encounters
+load("data/encounter/proximity_df.rda")
+load("data/encounter/distance_df.rda")
+encounter_radius_df <- readRDS("data/encounter/encounter_radius_df.RDS")
+load("data/encounter/proximity_identified_pairs_df.rda")
+distance_pairs_df <- readRDS("data/encounter/distance_pairs_df.RDS")
 #load correlated movement data
-cm_pair1 <- readRDS("RDS/cm_pair1.RDS")
-cm_pair2 <- readRDS("RDS/cm_pair2.RDS")
-cm_pair3 <- readRDS("RDS/cm_pair3.RDS")
-cm_pair4 <- readRDS("RDS/cm_pair4.RDS")
-cm_pair5 <- readRDS("RDS/cm_pair5.RDS")
-cm_pair6 <- readRDS("RDS/cm_pair6.RDS")
-cm_pair7 <- readRDS("RDS/cm_pair7.RDS")
-cm_pair8 <- readRDS("RDS/cm_pair8.RDS")
-cm_pair9 <- readRDS("RDS/cm_pair9.RDS")
-cm_pair10 <- readRDS("RDS/cm_pair10.RDS")
-cm_pair11 <- readRDS("RDS/cm_pair11.RDS")
-cm_pair12 <- readRDS("RDS/cm_pair12.RDS")
+cm_pair1 <- readRDS("data/correlative_movement/cm_pair1.RDS")
+cm_pair2 <- readRDS("data/correlative_movement/cm_pair2.RDS")
+cm_pair3 <- readRDS("data/correlative_movement/cm_pair3.RDS")
+cm_pair4 <- readRDS("data/correlative_movement/cm_pair4.RDS")
+cm_pair5 <- readRDS("data/correlative_movement/cm_pair5.RDS")
+cm_pair6 <- readRDS("data/correlative_movement/cm_pair6.RDS")
+cm_pair7 <- readRDS("data/correlative_movement/cm_pair7.RDS")
+cm_pair8 <- readRDS("data/correlative_movement/cm_pair8.RDS")
+cm_pair9 <- readRDS("data/correlative_movement/cm_pair9.RDS")
+cm_pair10 <- readRDS("data/correlative_movement/cm_pair10.RDS")
+cm_pair11 <- readRDS("data/correlative_movement/cm_pair11.RDS")
+cm_pair12 <- readRDS("data/correlative_movement/cm_pair12.RDS")
 ```
 
 
 ```{r import-data, message = FALSE}
-#import GPS data
-DATA_GPS <- read_csv("data/Anteaters_NoOutliers.csv")
+#import data, cleaned giant anteater GPS tracking data, containing no outliers
+DATA_GPS <- read.csv("data/anteater/Anteaters_NoOutliers.csv")
 
 #import supplementary data containing biological information
-DATA_META <- read_csv("data/Anteater_Results_Final.csv")
+DATA_META <- read.csv("data/anteater/Anteater_Results_Final.csv")
 
 #correct mismatch ID entries
 DATA_GPS$ID[DATA_GPS$ID == "Larry 267"] <- "Larry"
@@ -121,27 +113,26 @@ DATA_META$ID[DATA_META$ID == "Little Rick"] <- "Little_Rick"
 While a total of 43 individuals were collared as part of the larger monitoring effort (Noonan et al., 2022), here we restricted our analyses to 23 range-resident individuals living in three separate clusters. These individuals were selected as they resided in areas where there was high confidence that all resident giant anteaters were equipped with GPS trackers. The resulting dataset consisted of 528,324 GPS fixes.
 
 ```{r import-meta, message = FALSE}
-#subset to range-resident individuals
-GPS_df <- DATA_GPS[which(DATA_GPS$ID %in% 
-                           c("Alexander", "Annie", "Anthony", "Beto", "Bumpus",
-                             "Cate", "Christoffer","Elaine", "Hannah","Jackson",
-                             "Jane","Kyle", "Larry", "Little_Rick", "Luigi",
-                             "Makao", "Margaret", "Maria", "Puji", "Reid", 
-                             "Rodolfo", "Sheron", "Thomas")),]
+#subset to the 23 range-resident individuals
+anteater_data <- DATA_GPS[which(DATA_GPS$ID %in% c("Alexander", "Annie", "Anthony", "Beto", "Bumpus",
+                                            "Cate", "Christoffer","Elaine", "Hannah","Jackson",
+                                            "Jane","Kyle", "Larry", "Little_Rick", "Luigi",
+                                            "Makao", "Margaret", "Maria", "Puji", "Reid", 
+                                            "Rodolfo", "Sheron", "Thomas")),]
 
-#subset to range-resident individuals
-bio_df <- DATA_META[c(1:3,8:10,12,14,17,19,20,22,23,25:29,33:35,37,38),]
+#subset to the 23 range-resident individuals
+bio_data <- DATA_META[c(1:3,8:10,12,14,17,19,20,22,23,25:29,33:35,37,38),]
 #subset the biological data
-bio_df <- bio_df[,c(1:3,5)]
+bio_data <- bio_data[,c(1:3,5)]
 
 #add site location to the dataframe
-bio_df$Site <- NA
-bio_df$Site[bio_df$Road == "MS-040"] <- 1
-bio_df$Site[bio_df$Road == "BR_267"] <- 2
-bio_df
+bio_data$Site <- NA
+bio_data$Site[bio_data$Road == "MS-040"] <- 1
+bio_data$Site[bio_data$Road == "BR_267"] <- 2
+bio_data
 
 #convert GPS dataset to a telemetry object
-DATA_TELEMETRY <- as.telemetry(GPS_df)
+DATA_TELEMETRY <- as.telemetry(anteater_data)
 
 #summary of the dataset
 summary(DATA_TELEMETRY)
@@ -152,11 +143,11 @@ plot(DATA_TELEMETRY)
 
 ```{r eval = FALSE, echo=FALSE}
 #save GPS dataframe
-saveRDS(GPS_df, file = "data/GPS_df.rds")
+save(anteater_data, file = "data/anteater/anteater_data.rda")
 #save biological information dataframe
-saveRDS(bio_df, file = "data/bio_df.rds")
+save(bio_data, file = "data/anteater/bio_data.rda")
 #save telemetry data
-saveRDS(DATA_TELEMETRY, file = "data/DATA_TELEMETRY.rds")
+save(DATA_TELEMETRY, file = "data/anteater/telemetry_data.rda")
 ```
 
 <hr style="border: 1px solid black;">
@@ -180,7 +171,7 @@ summary(FIT)
 
 ```{r eval = FALSE, echo=FALSE}
 #save movement model
-save(FIT, file = "data/FIT.rda")
+save(FIT, file = "data/anteater_fit.rda")
 ```
 
 <hr style="border: 1px solid black;">
@@ -200,7 +191,7 @@ overlap(AKDE)
 
 ```{r eval=FALSE, echo=FALSE}
 #save AKDE home-range estimations
-save(AKDE, file = "data/anteater_AKDE.rda")
+save(AKDE, file = "data/anteater_akdes.rda")
 ```
 
 ## Home-range results
@@ -210,86 +201,40 @@ meta(AKDE)
 ```
 
 ```{r extract-hr,eval=FALSE,echo=FALSE}
-output_directory <- "data/home_range/shp"
-if (!dir.exists(output_directory)) {
-  dir.create(output_directory, recursive = TRUE)
-}
-
-#save 95% range estimate as shapefile:
-for (name in names(AKDE)) {
-  shp_file <- file.path(output_directory, paste0(name))
-  writeVector(AKDE[[name]], filename = shp_file, filetype="ESRI Shapefile", 
-              level.UD=0.95, level=0.95)
-}
-
-# Import 95% home-range estimate shapefiles
-
-# Set folder path containing the exported subfolders
-folder_path <- "data/home_range/shp"
-
-# Load .shp files from subfolders
-shp.dir <- list.files(path = folder_path, pattern = "\\.shp$", recursive = TRUE, full.names = TRUE)
-
-#Read each shapefile into a list
-shp.files <- lapply(shp.dir, st_read)
-names(shp.files) <- names(AKDE)
-
-# Combine all the shapefiles into a single sf object
-#hr.shp = dplyr::bind_rows(shp.files)
-hr.shp <- do.call(rbind, shp.files)
-
-# Extract/subset 95% est shapefiles only based on the text "95% est"
-library(stringr)
-hr.shp <- hr.shp[str_detect(hr.shp$name, "est"),]
-rownames(hr.shp) <- NULL
-
-#.......................................
-#import 95% hr shapefile
-hr.shp <- st_read('data/home_range/95_HR_estimate/95_HR_estimate.shp')
-
-#convert sf dataframe object to dataframe object
-dat.hr <- as.data.frame(hr.shp)
-
-#Get HR results (units = square km)
+#create a dataframe to store home range area statistics from the AKDE
 HR_size <- data.frame()
+
+#loop through each object in the AKDE list
 for (i in 1:length(AKDE)) {
+  #extract the home range area statistics summary
   summary <- summary(AKDE[[i]])$CI
-  #  summary_df <- data.frame(individual.local.identifier = names(AKDES)[i], summary)
-  HR_size <- rbind(HR_size, summary)
+  
+  #bind the summary to the dataframe
+  HR_size <- rbind(HR_size, as.data.frame(summary))
 }
-names(HR_size)[1] <- "HR_low"
-names(HR_size)[2] <- "HR_est"
-names(HR_size)[3] <- "HR_high"
-rownames(HR_size) <- NULL
 
-dat.hr <- cbind(dat.hr, HR_size)
+row.names(HR_size) <- NULL
 
-#correct mismatch column name entries
-names(dat.hr)[1] <- "ID"
+#add biological data to dataframe
+HR_size <- cbind(HR_size, bio_df)
+HR_size <- relocate(HR_size, c(low, est, high), .after = Site)
+names(HR_size)[6] <- "HR_low"
+names(HR_size)[7] <- "HR_est"
+names(HR_size)[8] <- "HR_high"
 
-#correct mismatch ID entries dropping 95% est from the name, extract text before 9 including the space in front of the 9
-dat.hr$ID <- sub("^(.*?)\\s*9.*", "\\1", dat.hr$ID)
-
-#correct mismatch ID entries 
-dat.hr$ID[dat.hr$ID == "Larry 267"] <- "Larry"
-dat.hr$ID[dat.hr$ID == "Little Rick"] <- "Little_Rick"
-
-#add biological information to home-range dataframe
-dat.hr <- merge(dat.hr, bio_data, all = TRUE)
-
-saveRDS(dat.hr, file = "data/home_range/dat_hr.rds")
+save(HR_size, file = "data/home_range/HR_size.rda")
 
 ```
 
 
 
 ```{r}
-#calculate the mean total home-range size
-round(mean(dat.hr$HR_est), 2)
+#calculate the mean total home range size
+round(mean(HR_size$HR_est), 2)
 
-#calculate CIs of the mean total home-range size
-round(mean(dat.hr$HR_low), 2)
-round(mean(dat.hr$HR_high), 2)
+#calculate CIs of the mean total home range size
+round(mean(HR_size$HR_low), 2)
+round(mean(HR_size$HR_high), 2)
 ```
 
 Here, we calculate the home-range statistics based on a sex parameter using the `ctmm` function `meta()`.
@@ -305,34 +250,47 @@ AKDE_female <- AKDE[c("Annie", "Bumpus", "Cate", "Elaine", "Hannah",
                       "Jane","Makao", "Margaret", "Maria", "Puji",
                       "Sheron")]
 
-#calculate mean home-range size for male
+#calculate mean home range sizes for male
 meta(AKDE_male)
 
-#calculate mean home-range size for female
+#calculate mean home range sizes for female
 meta(AKDE_female)
 
-#test to see significance of sex on home-range
+#test to see significance of sex on home range
 AKDE_sex_compare <- list(male = AKDE_male,
                          female = AKDE_female)
 COL_sex <- c("#004488", "#A50026")
 meta(AKDE_sex_compare, col = COL_sex, sort = TRUE)
 ```
 
-```{r eval=FALSE, echo=FALSE}
-#save AKDE home-range estimations for each sex
-saveRDS(AKDE_male, file = "rds/AKDE_male.rds")
-saveRDS(AKDE_female, file = "rds/AKDE_female.rds")
-```
+We investigated if weight was a factor in home-range size. We used a GLMM with a gamma distribution, a log link function, and site as a random effect to determine whether the weight differed between individuals. This model was then compared to similar model that excluded the weight predictor variable using a likelihood ratio test.
 
 
 ```{r hr-weight}
+#import supplementary data containing biological information
+DATA_META <- read.csv("data/anteater/Anteater_Results_Final.csv")
+#subset biological data from supplementary data
+bio_data <- DATA_META[c(1:3,8:10,12,14,17,19,20,22,23,25:29,33:35,37,38), c(1:5)]
+#add site location 
+bio_data$Site[bio_data$Road == "MS-040"] <- 1
+bio_data$Site[bio_data$Road == "BR_267"] <- 2
+
+#load home range size data
+load("data/home_range/HR_size.rda")
+Weight <- bio_data[,4]
+HR_size <- cbind(HR_size, Weight)
+
+#without luigi
+HR_size <- HR_size[HR_size$ID != "Luigi",]
+
+#............................................................
 # Is weight a factor in home-range size?
 
 #compare model with and without weight as a variable
 HR_weight_test <- glmmTMB(HR_est ~ Weight + (1|Site), 
-                          family = Gamma(link = "log"), data = dat.hr)
+                          family = Gamma(link = "log"), data = HR_size)
 HR_weight_test2 <- glmmTMB(HR_est ~ 1 + (1|Site), 
-                           family = Gamma(link = "log"), data = dat.hr)
+                           family = Gamma(link = "log"), data = HR_size)
 
 HR_weight_test_results <- anova(HR_weight_test, HR_weight_test2)
 HR_weight_test_results
@@ -340,6 +298,10 @@ HR_weight_test_results
 #calculate weight impact via likelihood ratio test
 HR_weight_test_pvalue <- round(HR_weight_test_results$`Pr(>Chisq)`[2], 2)
 HR_weight_test_pvalue
+
+summary(HR_weight_test)
+
+plot(HR_size$HR_est ~ HR_size$Weight)
 
 summary(HR_weight_test)
 ```
@@ -362,9 +324,9 @@ AKDE_2 <- AKDE[c("Annie", "Beto", "Hannah", "Jane", "Larry",
 ```
 
 ```{r eval=FALSE, echo=FALSE}
-#save home-range overlap for each site
-saveRDS(AKDE_1, file = "rds/AKDE_1.rds")
-saveRDS(AKDE_2, file = "rds/AKDE_2.rds")
+#save home range estimates for each site
+save(AKDE_1, file = "data/home_range/AKDE_1.rda")
+save(AKDE_2, file = "data/home_range/AKDE_2.rda")
 ```
 
 
@@ -415,9 +377,9 @@ overlap_1_df <- left_join(overlap_1_df, overlap_1_high,
                           by = c("anteater_A", "anteater_B"))
 
 #add biological data to dataframe
-overlap_1_df <- left_join(overlap_1_df, rename(bio_df, anteater_A = ID), 
+overlap_1_df <- left_join(overlap_1_df, rename(bio_data, anteater_A = ID), 
                           by = "anteater_A")
-overlap_1_df <- left_join(overlap_1_df, rename(bio_df, anteater_B = ID), 
+overlap_1_df <- left_join(overlap_1_df, rename(bio_data, anteater_B = ID), 
                           by = "anteater_B", suffix = c(".A", ".B"))
 #add column to indicate which sexes that are being compared
 overlap_1_df <- mutate(overlap_1_df,
@@ -471,9 +433,9 @@ overlap_2_df <- left_join(overlap_2_df, overlap_2_high,
                           by = c("anteater_A", "anteater_B"))
 
 #add biological data to dataframe
-overlap_2_df <- left_join(overlap_2_df, rename(bio_df, anteater_A = ID), 
+overlap_2_df <- left_join(overlap_2_df, rename(bio_data, anteater_A = ID), 
                           by = "anteater_A")
-overlap_2_df <- left_join(overlap_2_df, rename(bio_df, anteater_B = ID), 
+overlap_2_df <- left_join(overlap_2_df, rename(bio_data, anteater_B = ID), 
                           by = "anteater_B", suffix = c(".A", ".B"))
 #add column to indicate which sexes that are being compared
 overlap_2_df <- mutate(overlap_2_df,
@@ -500,10 +462,10 @@ rm(overlap_1_low, overlap_1_est, overlap_1_high,
 ```
 
 ```{r eval = FALSE, echo=FALSE}
-#save home-range overlap dataframes
-saveRDS(object = overlap_2_df, file = "rds/overlap_1_df.rds")
-saveRDS(object = overlap_2_df, file = "rds/overlap_2_df.rds")
-saveRDS(object = overlap_df, file = "rds/overlap_df.rds")
+#save home range overlap dataframes
+save(object = overlap_1_df, file = "data/home_range/overlap_1_df.rda")
+save(object = overlap_2_df, file = "data/home_range/overlap_2_df.rda")
+save(object = overlap_df, file = "data/home_range/overlap_df.rda")
 ```
 
 ## Home-range overlap results
@@ -610,7 +572,7 @@ for(i in 1:nrow(overlap_1)){
   overlap_1_df[i, c("proximity_high")] <- PROXIMITY_1[3]
   
   #save results to a csv file
-  write.csv(overlap_1_df, "data/DATA_proximity_1.csv", row.names = FALSE)
+  write.csv(overlap_1_df, "data/encounter/DATA_proximity_1.csv", row.names = FALSE)
   #track progress
   cat("finished index", i, "\n")
 }
@@ -646,7 +608,7 @@ for(i in 1:nrow(overlap_2_df)){
   overlap_2_df[i, c("proximity_high")] <- PROXIMITY_2[3]
   
   #save results in a csv file
-  write.csv(overlap_2_df, "data/DATA_proximity_2.csv", row.names = FALSE)
+  write.csv(overlap_2_df, "data/enocunter/DATA_proximity_2.csv", row.names = FALSE)
   #track progress
   cat("finished index", i, "\n")
 }
@@ -654,8 +616,8 @@ for(i in 1:nrow(overlap_2_df)){
 
 ```{r eval = FALSE, message = FALSE}
 #import proximity statistics data
-DATA_proximity_1 <- read_csv("data/DATA_proximity_1.csv")
-DATA_proximity_2 <- read_csv("data/DATA_proximity_2.csv")
+DATA_proximity_1 <- read.csv("data/encounter/DATA_proximity_1.csv")
+DATA_proximity_2 <- read.csv("data/encounter/DATA_proximity_2.csv")
 
 #correct mismatch entry
 DATA_proximity_1$anteater_A[DATA_proximity_1$anteater_A == "Little Rick"] <- "Little_Rick"
@@ -688,7 +650,7 @@ proximity_df <- left_join(overlap_df, proximity_df, by = c("anteater_A", "anteat
 
 ```{r eval = FALSE, echo=FALSE}
 #save proximity dataframe
-saveRDS(proximity_df, file = "rds/proximity_df.rds")
+save(proximity_df, file = "data/encounter/proximity_df.rda")
 ```
 
 ### Proximity ratio results
@@ -772,12 +734,12 @@ DATA_DISTANCE <- do.call(rbind, RES)
 
 ```{r eval = FALSE, echo=FALSE}
 #save distance data
-saveRDS(DATA_DISTANCE, file = "data/rds/DATA_DISTANCE.rds")
+saveRDS(DATA_DISTANCE, file = "data/encounter/DATA_DISTANCE.rds")
 ```
 
 ```{r eval = FALSE}
 #import the distance statistics data
-DATA_DISTANCE <- readRDS("data/rds/DATA_DISTANCE.rds")
+DATA_DISTANCE <- readRDS("data/encounter/DATA_DISTANCE.rds")
 
 #locate NA values within the dataframe
 DATA_DISTANCE[!complete.cases(DATA_DISTANCE), ]
@@ -792,7 +754,7 @@ distance_df <- relocate(distance_df, c(distance_low, distance_est, distance_high
 
 ```{r eval = FALSE, echo=FALSE}
 #save the distance dataframe
-saveRDS(distance_df, file = "data/rds/distance_df.rds")
+save(distance_df, file = "data/encounter/distance_df.rda")
 ```
 
 ### Sensitivity analysis
@@ -883,7 +845,7 @@ for(i in 1:length(enc_radius)){
 encounter_radius_df <- data.frame(x = enc_radius,
                                   y = encounter_radius_pvalue)
 
-saveRDS(encounter_radius_df, file = "rds/encounter_radius_df.rds")
+saveRDS(encounter_radius_df, file = "data/encounter/encounter_radius_df.RDS")
 
 ```
 
@@ -983,15 +945,14 @@ To evaluate if pairs of giant anteaters exhibited any correlation in their movem
 proximity_above1 <- proximity_df[proximity_df$proximity_low > 1,]
 proximity_below1 <- proximity_df[proximity_df$proximity_high < 1,]
 
-#exclude pairs with a home-range overlap of 0
-proximity_below1[proximity_below1$overlap_est == 0,]
-proximity_below1 <- proximity_below1[proximity_below1$overlap_est != 0,]
+#exclude pairs with a HR overlap of 0
+proximity_below1[proximity_below1$overlap_est < 0.0001,]
+proximity_below1 <- proximity_below1[!(proximity_below1$overlap_est < 0.0001),]
 
 #create a dataframe of the deviated pairs
 proximity_identified_pairs_df <- rbind(proximity_above1, proximity_below1)
 proximity_identified_pairs_df$pair_ID_number <- seq(from = 1, to = 12, by = 1)
-proximity_identified_pairs_df <- relocate(proximity_identified_pairs_df, pair_ID_number,
-                                          .before = anteater_A)
+proximity_identified_pairs_df <- relocate(proximity_identified_pairs_df, pair_ID_number, .before = anteater_A)
 
 #correct the sex_comparison output to female-male
 proximity_identified_pairs_df <- mutate(proximity_identified_pairs_df, sex_comparison = 
@@ -1007,7 +968,7 @@ rm(proximity_above1, proximity_below1)
 
 ```{r eval=FALSE, echo=FALSE}
 #save deviated pairs dataframe
-saveRDS(proximity_identified_pairs_df, file = "rds/proximity_identified_pairs_df.rds")
+save(proximity_identified_pairs_df, file = "data/encounter/proximity_identified_pairs_df.rda")
 ```
 
 ## Deviated pairs results
@@ -1184,7 +1145,7 @@ rm(distance_pair1, distance_pair2, distance_pair3, distance_pair4, distance_pair
 
 ```{r eval = FALSE, echo=FALSE}
 #save the distance dataframe of the deviated pairs
-saveRDS(object = distance_pairs_df, file = "data/rds/distance_pairs_df.rds")
+saveRDS(object = distance_pairs_df, file = "data/encounter/distance_pairs_df.rds")
 ```
 
 ```{r eval=FALSE}
@@ -1349,18 +1310,19 @@ cm_pair12 <- corrMove(cd_pair12, prts_pair12)
 ```
 
 ```{r eval = FALSE, echo=FALSE}
-saveRDS(cm_pair1, file = "RDS/cm_pair1.RDS")
-saveRDS(cm_pair2, file = "RDS/cm_pair2.RDS")
-saveRDS(cm_pair3, file = "RDS/cm_pair3.RDS")
-saveRDS(cm_pair4, file = "RDS/cm_pair4.RDS")
-saveRDS(cm_pair5, file = "RDS/cm_pair5.RDS")
-saveRDS(cm_pair6, file = "RDS/cm_pair6.RDS")
-saveRDS(cm_pair7, file = "RDS/cm_pair7.RDS")
-saveRDS(cm_pair8, file = "RDS/cm_pair8.RDS")
-saveRDS(cm_pair9, file = "RDS/cm_pair9.RDS")
-saveRDS(cm_pair10, file = "RDS/cm_pair10.RDS")
-saveRDS(cm_pair11, file = "RDS/cm_pair11.RDS")
-saveRDS(cm_pair12, file = "RDS/cm_pair12.RDS")
+#save correlative movement data
+saveRDS(cm_pair1, file = "data/correlative_movement/cm_pair1.RDS")
+saveRDS(cm_pair2, file = "data/correlative_movement/cm_pair2.RDS")
+saveRDS(cm_pair3, file = "data/correlative_movement/cm_pair3.RDS")
+saveRDS(cm_pair4, file = "data/correlative_movement/cm_pair4.RDS")
+saveRDS(cm_pair5, file = "data/correlative_movement/cm_pair5.RDS")
+saveRDS(cm_pair6, file = "data/correlative_movement/cm_pair6.RDS")
+saveRDS(cm_pair7, file = "data/correlative_movement/cm_pair7.RDS")
+saveRDS(cm_pair8, file = "data/correlative_movement/cm_pair8.RDS")
+saveRDS(cm_pair9, file = "data/correlative_movement/cm_pair9.RDS")
+saveRDS(cm_pair10, file = "data/correlative_movement/cm_pair10.RDS")
+saveRDS(cm_pair11, file = "data/correlative_movement/cm_pair11.RDS")
+saveRDS(cm_pair12, file = "data/correlative_movement/cm_pair12.RDS")
 ```
 
 ## Correlated movement results
@@ -1555,25 +1517,25 @@ streams <- osmdata_sf(streams)
 
 ```{r raster-data, eval=FALSE}
 #import raster data
-pasture <- terra::rast("data/map/pasture.TIF")
+pasture <- terra::rast("data/habitat/pasture.TIF")
 pasture[pasture == 0] <- NA
 pasture[pasture == 1] <- 1
 
-planted_forest <- terra::rast("data/map/planted_forest.TIF")
+planted_forest <- terra::rast("data/habitat/planted_forest.TIF")
 planted_forest[planted_forest == 0] <- NA
 planted_forest[planted_forest == 1] <- 3
 
-native_forest <- terra::rast("data/map/native_forest.TIF")
+native_forest <- terra::rast("data/habitat/native_forest.TIF")
 native_forest[native_forest == 0] <- NA
 native_forest[native_forest == 1] <- 2
 ```
 
 ```{r sf-object}
 #add biological data to GPS dataframe
-GPS_df <- left_join(GPS_df, bio_df, by = "ID")
+anteater_data <- left_join(anteater_data, bio_data, by = "ID")
 
 #convert the GPS data into a sf object
-gps_sf <- st_as_sf(GPS_df, coords = c("GPS.Longitude", "GPS.Latitude"), 
+gps_sf <- st_as_sf(anteater_data, coords = c("GPS.Longitude", "GPS.Latitude"), 
                    crs = 4326)
 
 #find the extent of the GPS coordinates
