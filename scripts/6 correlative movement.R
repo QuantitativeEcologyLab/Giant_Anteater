@@ -31,7 +31,8 @@ proximity_identified_pairs_df <- mutate(proximity_identified_pairs_df,
 rm(proximity_above1, proximity_below1)
 
 #save identified pairs dataframe
-save(proximity_identified_pairs_df, file = "data/encounter/proximity_identified_pairs_df.rda")
+# save(proximity_identified_pairs_df, file = "data/encounter/proximity_identified_pairs_df.rda")
+load("data/encounter/proximity_identified_pairs_df.rda")
 
 #............................................................
 # Deviated pairs results ----
@@ -193,6 +194,7 @@ rm(distance_pair1, distance_pair2, distance_pair3, distance_pair4, distance_pair
 
 #save the distance dataframe of the deviated pairs
 saveRDS(object = distance_pairs_df, file = "data/encounter/distance_pairs_df.rds")
+distance_pairs_df <- readRDS("data/encounter/distance_pairs_df.rds")
 
 #............................................................
 
@@ -351,18 +353,18 @@ cm_pair11 <- corrMove(cd_pair11, prts_pair11)
 prts_pair12 <- findPrts(cd_pair12, W=5, IC = 2)
 cm_pair12 <- corrMove(cd_pair12, prts_pair12)
 
-saveRDS(cm_pair1, file = "RDS/cm_pair1.RDS")
-saveRDS(cm_pair2, file = "RDS/cm_pair2.RDS")
-saveRDS(cm_pair3, file = "RDS/cm_pair3.RDS")
-saveRDS(cm_pair4, file = "RDS/cm_pair4.RDS")
-saveRDS(cm_pair5, file = "RDS/cm_pair5.RDS")
-saveRDS(cm_pair6, file = "RDS/cm_pair6.RDS")
-saveRDS(cm_pair7, file = "RDS/cm_pair7.RDS")
-saveRDS(cm_pair8, file = "RDS/cm_pair8.RDS")
-saveRDS(cm_pair9, file = "RDS/cm_pair9.RDS")
-saveRDS(cm_pair10, file = "RDS/cm_pair10.RDS")
-saveRDS(cm_pair11, file = "RDS/cm_pair11.RDS")
-saveRDS(cm_pair12, file = "RDS/cm_pair12.RDS")
+saveRDS(cm_pair1, file = "data/correlative_movement/cm_pair1.RDS")
+saveRDS(cm_pair2, file = "data/correlative_movement/cm_pair2.RDS")
+saveRDS(cm_pair3, file = "data/correlative_movement/cm_pair3.RDS")
+saveRDS(cm_pair4, file = "data/correlative_movement/cm_pair4.RDS")
+saveRDS(cm_pair5, file = "data/correlative_movement/cm_pair5.RDS")
+saveRDS(cm_pair6, file = "data/correlative_movement/cm_pair6.RDS")
+saveRDS(cm_pair7, file = "data/correlative_movement/cm_pair7.RDS")
+saveRDS(cm_pair8, file = "data/correlative_movement/cm_pair8.RDS")
+saveRDS(cm_pair9, file = "data/correlative_movement/cm_pair9.RDS")
+saveRDS(cm_pair10, file = "data/correlative_movement/cm_pair10.RDS")
+saveRDS(cm_pair11, file = "data/correlative_movement/cm_pair11.RDS")
+saveRDS(cm_pair12, file = "data/correlative_movement/cm_pair12.RDS")
 
 #............................................................
 # Correlative movement results ----

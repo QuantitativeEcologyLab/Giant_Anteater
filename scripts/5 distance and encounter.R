@@ -65,7 +65,8 @@ distance_df <- relocate(distance_df, c(distance_low, distance_est, distance_high
                                        t, timestamp), .after = proximity_high)
 
 #save the distance dataframe
-save(distance_df, file = "data/encounter/distance_df.rda")
+# save(distance_df, file = "data/encounter/distance_df.rda")
+load("data/encounter/distance_df.rda")
 
 #............................................................
 # Sensitivity analysis ----
@@ -84,7 +85,7 @@ for(i in 1:length(enc_radius)){
 #visualization
 plot(x = enc_radius, y = enc_count, type = "l")
 
-#.....
+#...................................................
 
 #sensitivity analysis on female-male encounter significance
 encounter_radius_pvalue <- vector("numeric", length(enc_radius))

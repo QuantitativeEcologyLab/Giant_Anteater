@@ -149,3 +149,23 @@ prox_overlap_test <- glmer(proximity_est ~ overlap_est + (1|site), family = Gamm
 prox_overlap_test2 <- glmer(proximity_est ~ 1 + (1|site), family = Gamma(link = "log"), data = proximity_df)
 prox_overlap_test_results <- anova(prox_overlap_test, prox_overlap_test2)
 prox_overlap_test_pvalue <- round(prox_overlap_test_results$`Pr(>Chisq)`[2], 2) #p = 0.03
+
+#test for significance in sex, compare model with and without sex as a variable
+proximity_test <- glmer(proximity_est ~ sex_comparison + (1|site), 
+                        family = Gamma(link = "log"), data = proximity_df)
+proximity_test2 <- glmer(proximity_est ~ 1 + (1|site), 
+                         family = Gamma(link = "log"), data = proximity_df)
+proximity_test_results <- anova(proximity_test, proximity_test2)
+proximity_test_results
+proximity_test_pvalue <- round(proximity_test_results$`Pr(>Chisq)`[2], 2) #p = 0.13
+proximity_test_pvalue
+
+#test for significance in home-range overlap, compare model with and without overlap as a variable
+prox_overlap_test <- glmer(proximity_est ~ overlap_est + (1|site), 
+                           family = Gamma(link = "log"), data = proximity_df)
+prox_overlap_test2 <- glmer(proximity_est ~ 1 + (1|site), 
+                            family = Gamma(link = "log"), data = proximity_df)
+prox_overlap_test_results <- anova(prox_overlap_test, prox_overlap_test2)
+prox_overlap_test_results
+prox_overlap_test_pvalue <- round(prox_overlap_test_results$`Pr(>Chisq)`[2], 2) #p = 0.03
+prox_overlap_test_pvalue
