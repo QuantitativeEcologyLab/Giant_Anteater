@@ -58,22 +58,22 @@ load("data/home_range/overlap_df.rda")
 load("data/encounter/proximity_df.rda")
 load("data/encounter/distance_df.rda")
 encounter_radius_df <- readRDS("data/encounter/encounter_radius_df.RDS")
-proximity_identified_pairs_df <- readRDS("data/encounter/proximity_identified_pairs_df.rds")
+load("data/encounter/proximity_identified_pairs_df.rda")
 distance_pairs_df <- readRDS("data/encounter/distance_pairs_df.RDS")
 
 #correlative movement data
-cm_pair1 <- readRDS("RDS/cm_pair1.RDS")
-cm_pair2 <- readRDS("RDS/cm_pair2.RDS")
-cm_pair3 <- readRDS("RDS/cm_pair3.RDS")
-cm_pair4 <- readRDS("RDS/cm_pair4.RDS")
-cm_pair5 <- readRDS("RDS/cm_pair5.RDS")
-cm_pair6 <- readRDS("RDS/cm_pair6.RDS")
-cm_pair7 <- readRDS("RDS/cm_pair7.RDS")
-cm_pair8 <- readRDS("RDS/cm_pair8.RDS")
-cm_pair9 <- readRDS("RDS/cm_pair9.RDS")
-cm_pair10 <- readRDS("RDS/cm_pair10.RDS")
-cm_pair11 <- readRDS("RDS/cm_pair11.RDS")
-cm_pair12 <- readRDS("RDS/cm_pair12.RDS")
+cm_pair1 <- readRDS("data/correlative_movement/cm_pair1.RDS")
+cm_pair2 <- readRDS("data/correlative_movement/cm_pair2.RDS")
+cm_pair3 <- readRDS("data/correlative_movement/cm_pair3.RDS")
+cm_pair4 <- readRDS("data/correlative_movement/cm_pair4.RDS")
+cm_pair5 <- readRDS("data/correlative_movement/cm_pair5.RDS")
+cm_pair6 <- readRDS("data/correlative_movement/cm_pair6.RDS")
+cm_pair7 <- readRDS("data/correlative_movement/cm_pair7.RDS")
+cm_pair8 <- readRDS("data/correlative_movement/cm_pair8.RDS")
+cm_pair9 <- readRDS("data/correlative_movement/cm_pair9.RDS")
+cm_pair10 <- readRDS("data/correlative_movement/cm_pair10.RDS")
+cm_pair11 <- readRDS("data/correlative_movement/cm_pair11.RDS")
+cm_pair12 <- readRDS("data/correlative_movement/cm_pair12.RDS")
 
 
 #............................................................
@@ -86,9 +86,6 @@ FIT <- FIT[-c(3,12,14,20)]
 AKDE <- AKDE[-c(3,12,14,20)]
 load("data/home_range/HR_size_adult.rda")
 overlap_df <- readRDS("data/home_range/overlap_data_adult.rds")
-
-
-
 
 
 #............................................................
