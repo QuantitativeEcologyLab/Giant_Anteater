@@ -78,6 +78,48 @@ meta(AKDE_sex_compare, col = COL_sex, sort = TRUE)
 
 
 #............................................................
+# Weight and home-range ----
+#............................................................
+
+#import supplementary data containing biological information
+DATA_META <- read.csv("data/anteater/Anteater_Results_Final.csv")
+#subset biological data from supplementary data
+bio_data <- DATA_META[c(1:3,8:10,12,14,17,19,20,22,23,25:29,33:35,37,38), c(1:5)]
+#add site location 
+bio_data$Site[bio_data$Road == "MS-040"] <- 1
+bio_data$Site[bio_data$Road == "BR_267"] <- 2
+
+#load home range size data
+load("data/home_range/HR_size.rda")
+Weight <- bio_data[,4]
+HR_size <- cbind(HR_size, Weight)
+
+#without luigi
+HR_size <- HR_size[HR_size$ID != "Luigi",]
+
+#............................................................
+# Is weight a factor in home-range size?
+
+#compare model with and without weight as a variable
+HR_weight_test <- glmmTMB(HR_est ~ Weight + (1|Site), 
+                          family = Gamma(link = "log"), data = HR_size)
+HR_weight_test2 <- glmmTMB(HR_est ~ 1 + (1|Site), 
+                           family = Gamma(link = "log"), data = HR_size)
+
+HR_weight_test_results <- anova(HR_weight_test, HR_weight_test2)
+HR_weight_test_results
+
+#calculate weight impact via likelihood ratio test
+HR_weight_test_pvalue <- round(HR_weight_test_results$`Pr(>Chisq)`[2], 2)
+HR_weight_test_pvalue
+
+summary(HR_weight_test)
+
+plot(HR_size$HR_est ~ HR_size$Weight)
+
+
+
+#............................................................
 # Estimating home range overlap ----
 #............................................................
 
