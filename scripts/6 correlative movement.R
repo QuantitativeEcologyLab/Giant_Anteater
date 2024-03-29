@@ -1,4 +1,5 @@
 
+# Script description: identify individuals of interest, deviated pairs analysis, caluculate distances between individuals in the deviated pairs, investigate correlative movement between those individuals, calculate mean correlative movement statistics
 
 # Correlative movement
 
@@ -11,8 +12,8 @@ proximity_above1 <- proximity_df[proximity_df$proximity_low > 1,]
 proximity_below1 <- proximity_df[proximity_df$proximity_high < 1,]
 
 #exclude pairs with a HR overlap of 0
-proximity_below1[proximity_below1$overlap_est == 0,]
-proximity_below1 <- proximity_below1[proximity_below1$overlap_est != 0,]
+proximity_below1[proximity_below1$overlap_est < 0.0001,]
+proximity_below1 <- proximity_below1[!(proximity_below1$overlap_est < 0.0001),]
 
 #create a dataframe of the deviated pairs
 proximity_identified_pairs_df <- rbind(proximity_above1, proximity_below1)
@@ -30,7 +31,7 @@ proximity_identified_pairs_df <- mutate(proximity_identified_pairs_df,
 rm(proximity_above1, proximity_below1)
 
 #save identified pairs dataframe
-saveRDS(proximity_identified_pairs_df, file = "rds/proximity_identified_pairs_df.rds")
+save(proximity_identified_pairs_df, file = "data/encounter/proximity_identified_pairs_df.rda")
 
 #............................................................
 # Deviated pairs results ----
@@ -191,7 +192,7 @@ rm(distance_pair1, distance_pair2, distance_pair3, distance_pair4, distance_pair
    distance_pair11, distance_pair12)
 
 #save the distance dataframe of the deviated pairs
-saveRDS(object = distance_pairs_df, file = "data/rds/distance_pairs_df.rds")
+saveRDS(object = distance_pairs_df, file = "data/encounter/distance_pairs_df.rds")
 
 #............................................................
 
