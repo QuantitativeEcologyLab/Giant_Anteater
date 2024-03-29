@@ -24,9 +24,11 @@ library(lme4)
 The pre-print analyses contained 23 range-resident giant anteaters. Within the 23 individuals contained 12 males (8 adults, 4 subadults) and 11 females (all adults).
 This script is based on adult giant anteaters only. Subadults have been removed.
 
+# Data
+
 ```{r import-data, eval = FALSE, message = FALSE}
 #import data, cleaned giant anteater GPS tracking data, containing no outliers
-COLLAR_DATA <- read.csv("data/Anteaters_NoOutliers.csv")
+COLLAR_DATA <- read.csv("data/anteater/Anteaters_NoOutliers.csv")
 
 #correct mismatch ID entries
 COLLAR_DATA$ID[COLLAR_DATA$ID == "Larry 267"] <- "Larry"
@@ -46,16 +48,16 @@ anteater_data <- COLLAR_DAT[which(COLLAR_DAT$ID
                                          "Larry", "Luigi", "Makao", "Margaret", "Maria", 
                                          "Puji", "Rodolfo", "Sheron", "Thomas")),]
 
-saveRDS(anteater_data, file = "data/anteater_data_adults.rds")
+save(anteater_data, file = "data/anteater/anteater_data_adults.rda")
 ```
 
 ```{r}
-anteater_data <- readRDS("data/anteater_data_adults.rds")
+load("data/anteater/anteater_data_adults.rda")
 ```
 
 ```{r message =FALSE}
 #import supplementary data containing biological information
-DATA_META <- read.csv("data/Anteater_Results_Final.csv")
+DATA_META <- read.csv("data/anteater/Anteater_Results_Final.csv")
 
 #subset biological data from supplementary data
 bio_data <- DATA_META[which(DATA_META$ID 
@@ -84,14 +86,14 @@ load("data/anteater_fit.rda")
 FIT <- FIT[-c(3,12,14,20)]
 
 #import home-range estimates
-load("data/anteater_AKDE.rda")
+load("data/anteater_akdes.rda")
 
 #subset to adults only
 AKDE <- AKDE[-c(3,12,14,20)]
 
 ```
 
-## Home-range results
+# Home-range results
 
 ```{r}
 #Mean HR size...
@@ -118,7 +120,7 @@ meta(AKDE_sex_compare, col = c("#004488", "#A50026"), sort = TRUE)
 ```
 
 
-## Estimating home-range overlap
+# Estimating home-range overlap
 
 ```{r}
 #subset home range overlap based on site location
@@ -217,11 +219,11 @@ rm(matrix_layer1, matrix_layer2, matrix_level,
    overlap_result1, overlap_result2)
 
 overlap_data$site <- overlap_data$Site.A
-#saveRDS(overlap_data, file = "data/home_range/overlap_data_adults.rds")
+# save(overlap_data, file = "data/home_range/overlap_data_adult.rda")
 ```
 
 ```{r}
-overlap_data <- readRDS("data/home_range/overlap_data_adults.rds")
+load("data/home_range/overlap_data_adult.rda")
 ```
 
 
@@ -280,17 +282,17 @@ round(max(overlap_data$overlap_est[overlap_data$sex_comparison == "female-male"]
 
 ```{r}
 #import proximity data
-proximity_data <- readRDS("data/proximity/proximity_df.rds")
-proximity_data <- as.data.frame(proximity_data)
+load("data/encounter/proximity_df.rda")
+proximity_df <- as.data.frame(proximity_df)
 
 #remove subadults from proximity data
-proximity_data <- proximity_data[!(proximity_data$anteater_A %in% "Anthony" | proximity_data$anteater_B %in% "Anthony"),]
-proximity_data <- proximity_data[!(proximity_data$anteater_A %in% "Kyle" | proximity_data$anteater_B %in% "Kyle"),]
-proximity_data <- proximity_data[!(proximity_data$anteater_A %in% "Little_Rick" | proximity_data$anteater_B %in% "Little_Rick"),]
-proximity_data <- proximity_data[!(proximity_data$anteater_A %in% "Reid" | proximity_data$anteater_B %in% "Reid"),]
+proximity_df <- proximity_df[!(proximity_df$anteater_A %in% "Anthony" | proximity_df$anteater_B %in% "Anthony"),]
+proximity_df <- proximity_df[!(proximity_df$anteater_A %in% "Kyle" | proximity_df$anteater_B %in% "Kyle"),]
+proximity_df <- proximity_df[!(proximity_df$anteater_A %in% "Little_Rick" | proximity_df$anteater_B %in% "Little_Rick"),]
+proximity_df <- proximity_df[!(proximity_df$anteater_A %in% "Reid" | proximity_df$anteater_B %in% "Reid"),]
 
 #combine overlap and proximity data
-overlap_data <- merge(overlap_data, proximity_data, all = TRUE)
+overlap_data <- merge(overlap_data, proximity_df, all = TRUE)
 ```
 
 # Proximity ratio results
@@ -324,7 +326,7 @@ prox_overlap_test_pvalue
 
 ```{r}
 #import the distance data
-DATA_DISTANCE <- readRDS("data/proximity/DATA_DISTANCE.rds")
+DATA_DISTANCE <- readRDS("data/encounter/DATA_DISTANCE.rds")
 
 #locate NA values within the dataframe
 DATA_DISTANCE[!complete.cases(DATA_DISTANCE), ] #3,502,701 observations
@@ -332,19 +334,19 @@ DATA_DISTANCE[!complete.cases(DATA_DISTANCE), ] #3,502,701 observations
 DATA_DISTANCE <- na.omit(DATA_DISTANCE) #3,502,698 observations
 
 #add overlap and proximity information to the distance dataframe
-distance_data <- merge(DATA_DISTANCE, proximity_data, by = "pair_ID")
+distance_data <- merge(DATA_DISTANCE, proximity_df, by = "pair_ID")
 distance_data <- relocate(distance_data, c(distance_low, distance_est, distance_high,
                                        t, timestamp), .after = proximity_high)
 
 #save the distance dataframe
-#saveRDS(distance_data, file = "data/proximity/distance_data_adults.rds")
+save(distance_data, file = "data/encounter/distance_data_adults.rda")
 ```
 
 
 
 ```{r}
 #import distance data
-distance_data <- readRDS("data/proximity/distance_data_adults.rds")
+load("data/encounter/distance_data_adults.rda")
 
 overlap_data$encounter_count <- NA
 pair_ID <- unique(overlap_data$pair_ID)
@@ -396,13 +398,14 @@ summary(encounter_test)
 # Deviated pairs
 
 ```{r}
+
 #identify pairs that did not have a proximity ratio of 1
-proximity_above1 <- proximity_data[proximity_data$proximity_low > 1,]
-proximity_below1 <- proximity_data[proximity_data$proximity_high < 1,]
+proximity_above1 <- proximity_df[proximity_df$proximity_low > 1,]
+proximity_below1 <- proximity_df[proximity_df$proximity_high < 1,]
 
 #exclude pairs with a home range overlap of 0
 proximity_below1[proximity_below1$overlap_est > 0.0001,]
-proximity_below1 <- proximity_below1[proximity_below1$overlap_est > 0.001,]
+proximity_below1 <- proximity_below1[proximity_below1$overlap_est > 0.0001,]
 
 #create a dataframe of the deviated pairs
 proximity_identified_pairs_df <- rbind(proximity_above1, proximity_below1)
@@ -420,14 +423,14 @@ proximity_identified_pairs_df <- mutate(proximity_identified_pairs_df, sex_compa
 #clean up environment
 rm(proximity_above1, proximity_below1)
 
-#saveRDS(proximity_identified_pairs_df, file = "data/proximity/proximity_identified_adult_pairs_df.rds")
+save(proximity_identified_pairs_df, file = "data/encounter/proximity_identified_adult_pairs_df.rda")
 ```
 
 
 
 ```{r}
 #import identified deviated pairs (7 pairs)
-proximity_identified_pairs_df <- readRDS("data/proximity/proximity_identified_adult_pairs_df.rds")
+load("data/encounter/proximity_identified_adult_pairs_df.rda")
 
 #number of pairs with a deviated proximity ratio based on sex comparison
 table(proximity_identified_pairs_df$sex_comparison)
@@ -463,6 +466,47 @@ prox_overlap_test_pvalue_pairs
 
 
 
+# Investigating if weight is a factor in home-range size
+
+```{r}
+
+#import supplementary data containing biological information
+DATA_META <- read.csv("data/anteater/Anteater_Results_Final.csv")
+#subset biological data from supplementary data
+bio_data <- DATA_META[c(1:3,8:10,12,14,17,19,20,22,23,25:29,33:35,37,38), c(1:5)]
+#add site location 
+bio_data$Site[bio_data$Road == "MS-040"] <- 1
+bio_data$Site[bio_data$Road == "BR_267"] <- 2
+
+#load home range size data
+load("data/home_range/HR_size.rda")
+Weight <- bio_data[,4]
+HR_size <- cbind(HR_size, Weight)
+
+#without luigi
+HR_size <- HR_size[HR_size$ID != "Luigi",]
+
+#............................................................
+# Is weight a factor in home-range size?
+
+#compare model with and without weight as a variable
+HR_weight_test <- glmmTMB(HR_est ~ Weight + (1|Site), 
+                          family = Gamma(link = "log"), data = HR_size)
+HR_weight_test2 <- glmmTMB(HR_est ~ 1 + (1|Site), 
+                           family = Gamma(link = "log"), data = HR_size)
+
+HR_weight_test_results <- anova(HR_weight_test, HR_weight_test2)
+HR_weight_test_results
+
+#calculate weight impact via likelihood ratio test
+HR_weight_test_pvalue <- round(HR_weight_test_results$`Pr(>Chisq)`[2], 2)
+HR_weight_test_pvalue
+
+summary(HR_weight_test)
+
+plot(HR_size$HR_est ~ HR_size$Weight)
+
+```
 
 
 
