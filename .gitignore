@@ -2,10 +2,6 @@
 .Ruserdata
 .gitattributes.txt
 .gitignore
-data/
-report/
-other scripts/
-paper/
-sources/
-old figures/
 
+
+data/
