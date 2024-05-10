@@ -81,6 +81,7 @@ figure2_left <- grid.arrange(figure2a_HR_size,
                              #plot_grid(plot_HRO_site1, plot_HRO_site2, ncol = 1),
                              figure2b_overlap_sex,
                              nrow = 2, heights = c(0.65, 0.35))
+figure2_left
 
 ggsave(figure2_left, filename = "figures/individual figures/figure2_left.png", device = NULL,
        path = NULL, scale = 1, width = 4, height = 6, units = "in", dpi = 600)
@@ -141,3 +142,63 @@ dev.off()
 #multi-panel
 #manually combine the two plots due to the nature of base r plot and ggplot
 #plot saved as "figures/figure2.png"
+
+#................................................................
+# Revision 2, figure 2 ----
+#................................................................
+
+load("data/anteater_akdes_reproj.rda")
+
+names(AKDE_1_reproj)
+#"Alexander", "Anthony", "Bumpus", "Cate", "Christoffer",
+#"Elaine", "Jackson", "Kyle", "Little_Rick", "Makao",
+#"Puji", "Rodolfo"
+
+#assign colours based on sex of individual at site 1
+COL_1 <- c("#004488", "#004488", "#A50026", "#A50026", "#004488", 
+           "#A50026", "#004488", "#004488", "#004488", "#A50026", 
+           "#A50026", "#004488")
+
+names(AKDE_2_reproj)
+#"Annie", "Beto", "Hannah", "Jane", "Larry",
+#"Luigi", "Margaret", "Maria", "Reid", "Sheron",
+#"Thomas"
+
+#assign colours based on sex of individual at site 2
+COL_2 <- c("#A50026", "#004488", "#A50026", "#A50026", "#004488", 
+           "#004488", "#A50026", "#A50026", "#004488", "#A50026", 
+           "#004488") 
+
+png(file = "figures/figure2_right_overlap_reproj.png", width = 2.86, height = 6, units = "in", res = 600)
+par(mfrow=c(2,1))
+par(mgp = c(2, 0.5, 0))             #Adjust the third element (margin for axis title spacing)
+par(mar = c(3, 3, 1.25, 0.25))      #margin defaults (order: bottom, left, top, and right)
+plot(AKDE_1_reproj, 
+     # col.DF = COL_1,
+     col.UD=COL_1,
+     col.level = COL_1,
+     col.grid = NA, 
+     level = NA,
+     lwd.level = 1,            #line thickness
+     #font=2,                  #bold axis text
+     cex.lab = 1,              #size of axis title
+     cex.axis = 0.8,           #size of axis text font
+     font.lab = 2)             #bold axis labels
+title("C", adj = 0)
+plot(AKDE_2_reproj, 
+     # col.DF = COL_2, 
+     col.UD=COL_2,
+     col.level = COL_2, 
+     col.grid = NA, 
+     level = NA,
+     lwd.level = 1,            #line thickness
+     #font=2,                  #bold axis text
+     cex.lab = 1,              #size of axis title
+     cex.axis = 0.8,           #size of axis text font
+     font.lab = 2)             #bold axis labels
+title("D", adj = 0)
+dev.off()
+
+#multi-panel
+#manually combine the two plots due to the nature of base r plot and ggplot
+#plot saved as "figures/figure2_reproj.png"
