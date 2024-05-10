@@ -24,7 +24,7 @@ library(sf)              #spatial data
 # #analysis
 # library(devtools)
 # #if the ctmm package needs to be updated
-# #devtools::install_github("ctmm-initiative/ctmm", force = TRUE) 
+# devtools::install_github("ctmm-initiative/ctmm", force = TRUE)
 library(ctmm)            #continuous-time movement models
 library(lme4)            #pairwise sex test to see if differences are significant using glmer()
 library(glmmTMB)         #beta distribution
@@ -87,6 +87,20 @@ AKDE <- AKDE[-c(3,12,14,20)]
 load("data/home_range/HR_size_adult.rda")
 overlap_df <- readRDS("data/home_range/overlap_data_adult.rds")
 
+
+
+#............................................................
+# Reprojected AKDEs ----
+#............................................................
+
+#anteater data
+load("data/anteater/telemetry_data_reproj.rda")
+
+#movement models and home range estimate
+load("data/anteater_fit_reproj.rda")
+load("data/anteater_akdes_Reproj.rda")
+load("data/home_range/AKDE_1_reproj.rda")
+load("data/home_range/AKDE_2_reproj.rda")
 
 #............................................................
 # End
